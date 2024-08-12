@@ -31,6 +31,7 @@ let gameInterval;
 let currentQuestion;
 let questionAnswered;
 let isPaused;
+let appleEaten;
 
 const questions = [
     { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0, hint: 'It means "hello"' },
@@ -47,6 +48,7 @@ function initializeGame() {
     isGameOver = false;
     isPaused = false;
     questionAnswered = false;
+    appleEaten = false;
     questionContainer.classList.add('hidden');
     pauseMessage.classList.add('hidden');
     speed = 100 - (difficultySelect.value - 1) * 30; // Adjust speed based on difficulty
@@ -68,7 +70,7 @@ function draw() {
     ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize, gridSize);
 
     if (isPaused) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.font = '24px Arial';
@@ -85,6 +87,7 @@ function moveSnake() {
     snake.unshift(head);
 
     if (head.x === apple.x && head.y === apple.y) {
+        appleEaten = true;
         questionAnswered = false;
         isPaused = true;
         questionContainer.classList.remove('hidden');
@@ -121,10 +124,11 @@ function handleAnswer(index) {
     if (index === currentQuestion.correct) {
         score += 10;
         scoreElem.textContent = score;
-        placeApple();
         questionContainer.classList.add('hidden');
         isPaused = false;
         questionAnswered = true;
+        appleEaten = false;
+        placeApple();
     } else {
         if (snake.length > 1) {
             snake.pop(); // Reduce snake size on incorrect answer
