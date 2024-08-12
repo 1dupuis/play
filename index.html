@@ -227,6 +227,7 @@
 
         let gridSize, tileCount, snake, food, dx, dy, score, highScore, gameLoop, lastRenderTime, snakeSpeed, gameState, difficulty;
         let applesEaten = 0;
+        let quizPoints = 0;
 
         const colors = {
             background: '#2C3E50',
@@ -237,18 +238,44 @@
             grid: 'rgba(255, 255, 255, 0.1)'
         };
 
-        const frenchWords = [
-            {french: 'Bonjour', english: 'Hello'},
-            {french: 'Merci', english: 'Thank you'},
-            {french: 'Au revoir', english: 'Goodbye'},
-            {french: 'S\'il vous plaît', english: 'Please'},
-            {french: 'Oui', english: 'Yes'},
-            {french: 'Non', english: 'No'},
-            {french: 'Chat', english: 'Cat'},
-            {french: 'Chien', english: 'Dog'},
-            {french: 'Maison', english: 'House'},
-            {french: 'Voiture', english: 'Car'}
-        ];
+        const frenchWords = {
+            easy: [
+                {french: 'Bonjour', english: 'Hello'},
+                {french: 'Merci', english: 'Thank you'},
+                {french: 'Au revoir', english: 'Goodbye'},
+                {french: 'S\'il vous plaît', english: 'Please'},
+                {french: 'Oui', english: 'Yes'},
+                {french: 'Non', english: 'No'},
+                {french: 'Chat', english: 'Cat'},
+                {french: 'Chien', english: 'Dog'},
+                {french: 'Maison', english: 'House'},
+                {french: 'Voiture', english: 'Car'}
+            ],
+            medium: [
+                {french: 'Aujourd\'hui', english: 'Today'},
+                {french: 'Demain', english: 'Tomorrow'},
+                {french: 'Hier', english: 'Yesterday'},
+                {french: 'Maintenant', english: 'Now'},
+                {french: 'Toujours', english: 'Always'},
+                {french: 'Jamais', english: 'Never'},
+                {french: 'Souvent', english: 'Often'},
+                {french: 'Parfois', english: 'Sometimes'},
+                {french: 'Beaucoup', english: 'A lot'},
+                {french: 'Peu', english: 'Little'}
+            ],
+            hard: [
+                {french: 'Néanmoins', english: 'Nevertheless'},
+                {french: 'Dorénavant', english: 'From now on'},
+                {french: 'Auparavant', english: 'Previously'},
+                {french: 'Désormais', english: 'Henceforth'},
+                {french: 'Simultanément', english: 'Simultaneously'},
+                {french: 'Éventuellement', english: 'Possibly'},
+                {french: 'Apparemment', english: 'Apparently'},
+                {french: 'Vraisemblablement', english: 'Presumably'},
+                {french: 'Progressivement', english: 'Gradually'},
+                {french: 'Paradoxalement', english: 'Paradoxically'}
+            ]
+        };
 
         let currentWord;
 
@@ -257,6 +284,7 @@
             snake = [{ x: 5, y: 5 }];
             generateFood();
             score = 0;
+            quizPoints = 0;
             applesEaten = 0;
             dx = 1;
             dy = 0;
@@ -397,6 +425,7 @@
             ctx.strokeStyle = colors.foodOutline;
             ctx.lineWidth = 2;
             ctx.beginPath();
+            ctx.arc(x + gridSize / 2,
             ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2 - 1, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
@@ -466,6 +495,7 @@
         }
 
         function updateScore() {
+            score += quizPoints;
             scoreElement.textContent = `Score: ${score}`;
             if (score > highScore) {
                 highScore = score;
@@ -474,7 +504,7 @@
         }
 
         function selectNewWord() {
-            currentWord = frenchWords[Math.floor(Math.random() * frenchWords.length)];
+            currentWord = frenchWords[difficulty][Math.floor(Math.random() * frenchWords[difficulty].length)];
             frenchWordElement.textContent = `${currentWord.french}`;
         }
 
@@ -498,7 +528,7 @@
         }
 
         function getWrongAnswers(correctAnswer) {
-            const wrongAnswers = frenchWords
+            const wrongAnswers = frenchWords[difficulty]
                 .filter(word => word !== correctAnswer)
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 2);
@@ -515,11 +545,22 @@
 
         function checkAnswer(selectedAnswer, correctAnswer) {
             if (selectedAnswer === correctAnswer) {
-                score += 5;
-                updateScore();
+                quizPoints += 5;
+            } else {
+                quizPoints -= 5;
             }
+            updateScore();
             quizOverlay.classList.add('hidden');
             gameState = 'playing';
+            addQuizPointsToSnake();
+        }
+
+        function addQuizPointsToSnake() {
+            for (let i = 0; i < quizPoints; i++) {
+                const tail = snake[snake.length - 1];
+                snake.push({ ...tail });
+            }
+            quizPoints = 0;
         }
 
         function gameOver() {
