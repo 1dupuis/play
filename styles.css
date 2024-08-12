@@ -3,25 +3,28 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    background: #f4f4f4; /* Light background for the body */
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 /* Game Container */
 #gameContainer {
     position: relative;
-    width: 100%;
-    height: 100vh;
-    background: #000;
-    overflow: hidden;
+    width: 600px;
+    height: 400px;
+    background: #222; /* Dark background for the game area */
+    border: 2px solid #444;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
 /* Canvas */
 #gameCanvas {
-    background: #222;
-    border: 2px solid #444;
-    display: block;
-    margin: 0 auto;
+    background: #000;
+    border: 1px solid #333;
 }
 
 /* Overlay */
@@ -31,8 +34,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    background: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
+    color: #fff; /* White text */
     display: none;
     justify-content: center;
     align-items: center;
@@ -40,6 +43,7 @@ body {
     text-align: center;
     font-size: 24px;
     border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 /* Pause Message */
@@ -54,12 +58,14 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    background: #333; /* Slightly lighter dark background for contrast */
 }
 
 /* Hint */
 .hint {
     margin: 10px 0;
     font-style: italic;
+    color: #ddd; /* Light grey color for hint text */
 }
 
 /* Answers */
@@ -70,18 +76,20 @@ body {
 }
 
 .answer {
-    background-color: #007bff;
+    background-color: #007bff; /* Blue background for buttons */
     border: none;
     border-radius: 5px;
-    color: #fff;
+    color: #fff; /* White text */
     cursor: pointer;
     padding: 10px;
     font-size: 16px;
     transition: background 0.3s, box-shadow 0.3s;
+    width: 100%;
+    max-width: 200px; /* Limit button width for readability */
 }
 
 .answer:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
 /* Game Over Screen */
@@ -91,6 +99,8 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    background: #333; /* Dark background for contrast */
+    text-align: center;
 }
 
 /* Score Container */
@@ -98,7 +108,12 @@ body {
     position: absolute;
     top: 10px;
     left: 10px;
-    color: #fff;
+    color: #fff; /* White text */
+    font-size: 18px;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 /* Buttons */
@@ -129,4 +144,29 @@ button:focus {
     border: 1px solid #ccc;
     border-radius: 5px;
     background: #fff;
+}
+
+/* Game Controls */
+#controls {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: #333;
+    font-size: 16px;
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Centering Elements */
+.hidden {
+    display: none;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
