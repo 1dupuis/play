@@ -130,6 +130,41 @@
             font-weight: bold;
         }
 
+        #quizOverlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #quizQuestion {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #quizOptions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quizOption {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quizOption:hover {
+            background-color: var(--primary-color);
+        }
+
         @media (max-width: 600px) {
             #gameContainer {
                 width: 95vw;
@@ -139,7 +174,7 @@
                 font-size: 2em;
             }
 
-            .button, .difficulty-btn {
+            .button, .difficulty-btn, .quizOption {
                 font-size: 1em;
                 padding: 8px 16px;
             }
@@ -169,6 +204,10 @@
             <p id="finalScore"></p>
             <button id="restartButton" class="button">Play Again</button>
         </div>
+        <div id="quizOverlay" class="overlay hidden">
+            <div id="quizQuestion"></div>
+            <div id="quizOptions"></div>
+        </div>
     </div>
 
     <script>
@@ -178,12 +217,16 @@
         const highScoreElement = document.getElementById('highScore');
         const startScreen = document.getElementById('startScreen');
         const gameOverScreen = document.getElementById('gameOverScreen');
+        const quizOverlay = document.getElementById('quizOverlay');
+        const quizQuestion = document.getElementById('quizQuestion');
+        const quizOptions = document.getElementById('quizOptions');
         const startButton = document.getElementById('startButton');
         const restartButton = document.getElementById('restartButton');
         const difficultyButtons = document.querySelectorAll('.difficulty-btn');
         const frenchWordElement = document.getElementById('frenchWord');
 
         let gridSize, tileCount, snake, food, dx, dy, score, highScore, gameLoop, lastRenderTime, snakeSpeed, gameState, difficulty;
+        let applesEaten = 0;
 
         const colors = {
             background: '#2C3E50',
@@ -214,11 +257,13 @@
             snake = [{ x: 5, y: 5 }];
             generateFood();
             score = 0;
+            applesEaten = 0;
             dx = 1;
             dy = 0;
             gameState = 'playing';
             startScreen.classList.add('hidden');
             gameOverScreen.classList.add('hidden');
+            quizOverlay.classList.add('hidden');
             setDifficulty(difficulty);
             updateScore();
             selectNewWord();
@@ -380,9 +425,13 @@
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 score++;
+                applesEaten++;
                 updateScore();
                 generateFood();
                 selectNewWord();
+                if (applesEaten % 3 === 0) {
+                    showQuiz();
+                }
             } else {
                 snake.pop();
             }
@@ -397,9 +446,13 @@
         function checkFoodCollision() {
             if (snake[0].x === food.x && snake[0].y === food.y) {
                 score++;
+                applesEaten++;
                 updateScore();
                 generateFood();
                 selectNewWord();
+                if (applesEaten % 3 === 0) {
+                    showQuiz();
+                }
             }
         }
 
@@ -422,7 +475,51 @@
 
         function selectNewWord() {
             currentWord = frenchWords[Math.floor(Math.random() * frenchWords.length)];
-            frenchWordElement.textContent = `${currentWord.french} (${currentWord.english})`;
+            frenchWordElement.textContent = `${currentWord.french}`;
+        }
+
+        function showQuiz() {
+            gameState = 'quiz';
+            quizOverlay.classList.remove('hidden');
+            
+            const correctAnswer = currentWord;
+            const wrongAnswers = getWrongAnswers(correctAnswer);
+            const answers = shuffleArray([correctAnswer, ...wrongAnswers]);
+
+            quizQuestion.textContent = `What is the English translation of "${correctAnswer.french}"?`;
+            quizOptions.innerHTML = '';
+            answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.classList.add('quizOption');
+                button.textContent = answer.english;
+                button.addEventListener('click', () => checkAnswer(answer, correctAnswer));
+                quizOptions.appendChild(button);
+            });
+        }
+
+        function getWrongAnswers(correctAnswer) {
+            const wrongAnswers = frenchWords
+                .filter(word => word !== correctAnswer)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 2);
+            return wrongAnswers;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            if (selectedAnswer === correctAnswer) {
+                score += 5;
+                updateScore();
+            }
+            quizOverlay.classList.add('hidden');
+            gameState = 'playing';
         }
 
         function gameOver() {
