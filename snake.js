@@ -389,66 +389,55 @@ function handleTouchStart(e) {
 }
 
 function handleTouchMove(e) {
-  if (gameState !== 'playing') return;
-  e.preventDefault();
-
-  const touchEndX = e.touches[0].clientX;
-  const touchEndY = e.touches[0].clientY;
-  const deltaX = touchEndX - touchStartX;
-  const deltaY = touchEndY - touchStartY;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    if (deltaX > 0 && dx === 0) {
-      dx = 1;
-      dy = 0;
-    } else if (deltaX < 0 && dx === 0) {
-      dx = -1;
-      dy = 0;
+    if (gameState !== 'playing') return;
+    e.preventDefault();
+    
+    const touchEndX = e.touches[0].clientX;
+    const touchEndY = e.touches[0].clientY;
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0 && dx === 0) { dx = 1; dy = 0; }
+        else if (deltaX < 0 && dx === 0) { dx = -1; dy = 0; }
+    } else {
+        if (deltaY > 0 && dy === 0) { dx = 0; dy = 1; }
+        else if (deltaY < 0 && dy === 0) { dx = 0; dy = -1; }
     }
-  } else {
-    if (deltaY > 0 && dy === 0) {
-      dx = 0;
-      dy = 1;
-    } else if (deltaY < 0 && dy === 0) {
-      dx = 0;
-      dy = -1;
-    }
-  }
 }
 
 startButton.addEventListener('click', initGame);
 restartButton.addEventListener('click', initGame);
 
-difficultyButtons.forEach(button = >{
-  button.addEventListener('click', (e) = >{
-    difficultyButtons.forEach(btn = >btn.classList.remove('active'));
-    e.target.classList.add('active');
-    setDifficulty(e.target.dataset.difficulty);
-  });
+difficultyButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        difficultyButtons.forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        setDifficulty(e.target.dataset.difficulty);
+    });
 });
 
 document.addEventListener('keydown', handleKeydown);
 
-let touchStartX,
-touchStartY;
+let touchStartX, touchStartY;
 canvas.addEventListener('touchstart', handleTouchStart, false);
 canvas.addEventListener('touchmove', handleTouchMove, false);
 
-window.addEventListener('resize', () = >{
-  setCanvasSize();
-  if (gameState === 'playing') {
-    // Adjust snake and food positions
-    snake = snake.map(segment = >({
-      x: Math.floor(segment.x * canvas.width / prevWidth),
-      y: Math.floor(segment.y * canvas.height / prevHeight)
-    }));
-    food = {
-      x: Math.floor(food.x * canvas.width / prevWidth),
-      y: Math.floor(food.y * canvas.height / prevHeight)
-    };
-    prevWidth = canvas.width;
-    prevHeight = canvas.height;
-  }
+window.addEventListener('resize', () => {
+    setCanvasSize();
+    if (gameState === 'playing') {
+        // Adjust snake and food positions
+        snake = snake.map(segment => ({
+            x: Math.floor(segment.x * canvas.width / prevWidth),
+            y: Math.floor(segment.y * canvas.height / prevHeight)
+        }));
+        food = {
+            x: Math.floor(food.x * canvas.width / prevWidth),
+            y: Math.floor(food.y * canvas.height / prevHeight)
+        };
+        prevWidth = canvas.width;
+        prevHeight = canvas.height;
+    }
 });
 
 // Initialize the game
