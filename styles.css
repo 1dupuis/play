@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f0f0f0;
+}
+
+.game-container {
+    text-align: center;
+    max-width: 640px;
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+#gameCanvas {
+    border: 3px solid #333;
+    background: #fff;
+    margin: 20px 0;
+}
+
+#menu {
+    margin-bottom: 20px;
+}
+
+#difficulty {
+    margin-left: 10px;
+}
+
+#questionContainer {
+    margin-top: 20px;
+}
+
+#question {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#answers {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.answer {
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: #fff;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.answer:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+.answer:active {
+    transform: scale(0.95);
+}
+
+#scoreContainer {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+}
+
+#gameOver {
+    display: none;
+    margin-top: 20px;
+}
+
+#gameOver.hidden {
+    display: none;
+}
+
+#gameOver h2 {
+    color: #ff0000;
+}
+
+#gameOver button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background: #28a745;
+    color: #fff;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#gameOver button:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+#gameOver button:active {
+    transform: scale(0.95);
+}
