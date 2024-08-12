@@ -105,6 +105,7 @@ function moveSnake() {
         questionAnswered = false;
         isPaused = true;
         questionContainer.classList.remove('hidden');
+        hintElem.classList.add('hidden');
         draw();
     } else {
         snake.pop();
@@ -154,6 +155,13 @@ function handleAnswer(index) {
         if (score >= gameLevel * 100) {
             levelUp();
         }
+        setTimeout(() => {
+            if (appleEaten) {
+                isPaused = true;
+                questionContainer.classList.remove('hidden');
+                generateQuestion();
+            }
+        }, 1000); // Wait 1 second after eating apple before pausing for next question
     } else {
         if (snake.length > 1) {
             snake.pop(); // Reduce snake size on incorrect answer
@@ -201,6 +209,7 @@ function endGame() {
     finalScoreElem.textContent = score;
     gameOverScreen.classList.remove('hidden');
     stopBackgroundMusic();
+    setTimeout(() => location.reload(), 3000); // Refresh page after 3 seconds
 }
 
 function restartGame() {
@@ -231,24 +240,21 @@ function gameLoop() {
 }
 
 function playBackgroundMusic() {
-    const music = new Audio('path/to/background-music.mp3');
+    const music = new Audio('background-music.mp3');
     music.loop = true;
     music.play();
+    document.getElementById('playMusic').onclick = () => music.play();
+    document.getElementById('pauseMusic').onclick = () => music.pause();
 }
 
 function stopBackgroundMusic() {
-    const music = new Audio('path/to/background-music.mp3');
+    const music = new Audio('background-music.mp3');
     music.pause();
-    music.currentTime = 0;
 }
 
-startButton.addEventListener('click', () => {
-    initializeGame();
-    gameOverScreen.classList.add('hidden');
-});
-
-restartButton.addEventListener('click', restartGame);
-
+initializeGame();
+startButton.onclick = initializeGame;
+restartButton.onclick = restartGame;
 difficultySelect.addEventListener('change', () => {
     if (!isGameOver) {
         clearInterval(gameInterval);
