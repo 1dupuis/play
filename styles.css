@@ -4,6 +4,7 @@ body {
     padding: 0;
     font-family: Arial, sans-serif;
     background: #f4f4f4;
+    overflow: hidden;
 }
 
 /* Game Container */
@@ -23,73 +24,81 @@ body {
     margin: 0 auto;
 }
 
-/* Snake */
-.snake {
-    background-color: green;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.6);
-    transition: background-color 0.3s;
-}
-
-/* Apple */
-.apple {
-    background-color: red;
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
-    transition: background-color 0.3s;
-}
-
-/* Power-Up */
-.power-up {
-    background-color: blue;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 0, 255, 0.6);
-    transition: background-color 0.3s;
-}
-
-/* Question Container */
-#questionContainer {
+/* Overlay */
+.overlay {
     position: absolute;
-    top: 10%;
-    left: 50%;
-    transform: translate(-50%, 0);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.8);
     color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    font-size: 24px;
+    border-radius: 8px;
 }
 
 /* Pause Message */
 #pauseMessage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    display: none;
+}
+
+/* Question Container */
+#questionContainer {
+    display: none;
+    z-index: 10;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    font-size: 24px;
-    text-align: center;
-    display: none;
+}
+
+/* Hint */
+.hint {
+    margin: 10px 0;
+    font-style: italic;
+}
+
+/* Answers */
+.answers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.answer {
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 16px;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.answer:hover {
+    background-color: #0056b3;
 }
 
 /* Game Over Screen */
 #gameOver {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
+    display: none;
+    z-index: 10;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    display: none;
+}
+
+/* Score Container */
+#scoreContainer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #fff;
 }
 
 /* Buttons */
@@ -111,14 +120,6 @@ button:hover {
 
 button:focus {
     outline: none;
-}
-
-/* Score and High Score */
-#score, #highScore {
-    font-size: 24px;
-    color: #fff;
-    text-align: center;
-    margin: 10px;
 }
 
 /* Difficulty Select */
