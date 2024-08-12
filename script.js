@@ -11,6 +11,7 @@ const startButton = document.getElementById('startGame');
 const restartButton = document.getElementById('restartGame');
 const difficultySelect = document.getElementById('difficulty');
 const questionContainer = document.getElementById('questionContainer');
+const pauseMessage = document.getElementById('pauseMessage');
 
 const gridSize = 20;
 const tileCount = {
@@ -29,6 +30,7 @@ let speed;
 let gameInterval;
 let currentQuestion;
 let questionAnswered;
+let isPaused;
 
 const questions = [
     { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0, hint: 'It means "hello"' },
@@ -43,8 +45,10 @@ function initializeGame() {
     dy = 0;
     score = 0;
     isGameOver = false;
+    isPaused = false;
     questionAnswered = false;
     questionContainer.classList.add('hidden');
+    pauseMessage.classList.add('hidden');
     speed = 100 - (difficultySelect.value - 1) * 30; // Adjust speed based on difficulty
     document.removeEventListener('keydown', handleKeyPress);
     document.addEventListener('keydown', handleKeyPress);
@@ -62,10 +66,19 @@ function draw() {
 
     ctx.fillStyle = 'red';
     ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize, gridSize);
+
+    if (isPaused) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Paused: Answer Question', canvas.width / 2, canvas.height / 2);
+    }
 }
 
 function moveSnake() {
-    if (questionAnswered) return;
+    if (isPaused || questionAnswered) return;
 
     const head = { x: snake[0].x + dx / gridSize, y: snake[0].y + dy / gridSize };
 
@@ -73,6 +86,7 @@ function moveSnake() {
 
     if (head.x === apple.x && head.y === apple.y) {
         questionAnswered = false;
+        isPaused = true;
         questionContainer.classList.remove('hidden');
         draw();
     } else {
@@ -93,34 +107,35 @@ function generateQuestion() {
     currentQuestion = questions[Math.floor(Math.random() * questions.length)];
     questionElem.textContent = currentQuestion.question;
 
+    const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
     answersElem.forEach((btn, index) => {
-        btn.textContent = currentQuestion.answers[index];
-        btn.onclick = () => {
-            if (index === currentQuestion.correct) {
-                questionAnswered = true;
-                placeApple();
-                score += 10;
-                scoreElem.textContent = score;
-                questionContainer.classList.add('hidden');
-                draw();
-            } else {
-                loseSegment();
-                hintElem.textContent = `Hint: ${currentQuestion.hint}`;
-            }
-        };
+        btn.textContent = shuffledAnswers[index];
+        btn.onclick = () => handleAnswer(index);
     });
+
+    hintElem.textContent = currentQuestion.hint;
+    hintElem.classList.add('hidden');
 }
 
-function loseSegment() {
-    if (snake.length > 1) {
-        snake.pop(); // Remove the last segment
-        score -= 5; // Penalize the player
+function handleAnswer(index) {
+    if (index === currentQuestion.correct) {
+        score += 10;
         scoreElem.textContent = score;
+        placeApple();
+        questionContainer.classList.add('hidden');
+        isPaused = false;
+        questionAnswered = true;
+    } else {
+        if (snake.length > 1) {
+            snake.pop(); // Reduce snake size on incorrect answer
+        }
+        hintElem.classList.remove('hidden');
     }
 }
 
 function endGame() {
     clearInterval(gameInterval);
+    isGameOver = true;
     if (score > highScore) {
         highScore = score;
         highScoreElem.textContent = highScore;
@@ -151,7 +166,7 @@ function handleKeyPress(e) {
 }
 
 function gameLoop() {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
     moveSnake();
     draw();
 }
