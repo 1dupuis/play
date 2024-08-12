@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game - French Quiz</title>
+    <title>French Snake Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="gameContainer">
         <canvas id="gameCanvas" width="600" height="400"></canvas>
-        <div id="pauseMessage" class="overlay">Paused: Answer Question</div>
         <div id="questionContainer" class="overlay">
-            <div id="question"></div>
+            <div id="pauseMessage">Paused: Answer Question</div>
+            <div id="questionText"></div>
             <div id="hint" class="hint"></div>
-            <div class="answers">
-                <button class="answer"></button>
-                <button class="answer"></button>
-                <button class="answer"></button>
+            <div id="answers" class="answers">
+                <button class="answer" data-index="0"></button>
+                <button class="answer" data-index="1"></button>
+                <button class="answer" data-index="2"></button>
             </div>
         </div>
         <div id="gameOver" class="overlay">
-            <div id="finalScore"></div>
-            <button id="restartGame">Restart Game</button>
+            <div id="gameOverText"></div>
+            <button id="restartButton">Restart Game</button>
         </div>
         <div id="scoreContainer">
-            <div id="score">Score: 0</div>
-            <div id="highScore">High Score: 0</div>
+            Score: <span id="score">0</span>
         </div>
     </div>
     <div id="controls">
-        <button id="startGame">Start Game</button>
         <label for="difficulty">Difficulty:</label>
         <select id="difficulty">
             <option value="1">Easy</option>
             <option value="2">Medium</option>
             <option value="3">Hard</option>
         </select>
+        <button id="startButton">Start Game</button>
     </div>
-    <script src="script.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
