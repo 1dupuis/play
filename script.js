@@ -1,5 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const questionContainer = document.getElementById('questionContainer');
 const questionElem = document.getElementById('question');
 const hintElem = document.getElementById('hint');
 const answersElem = Array.from(document.querySelectorAll('.answer'));
@@ -10,8 +11,8 @@ const finalScoreElem = document.getElementById('finalScore');
 const startButton = document.getElementById('startGame');
 const restartButton = document.getElementById('restartGame');
 const difficultySelect = document.getElementById('difficulty');
-const questionContainer = document.getElementById('questionContainer');
 const pauseMessage = document.getElementById('pauseMessage');
+const backgroundMusic = new Audio('background-music.mp3');
 
 const gridSize = 20;
 const tileCount = {
@@ -240,16 +241,14 @@ function gameLoop() {
 }
 
 function playBackgroundMusic() {
-    const music = new Audio('background-music.mp3');
-    music.loop = true;
-    music.play();
-    document.getElementById('playMusic').onclick = () => music.play();
-    document.getElementById('pauseMusic').onclick = () => music.pause();
+    backgroundMusic.loop = true;
+    backgroundMusic.play();
+    document.getElementById('playMusic').onclick = () => backgroundMusic.play();
+    document.getElementById('pauseMusic').onclick = () => backgroundMusic.pause();
 }
 
 function stopBackgroundMusic() {
-    const music = new Audio('background-music.mp3');
-    music.pause();
+    backgroundMusic.pause();
 }
 
 initializeGame();
