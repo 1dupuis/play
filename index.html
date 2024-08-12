@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French Learning Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>French Learning Snake Game</h1>
+        <div id="menu">
+            <button id="startGame">Start Game</button>
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty">
+                <option value="1">Easy</option>
+                <option value="2">Medium</option>
+                <option value="3">Hard</option>
+            </select>
+        </div>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div id="questionContainer">
+            <p id="question">Question will appear here</p>
+            <div id="answers">
+                <button class="answer" id="answer1"></button>
+                <button class="answer" id="answer2"></button>
+                <button class="answer" id="answer3"></button>
+            </div>
+        </div>
+        <div id="scoreContainer">
+            <p>Score: <span id="score">0</span></p>
+            <p>High Score: <span id="highScore">0</span></p>
+        </div>
+        <div id="gameOver" class="hidden">
+            <h2>Game Over</h2>
+            <p>Your score: <span id="finalScore">0</span></p>
+            <button id="restartGame">Restart Game</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
