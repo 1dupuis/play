@@ -85,7 +85,7 @@ function draw() {
     });
 
     if (isPaused) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
         ctx.font = '24px Arial';
@@ -103,155 +103,93 @@ function moveSnake() {
 
     if (head.x === apple.x && head.y === apple.y) {
         appleEaten = true;
-        questionAnswered = false;
-        isPaused = true;
-        questionContainer.classList.remove('hidden');
-        hintElem.classList.add('hidden');
-        draw();
+        score += scoreMultiplier;
+        generateQuestion();
+        displayQuestion();
     } else {
         snake.pop();
     }
 
-    if (head.x < 0 || head.x >= tileCount.x || head.y < 0 || head.y >= tileCount.y || snake.slice(1).some(part => part.x === head.x && part.y === head.y)) {
-        endGame();
+    if (head.x < 0 || head.x >= tileCount.x || head.y < 0 || head.y >= tileCount.y || snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        gameOver();
     }
-
-    powerUps.forEach((pu, index) => {
-        if (head.x === pu.x && head.y === pu.y) {
-            handlePowerUp(pu.type);
-            powerUps.splice(index, 1);
-        }
-    });
 }
 
-function placeApple() {
-    apple.x = Math.floor(Math.random() * tileCount.x);
-    apple.y = Math.floor(Math.random() * tileCount.y);
+function handleKeyPress(e) {
+    switch (e.key) {
+        case 'ArrowUp':
+            if (dy === 0) { dx = 0; dy = -gridSize; }
+            break;
+        case 'ArrowDown':
+            if (dy === 0) { dx = 0; dy = gridSize; }
+            break;
+        case 'ArrowLeft':
+            if (dx === 0) { dx = -gridSize; dy = 0; }
+            break;
+        case 'ArrowRight':
+            if (dx === 0) { dx = gridSize; dy = 0; }
+            break;
+    }
 }
 
 function generateQuestion() {
     currentQuestion = questions[Math.floor(Math.random() * questions.length)];
-    questionElem.textContent = currentQuestion.question;
-
-    const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
-    answersElem.forEach((btn, index) => {
-        btn.textContent = shuffledAnswers[index];
-        btn.onclick = () => handleAnswer(index);
-    });
-
-    hintElem.textContent = currentQuestion.hint;
-    hintElem.classList.add('hidden');
 }
 
-function handleAnswer(index) {
+function displayQuestion() {
+    if (appleEaten) {
+        questionElem.textContent = currentQuestion.question;
+        hintElem.textContent = currentQuestion.hint;
+        answersElem.forEach((btn, index) => {
+            btn.textContent = currentQuestion.answers[index];
+            btn.onclick = () => {
+                checkAnswer(index);
+            };
+        });
+        questionContainer.style.display = 'flex';
+        isPaused = true;
+        pauseMessage.style.display = 'none';
+    }
+}
+
+function checkAnswer(index) {
     if (index === currentQuestion.correct) {
-        score += 10 * scoreMultiplier;
-        scoreElem.textContent = score;
-        questionContainer.classList.add('hidden');
-        isPaused = false;
         questionAnswered = true;
+        questionContainer.style.display = 'none';
+        pauseMessage.style.display = 'none';
         appleEaten = false;
-        placeApple();
-        spawnPowerUp();
-        if (score >= gameLevel * 100) {
-            levelUp();
-        }
-        setTimeout(() => {
-            if (appleEaten) {
-                isPaused = true;
-                questionContainer.classList.remove('hidden');
-                generateQuestion();
-            }
-        }, 1000); // Wait 1 second after eating apple before pausing for next question
+        generateApple();
     } else {
-        if (snake.length > 1) {
-            snake.pop(); // Reduce snake size on incorrect answer
-        }
-        hintElem.classList.remove('hidden');
-    }
-}
-
-function handlePowerUp(type) {
-    if (type === 'DoubleScore') {
-        scoreMultiplier = 2;
-        setTimeout(() => scoreMultiplier = 1, 10000); // Reset multiplier after 10 seconds
-    } else if (type === 'ExtraLife') {
-        if (snake.length < 5) { // Max length of the snake
-            snake.push({ ...snake[snake.length - 1] }); // Add an extra segment
-        }
-    }
-}
-
-function spawnPowerUp() {
-    if (Math.random() < 0.1) { // 10% chance to spawn a power-up
-        const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-        let pu;
-        do {
-            pu = { x: Math.floor(Math.random() * tileCount.x), y: Math.floor(Math.random() * tileCount.y), type };
-        } while (snake.some(part => part.x === pu.x && part.y === pu.y) || (pu.x === apple.x && pu.y === apple.y));
-        powerUps.push(pu);
-    }
-}
-
-function levelUp() {
-    gameLevel++;
-    speed = Math.max(30, speed - 10); // Increase speed but not below 30
-    clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, speed);
-}
-
-function endGame() {
-    clearInterval(gameInterval);
-    isGameOver = true;
-    if (score > highScore) {
-        highScore = score;
-        highScoreElem.textContent = highScore;
-    }
-    finalScoreElem.textContent = score;
-    gameOverScreen.classList.remove('hidden');
-    stopBackgroundMusic();
-    setTimeout(() => location.reload(), 3000); // Refresh page after 3 seconds
-}
-
-function restartGame() {
-    gameOverScreen.classList.add('hidden');
-    initializeGame();
-}
-
-function handleKeyPress(e) {
-    if (e.key === 'ArrowUp' && dy === 0) {
-        dx = 0;
-        dy = -gridSize;
-    } else if (e.key === 'ArrowDown' && dy === 0) {
-        dx = 0;
-        dy = gridSize;
-    } else if (e.key === 'ArrowLeft' && dx === 0) {
-        dx = -gridSize;
-        dy = 0;
-    } else if (e.key === 'ArrowRight' && dx === 0) {
-        dx = gridSize;
-        dy = 0;
+        score -= 1;
+        hintElem.textContent = 'Incorrect, try again! Hint: ' + currentQuestion.hint;
     }
 }
 
 function gameLoop() {
-    if (isGameOver || isPaused) return;
-    moveSnake();
-    draw();
+    if (!isPaused) {
+        moveSnake();
+        draw();
+    }
+}
+
+function gameOver() {
+    clearInterval(gameInterval);
+    isGameOver = true;
+    gameOverScreen.style.display = 'flex';
+    finalScoreElem.textContent = `Game Over! Final Score: ${score}`;
+    document.removeEventListener('keydown', handleKeyPress);
+}
+
+function restartGame() {
+    initializeGame();
+    gameOverScreen.style.display = 'none';
 }
 
 function playBackgroundMusic() {
     backgroundMusic.loop = true;
     backgroundMusic.play();
-    document.getElementById('playMusic').onclick = () => backgroundMusic.play();
-    document.getElementById('pauseMusic').onclick = () => backgroundMusic.pause();
 }
 
-function stopBackgroundMusic() {
-    backgroundMusic.pause();
-}
-
-initializeGame();
 startButton.onclick = initializeGame;
 restartButton.onclick = restartGame;
 difficultySelect.addEventListener('change', () => {
