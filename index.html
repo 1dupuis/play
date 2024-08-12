@@ -575,18 +575,22 @@
 
         function handleKeydown(e) {
             if (gameState !== 'playing') return;
-            
-            switch (e.key) {
-                case 'ArrowUp':
+    
+            switch (e.key.toLowerCase()) {
+                case 'arrowup':
+                case 'w':
                     if (dy === 0) { dx = 0; dy = -1; }
                     break;
-                case 'ArrowDown':
+                case 'arrowdown':
+                case 's':
                     if (dy === 0) { dx = 0; dy = 1; }
                     break;
-                case 'ArrowLeft':
+                case 'arrowleft':
+                case 'a':
                     if (dx === 0) { dx = -1; dy = 0; }
                     break;
-                case 'ArrowRight':
+                case 'arrowright':
+                case 'd':
                     if (dx === 0) { dx = 1; dy = 0; }
                     break;
             }
