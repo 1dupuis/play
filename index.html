@@ -3,19 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Learn French</title>
-    <link rel="stylesheet" href="homepage.css">
+    <title>dupuis.lol - Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="flag-container">
-        <div class="flag"></div>
-        <div class="flag"></div>
-        <div class="flag"></div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="scoreBoard">
+            <span id="score">Score: 0</span>
+            <span id="highScore">High Score: 0</span>
+        </div>
+        <div id="controls">Use arrow keys, wasd or swipe to move</div>
+        <div id="frenchWord"></div>
+        <div id="startScreen" class="overlay">
+            <h1>French Snake Game</h1>
+            <button id="startButton" class="button">Start Game</button>
+            <div id="difficultySelector">
+                <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+                <button class="difficulty-btn active" data-difficulty="medium">Medium</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+            </div>
+        </div>
+        <div id="gameOverScreen" class="overlay hidden">
+            <h1>Game Over</h1>
+            <p id="finalScore"></p>
+            <button id="restartButton" class="button">Play Again</button>
+        </div>
+        <div id="quizOverlay" class="overlay hidden">
+            <div id="quizQuestion"></div>
+            <div id="quizOptions"></div>
+        </div>
     </div>
-    <div class="container">
-        <h1>Bienvenue à dupuis.lol</h1>
-        <p>Prêt à tester vos réflexes et votre stratégie ?</p>
-        <a href="snake.html" class="button">Snake Game</a>
-    </div>
+
+    <script src="snake.js"></script>
 </body>
 </html>
