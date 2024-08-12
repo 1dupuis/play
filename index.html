@@ -425,7 +425,6 @@
             ctx.strokeStyle = colors.foodOutline;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(x + gridSize / 2,
             ctx.arc(x + gridSize / 2, y + gridSize / 2, gridSize / 2 - 1, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
@@ -500,6 +499,7 @@
             if (score > highScore) {
                 highScore = score;
                 highScoreElement.textContent = `High Score: ${highScore}`;
+                localStorage.setItem('snakeHighScore', highScore);
             }
         }
 
@@ -528,11 +528,10 @@
         }
 
         function getWrongAnswers(correctAnswer) {
-            const wrongAnswers = frenchWords[difficulty]
+            return frenchWords[difficulty]
                 .filter(word => word !== correctAnswer)
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 2);
-            return wrongAnswers;
         }
 
         function shuffleArray(array) {
@@ -547,7 +546,7 @@
             if (selectedAnswer === correctAnswer) {
                 quizPoints += 5;
             } else {
-                quizPoints -= 5;
+                quizPoints -= 2;
             }
             updateScore();
             quizOverlay.classList.add('hidden');
@@ -556,9 +555,14 @@
         }
 
         function addQuizPointsToSnake() {
-            for (let i = 0; i < quizPoints; i++) {
-                const tail = snake[snake.length - 1];
-                snake.push({ ...tail });
+            if (quizPoints > 0) {
+                for (let i = 0; i < quizPoints; i++) {
+                    const tail = snake[snake.length - 1];
+                    snake.push({ ...tail });
+                }
+            } else if (quizPoints < 0 && snake.length > 1) {
+                // Remove segments, but don't let the snake disappear completely
+                snake.splice(snake.length + quizPoints, Math.abs(quizPoints));
             }
             quizPoints = 0;
         }
@@ -650,7 +654,7 @@
         let prevHeight = canvas.height;
         setCanvasSize();
         setDifficulty('medium');
-        highScore = 0;
+        highScore = localStorage.getItem('snakeHighScore') || 0;
         updateScore();
 
         lastRenderTime = 0;
