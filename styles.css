@@ -1,174 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-:root {
-    --primary-color: #4CAF50;
-    --secondary-color: #2196F3;
-    --background-color: #1E1E1E;
-    --text-color: #FFFFFF;
-    --grid-color: rgba(255, 255, 255, 0.1);
-}
-
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
     margin: 0;
-    background-color: var(--background-color);
-    font-family: 'Roboto', sans-serif;
-    overflow: hidden;
-    color: var(--text-color);
-}
-
-#gameContainer {
-    position: relative;
-    width: 90vw;
-    max-width: 800px;
-    aspect-ratio: 4 / 3;
-}
-
-#gameCanvas {
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    padding: 0;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 15px;
-    transition: opacity 0.3s ease;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-.hidden {
-    opacity: 0;
-    pointer-events: none;
+.container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    max-width: 600px;
 }
 
 h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    text-align: center;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    color: #444;
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+p {
+    color: #666;
+    line-height: 1.6;
+}
+
+ul {
+    text-align: left;
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+li {
+    color: #555;
+    margin-bottom: 0.5rem;
 }
 
 .button {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
     padding: 12px 24px;
-    font-size: 1.2em;
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    border: none;
+    font-size: 1.2rem;
+    text-decoration: none;
     border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin: 10px;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
 }
 
 .button:hover {
     background-color: #45a049;
-    transform: scale(1.05);
 }
 
-#difficultySelector {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
+.flag-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
 }
 
-.difficulty-btn {
-    padding: 8px 16px;
-    font-size: 1em;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.difficulty-btn.active {
-    background-color: var(--primary-color);
-}
-
-#scoreBoard {
+.flag {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 1.2em;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    width: 100px;
+    height: 60px;
+    background: linear-gradient(to right, #0055A4 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #EF4135 66.66%);
+    opacity: 0.2;
+    animation: moveFlag 15s linear infinite;
 }
 
-#controls {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 1em;
+.flag:nth-child(2) {
+    animation-delay: -5s;
+    top: 40%;
 }
 
-#frenchWord {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1.5em;
-    font-weight: bold;
+.flag:nth-child(3) {
+    animation-delay: -10s;
+    top: 70%;
 }
 
-#quizOverlay {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-#quizQuestion {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-#quizOptions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.quizOption {
-    padding: 10px 20px;
-    font-size: 1.2em;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.quizOption:hover {
-    background-color: var(--primary-color);
-}
-
-@media (max-width: 600px) {
-    #gameContainer {
-        width: 95vw;
+@keyframes moveFlag {
+    0% {
+        transform: translateX(-100%) rotate(0deg);
     }
-
-    h1 {
-        font-size: 2em;
-    }
-
-    .button, .difficulty-btn, .quizOption {
-        font-size: 1em;
-        padding: 8px 16px;
+    100% {
+        transform: translateX(100vw) rotate(360deg);
     }
 }
