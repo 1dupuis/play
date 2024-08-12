@@ -25,13 +25,16 @@ let dx;
 let dy;
 let score;
 let highScore = 0;
-let isGameOver;
 let speed;
 let gameInterval;
 let currentQuestion;
 let questionAnswered;
 let isPaused;
 let appleEaten;
+let scoreMultiplier;
+let powerUps;
+let isGameOver;
+let gameLevel;
 
 const questions = [
     { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0, hint: 'It means "hello"' },
@@ -39,23 +42,29 @@ const questions = [
     { question: 'What is "goodbye" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 2, hint: 'It is used when leaving' }
 ];
 
+const powerUpTypes = ['DoubleScore', 'ExtraLife'];
+
 function initializeGame() {
     snake = [{ x: 5, y: 5 }];
     apple = { x: 10, y: 10 };
     dx = gridSize;
     dy = 0;
     score = 0;
+    scoreMultiplier = 1;
     isGameOver = false;
     isPaused = false;
     questionAnswered = false;
     appleEaten = false;
+    gameLevel = 1;
+    powerUps = [];
     questionContainer.classList.add('hidden');
     pauseMessage.classList.add('hidden');
-    speed = 100 - (difficultySelect.value - 1) * 30; // Adjust speed based on difficulty
+    speed = 100 - (difficultySelect.value - 1) * 30;
     document.removeEventListener('keydown', handleKeyPress);
     document.addEventListener('keydown', handleKeyPress);
     gameInterval = setInterval(gameLoop, speed);
     generateQuestion();
+    playBackgroundMusic();
 }
 
 function draw() {
@@ -68,6 +77,11 @@ function draw() {
 
     ctx.fillStyle = 'red';
     ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize, gridSize);
+
+    powerUps.forEach(pu => {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(pu.x * gridSize, pu.y * gridSize, gridSize, gridSize);
+    });
 
     if (isPaused) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -99,6 +113,13 @@ function moveSnake() {
     if (head.x < 0 || head.x >= tileCount.x || head.y < 0 || head.y >= tileCount.y || snake.slice(1).some(part => part.x === head.x && part.y === head.y)) {
         endGame();
     }
+
+    powerUps.forEach((pu, index) => {
+        if (head.x === pu.x && head.y === pu.y) {
+            handlePowerUp(pu.type);
+            powerUps.splice(index, 1);
+        }
+    });
 }
 
 function placeApple() {
@@ -122,19 +143,52 @@ function generateQuestion() {
 
 function handleAnswer(index) {
     if (index === currentQuestion.correct) {
-        score += 10;
+        score += 10 * scoreMultiplier;
         scoreElem.textContent = score;
         questionContainer.classList.add('hidden');
         isPaused = false;
         questionAnswered = true;
         appleEaten = false;
         placeApple();
+        spawnPowerUp();
+        if (score >= gameLevel * 100) {
+            levelUp();
+        }
     } else {
         if (snake.length > 1) {
             snake.pop(); // Reduce snake size on incorrect answer
         }
         hintElem.classList.remove('hidden');
     }
+}
+
+function handlePowerUp(type) {
+    if (type === 'DoubleScore') {
+        scoreMultiplier = 2;
+        setTimeout(() => scoreMultiplier = 1, 10000); // Reset multiplier after 10 seconds
+    } else if (type === 'ExtraLife') {
+        if (snake.length < 5) { // Max length of the snake
+            snake.push({ ...snake[snake.length - 1] }); // Add an extra segment
+        }
+    }
+}
+
+function spawnPowerUp() {
+    if (Math.random() < 0.1) { // 10% chance to spawn a power-up
+        const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+        let pu;
+        do {
+            pu = { x: Math.floor(Math.random() * tileCount.x), y: Math.floor(Math.random() * tileCount.y), type };
+        } while (snake.some(part => part.x === pu.x && part.y === pu.y) || (pu.x === apple.x && pu.y === apple.y));
+        powerUps.push(pu);
+    }
+}
+
+function levelUp() {
+    gameLevel++;
+    speed = Math.max(30, speed - 10); // Increase speed but not below 30
+    clearInterval(gameInterval);
+    gameInterval = setInterval(gameLoop, speed);
 }
 
 function endGame() {
@@ -146,6 +200,7 @@ function endGame() {
     }
     finalScoreElem.textContent = score;
     gameOverScreen.classList.remove('hidden');
+    stopBackgroundMusic();
 }
 
 function restartGame() {
@@ -173,6 +228,18 @@ function gameLoop() {
     if (isGameOver || isPaused) return;
     moveSnake();
     draw();
+}
+
+function playBackgroundMusic() {
+    const music = new Audio('path/to/background-music.mp3');
+    music.loop = true;
+    music.play();
+}
+
+function stopBackgroundMusic() {
+    const music = new Audio('path/to/background-music.mp3');
+    music.pause();
+    music.currentTime = 0;
 }
 
 startButton.addEventListener('click', () => {
