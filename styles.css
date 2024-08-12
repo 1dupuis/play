@@ -15,12 +15,14 @@ body {
 
 h1 {
     color: #333;
+    margin-bottom: 10px;
 }
 
 #gameCanvas {
     border: 3px solid #333;
     background: #fff;
     margin: 20px 0;
+    transition: all 0.3s ease;
 }
 
 #menu {
@@ -71,6 +73,12 @@ h1 {
 
 .answer:active {
     transform: scale(0.95);
+}
+
+#pauseMessage {
+    font-size: 18px;
+    color: #ff0000;
+    margin-top: 20px;
 }
 
 #scoreContainer {
