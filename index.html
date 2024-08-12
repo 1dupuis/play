@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Fluent Snake Game</title>
+    <title>French Learning Snake Game</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
@@ -122,6 +122,14 @@
             font-size: 1em;
         }
 
+        #frenchWord {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
         @media (max-width: 600px) {
             #gameContainer {
                 width: 95vw;
@@ -146,8 +154,9 @@
             <span id="highScore">High Score: 0</span>
         </div>
         <div id="controls">Use arrow keys or swipe to move</div>
+        <div id="frenchWord"></div>
         <div id="startScreen" class="overlay">
-            <h1>Snake Game</h1>
+            <h1>French Learning Snake Game</h1>
             <button id="startButton" class="button">Start Game</button>
             <div id="difficultySelector">
                 <button class="difficulty-btn" data-difficulty="easy">Easy</button>
@@ -172,6 +181,7 @@
         const startButton = document.getElementById('startButton');
         const restartButton = document.getElementById('restartButton');
         const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+        const frenchWordElement = document.getElementById('frenchWord');
 
         let gridSize, tileCount, snake, food, dx, dy, score, highScore, gameLoop, lastRenderTime, snakeSpeed, gameState, difficulty;
 
@@ -183,6 +193,21 @@
             foodOutline: '#C0392B',
             grid: 'rgba(255, 255, 255, 0.1)'
         };
+
+        const frenchWords = [
+            {french: 'Bonjour', english: 'Hello'},
+            {french: 'Merci', english: 'Thank you'},
+            {french: 'Au revoir', english: 'Goodbye'},
+            {french: 'S\'il vous plaît', english: 'Please'},
+            {french: 'Oui', english: 'Yes'},
+            {french: 'Non', english: 'No'},
+            {french: 'Chat', english: 'Cat'},
+            {french: 'Chien', english: 'Dog'},
+            {french: 'Maison', english: 'House'},
+            {french: 'Voiture', english: 'Car'}
+        ];
+
+        let currentWord;
 
         function initGame() {
             setCanvasSize();
@@ -196,6 +221,7 @@
             gameOverScreen.classList.add('hidden');
             setDifficulty(difficulty);
             updateScore();
+            selectNewWord();
         }
 
         function setCanvasSize() {
@@ -337,6 +363,13 @@
             ctx.beginPath();
             ctx.arc(x + sparkleOffset, y + sparkleOffset, sparkleSize, 0, 2 * Math.PI);
             ctx.fill();
+
+            // Draw French word on food
+            ctx.fillStyle = '#fff';
+            ctx.font = `${gridSize / 3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(currentWord.english.substring(0, 1), x + gridSize / 2, y + gridSize / 2);
         }
 
         function moveSnake() {
@@ -349,6 +382,7 @@
                 score++;
                 updateScore();
                 generateFood();
+                selectNewWord();
             } else {
                 snake.pop();
             }
@@ -365,6 +399,7 @@
                 score++;
                 updateScore();
                 generateFood();
+                selectNewWord();
             }
         }
 
@@ -383,6 +418,11 @@
                 highScore = score;
                 highScoreElement.textContent = `High Score: ${highScore}`;
             }
+        }
+
+        function selectNewWord() {
+            currentWord = frenchWords[Math.floor(Math.random() * frenchWords.length)];
+            frenchWordElement.textContent = `${currentWord.french} (${currentWord.english})`;
         }
 
         function gameOver() {
@@ -475,6 +515,7 @@
         highScore = 0;
         updateScore();
 
+        lastRenderTime = 0;
         main();
     </script>
 </body>
