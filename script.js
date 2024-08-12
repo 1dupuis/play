@@ -1,109 +1,58 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const questionContainer = document.getElementById('questionContainer');
-const questionElem = document.getElementById('question');
+const pauseMessage = document.getElementById('pauseMessage');
+const questionText = document.getElementById('questionText');
 const hintElem = document.getElementById('hint');
 const answersElem = Array.from(document.querySelectorAll('.answer'));
 const scoreElem = document.getElementById('score');
-const highScoreElem = document.getElementById('highScore');
 const gameOverScreen = document.getElementById('gameOver');
-const finalScoreElem = document.getElementById('finalScore');
-const startButton = document.getElementById('startGame');
-const restartButton = document.getElementById('restartGame');
+const finalScoreElem = document.getElementById('gameOverText');
+const restartButton = document.getElementById('restartButton');
+const startButton = document.getElementById('startButton');
 const difficultySelect = document.getElementById('difficulty');
-const pauseMessage = document.getElementById('pauseMessage');
-const backgroundMusic = new Audio('background-music.mp3');
+
+let snake = [];
+let apple = {};
+let dx = gridSize;
+let dy = 0;
+let appleEaten = false;
+let isPaused = false;
+let questionAnswered = false;
+let score = 0;
+let currentQuestion = null;
+let isGameOver = false;
+let speed = 200;
 
 const gridSize = 20;
-const tileCount = {
-    x: canvas.width / gridSize,
-    y: canvas.height / gridSize,
-};
-
-let snake;
-let apple;
-let dx;
-let dy;
-let score;
-let highScore = 0;
-let speed;
-let gameInterval;
-let currentQuestion;
-let questionAnswered;
-let isPaused;
-let appleEaten;
-let scoreMultiplier;
-let powerUps;
-let isGameOver;
-let gameLevel;
-
-const questions = [
-    { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0, hint: 'It means "hello"' },
-    { question: 'What is "thank you" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 1, hint: 'It is a polite way to express gratitude' },
-    { question: 'What is "goodbye" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 2, hint: 'It is used when leaving' }
-];
-
-const powerUpTypes = ['DoubleScore', 'ExtraLife'];
+const tileCount = { x: canvas.width / gridSize, y: canvas.height / gridSize };
 
 function initializeGame() {
-    snake = [{ x: 5, y: 5 }];
-    apple = { x: 10, y: 10 };
+    snake = [{ x: Math.floor(tileCount.x / 2), y: Math.floor(tileCount.y / 2) }];
     dx = gridSize;
     dy = 0;
-    score = 0;
-    scoreMultiplier = 1;
-    isGameOver = false;
+    appleEaten = false;
     isPaused = false;
     questionAnswered = false;
-    appleEaten = false;
-    gameLevel = 1;
-    powerUps = [];
-    questionContainer.classList.add('hidden');
-    pauseMessage.classList.add('hidden');
-    speed = 100 - (difficultySelect.value - 1) * 30;
-    document.removeEventListener('keydown', handleKeyPress);
+    score = 0;
+    scoreElem.textContent = score;
+    generateApple();
     document.addEventListener('keydown', handleKeyPress);
     gameInterval = setInterval(gameLoop, speed);
-    generateQuestion();
-    playBackgroundMusic();
-}
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'green';
-    snake.forEach(part => {
-        ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize, gridSize);
-    });
-
-    ctx.fillStyle = 'red';
-    ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize, gridSize);
-
-    powerUps.forEach(pu => {
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(pu.x * gridSize, pu.y * gridSize, gridSize, gridSize);
-    });
-
-    if (isPaused) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
-        ctx.font = '24px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Paused: Answer Question', canvas.width / 2, canvas.height / 2);
-    }
 }
 
 function moveSnake() {
-    if (isPaused || questionAnswered) return;
-
-    const head = { x: snake[0].x + dx / gridSize, y: snake[0].y + dy / gridSize };
-
+    if (isPaused) return;
+    
+    const head = { ...snake[0] };
+    head.x += dx / gridSize;
+    head.y += dy / gridSize;
     snake.unshift(head);
 
     if (head.x === apple.x && head.y === apple.y) {
         appleEaten = true;
-        score += scoreMultiplier;
+        score += 10;
+        scoreElem.textContent = score;
         generateQuestion();
         displayQuestion();
     } else {
@@ -117,15 +66,19 @@ function moveSnake() {
 
 function handleKeyPress(e) {
     switch (e.key) {
+        case 'w':
         case 'ArrowUp':
             if (dy === 0) { dx = 0; dy = -gridSize; }
             break;
+        case 's':
         case 'ArrowDown':
             if (dy === 0) { dx = 0; dy = gridSize; }
             break;
+        case 'a':
         case 'ArrowLeft':
             if (dx === 0) { dx = -gridSize; dy = 0; }
             break;
+        case 'd':
         case 'ArrowRight':
             if (dx === 0) { dx = gridSize; dy = 0; }
             break;
@@ -133,12 +86,17 @@ function handleKeyPress(e) {
 }
 
 function generateQuestion() {
+    // Example questions - replace with your actual questions
+    const questions = [
+        { question: "What is 'apple' in French?", answers: ["Pomme", "Banane", "Orange"], correct: 0, hint: "It's a common fruit." },
+        // Add more questions as needed
+    ];
     currentQuestion = questions[Math.floor(Math.random() * questions.length)];
 }
 
 function displayQuestion() {
     if (appleEaten) {
-        questionElem.textContent = currentQuestion.question;
+        questionText.textContent = currentQuestion.question;
         hintElem.textContent = currentQuestion.hint;
         answersElem.forEach((btn, index) => {
             btn.textContent = currentQuestion.answers[index];
@@ -147,8 +105,8 @@ function displayQuestion() {
             };
         });
         questionContainer.style.display = 'flex';
+        pauseMessage.style.display = 'block';
         isPaused = true;
-        pauseMessage.style.display = 'none';
     }
 }
 
@@ -172,30 +130,41 @@ function gameLoop() {
     }
 }
 
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the snake
+    ctx.fillStyle = '#0f0';
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+    });
+
+    // Draw the apple
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize, gridSize);
+}
+
+function generateApple() {
+    apple = {
+        x: Math.floor(Math.random() * tileCount.x),
+        y: Math.floor(Math.random() * tileCount.y)
+    };
+}
+
 function gameOver() {
     clearInterval(gameInterval);
-    isGameOver = true;
     gameOverScreen.style.display = 'flex';
     finalScoreElem.textContent = `Game Over! Final Score: ${score}`;
-    document.removeEventListener('keydown', handleKeyPress);
+    isGameOver = true;
 }
 
-function restartGame() {
-    initializeGame();
-    gameOverScreen.style.display = 'none';
-}
+restartButton.addEventListener('click', () => {
+    location.reload();
+});
 
-function playBackgroundMusic() {
-    backgroundMusic.loop = true;
-    backgroundMusic.play();
-}
-
-startButton.onclick = initializeGame;
-restartButton.onclick = restartGame;
-difficultySelect.addEventListener('change', () => {
-    if (!isGameOver) {
-        clearInterval(gameInterval);
-        speed = 100 - (difficultySelect.value - 1) * 30;
-        gameInterval = setInterval(gameLoop, speed);
+startButton.addEventListener('click', () => {
+    if (isGameOver) {
+        initializeGame();
+        gameOverScreen.style.display = 'none';
     }
 });
