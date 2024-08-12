@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const questionElem = document.getElementById('question');
+const hintElem = document.getElementById('hint');
 const answersElem = Array.from(document.querySelectorAll('.answer'));
 const scoreElem = document.getElementById('score');
 const highScoreElem = document.getElementById('highScore');
@@ -9,6 +10,7 @@ const finalScoreElem = document.getElementById('finalScore');
 const startButton = document.getElementById('startGame');
 const restartButton = document.getElementById('restartGame');
 const difficultySelect = document.getElementById('difficulty');
+const questionContainer = document.getElementById('questionContainer');
 
 const gridSize = 20;
 const tileCount = {
@@ -25,11 +27,13 @@ let highScore = 0;
 let isGameOver;
 let speed;
 let gameInterval;
+let currentQuestion;
+let questionAnswered;
 
 const questions = [
-    { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0 },
-    { question: 'What is "thank you" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 1 },
-    { question: 'What is "goodbye" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 2 }
+    { question: 'What is "hello" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 0, hint: 'It means "hello"' },
+    { question: 'What is "thank you" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 1, hint: 'It is a polite way to express gratitude' },
+    { question: 'What is "goodbye" in French?', answers: ['Bonjour', 'Merci', 'Au revoir'], correct: 2, hint: 'It is used when leaving' }
 ];
 
 function initializeGame() {
@@ -39,6 +43,8 @@ function initializeGame() {
     dy = 0;
     score = 0;
     isGameOver = false;
+    questionAnswered = false;
+    questionContainer.classList.add('hidden');
     speed = 100 - (difficultySelect.value - 1) * 30; // Adjust speed based on difficulty
     document.removeEventListener('keydown', handleKeyPress);
     document.addEventListener('keydown', handleKeyPress);
@@ -59,15 +65,16 @@ function draw() {
 }
 
 function moveSnake() {
+    if (questionAnswered) return;
+
     const head = { x: snake[0].x + dx / gridSize, y: snake[0].y + dy / gridSize };
 
     snake.unshift(head);
 
     if (head.x === apple.x && head.y === apple.y) {
-        score += 10;
-        scoreElem.textContent = score;
-        placeApple();
-        generateQuestion();
+        questionAnswered = false;
+        questionContainer.classList.remove('hidden');
+        draw();
     } else {
         snake.pop();
     }
@@ -83,19 +90,33 @@ function placeApple() {
 }
 
 function generateQuestion() {
-    const question = questions[Math.floor(Math.random() * questions.length)];
-    questionElem.textContent = question.question;
+    currentQuestion = questions[Math.floor(Math.random() * questions.length)];
+    questionElem.textContent = currentQuestion.question;
 
     answersElem.forEach((btn, index) => {
-        btn.textContent = question.answers[index];
+        btn.textContent = currentQuestion.answers[index];
         btn.onclick = () => {
-            if (index === question.correct) {
-                moveSnake();
+            if (index === currentQuestion.correct) {
+                questionAnswered = true;
+                placeApple();
+                score += 10;
+                scoreElem.textContent = score;
+                questionContainer.classList.add('hidden');
+                draw();
             } else {
-                endGame();
+                loseSegment();
+                hintElem.textContent = `Hint: ${currentQuestion.hint}`;
             }
         };
     });
+}
+
+function loseSegment() {
+    if (snake.length > 1) {
+        snake.pop(); // Remove the last segment
+        score -= 5; // Penalize the player
+        scoreElem.textContent = score;
+    }
 }
 
 function endGame() {
@@ -106,7 +127,11 @@ function endGame() {
     }
     finalScoreElem.textContent = score;
     gameOverScreen.classList.remove('hidden');
-    isGameOver = true;
+}
+
+function restartGame() {
+    gameOverScreen.classList.add('hidden');
+    initializeGame();
 }
 
 function handleKeyPress(e) {
@@ -126,23 +151,18 @@ function handleKeyPress(e) {
 }
 
 function gameLoop() {
-    if (!isGameOver) {
-        draw();
-        moveSnake();
-    }
+    if (isGameOver) return;
+    moveSnake();
+    draw();
 }
 
-function startGame() {
-    gameOverScreen.classList.add('hidden');
+startButton.addEventListener('click', () => {
     initializeGame();
-}
+    gameOverScreen.classList.add('hidden');
+});
 
-function restartGame() {
-    startGame();
-}
-
-startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', restartGame);
+
 difficultySelect.addEventListener('change', () => {
     if (!isGameOver) {
         clearInterval(gameInterval);
