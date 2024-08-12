@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: #f4f4f4; /* Light background for the body */
+    background: #f4f4f4;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -16,7 +16,7 @@ body {
     position: relative;
     width: 600px;
     height: 400px;
-    background: #222; /* Dark background for the game area */
+    background: #222;
     border: 2px solid #444;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
@@ -34,8 +34,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
-    color: #fff; /* White text */
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
     display: none;
     justify-content: center;
     align-items: center;
@@ -48,7 +48,7 @@ body {
 
 /* Pause Message */
 #pauseMessage {
-    display: none;
+    display: block;
 }
 
 /* Question Container */
@@ -58,14 +58,14 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    background: #333; /* Slightly lighter dark background for contrast */
+    background: #333;
 }
 
 /* Hint */
 .hint {
     margin: 10px 0;
     font-style: italic;
-    color: #ddd; /* Light grey color for hint text */
+    color: #ddd;
 }
 
 /* Answers */
@@ -76,20 +76,20 @@ body {
 }
 
 .answer {
-    background-color: #007bff; /* Blue background for buttons */
+    background-color: #007bff;
     border: none;
     border-radius: 5px;
-    color: #fff; /* White text */
+    color: #fff;
     cursor: pointer;
     padding: 10px;
     font-size: 16px;
     transition: background 0.3s, box-shadow 0.3s;
     width: 100%;
-    max-width: 200px; /* Limit button width for readability */
+    max-width: 200px;
 }
 
 .answer:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
 /* Game Over Screen */
@@ -99,7 +99,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    background: #333; /* Dark background for contrast */
+    background: #333;
     text-align: center;
 }
 
@@ -108,9 +108,9 @@ body {
     position: absolute;
     top: 10px;
     left: 10px;
-    color: #fff; /* White text */
+    color: #fff;
     font-size: 18px;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
