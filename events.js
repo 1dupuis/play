@@ -1,38 +1,51 @@
-const events = [];
+// Array of static events added to the calendar
+const events = [
+    {
+        imageUrl: 'https://via.placeholder.com/150',
+        title: 'French Language Workshop',
+        description: 'Learn the basics of French in a fun and interactive workshop!',
+        date: '2024-08-15',
+        fullDescription: 'This workshop will cover basic French phrases, vocabulary, and grammar. Suitable for beginners!'
+    },
+    {
+        imageUrl: 'https://via.placeholder.com/150',
+        title: 'French Culture Day',
+        description: 'A day to celebrate French culture with food, music, and art!',
+        date: '2024-08-20',
+        fullDescription: 'Enjoy a full day of activities dedicated to French culture, including cooking classes, music performances, and art exhibitions.'
+    },
+    {
+        imageUrl: 'https://via.placeholder.com/150',
+        title: 'Advanced French Grammar Session',
+        description: 'Dive deep into advanced French grammar with our experts!',
+        date: '2024-08-25',
+        fullDescription: 'This session is designed for those who already have a basic understanding of French and want to improve their grammar skills.'
+    }
+];
 
-function addEvent(imageUrl, title, description, date, fullDescription) {
-    const eventId = events.length;
-    events.push({ imageUrl, title, description, date, fullDescription });
-
+function createEventCard(event) {
     const eventCard = document.createElement('div');
     eventCard.className = 'event-card';
-    eventCard.setAttribute('data-id', eventId);
     eventCard.onclick = () => {
-        window.location.href = `event-detail?id=${eventId}`;
+        window.location.href = `event-detail?id=${events.indexOf(event)}`;
     };
 
     eventCard.innerHTML = `
-        <img src="${imageUrl}" alt="${title}">
-        <h3>${title}</h3>
-        <p>${description}</p>
-        <p><strong>Date:</strong> ${date}</p>
+        <img src="${event.imageUrl}" alt="${event.title}">
+        <h3>${event.title}</h3>
+        <p>${event.description}</p>
+        <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
     `;
 
-    document.getElementById('events-container').appendChild(eventCard);
+    return eventCard;
 }
 
-function saveEventsToLocalStorage() {
-    localStorage.setItem('events', JSON.stringify(events));
-}
-
-function loadEventsFromLocalStorage() {
-    const storedEvents = localStorage.getItem('events');
-    if (storedEvents) {
-        const parsedEvents = JSON.parse(storedEvents);
-        parsedEvents.forEach(event => {
-            addEvent(event.imageUrl, event.title, event.description, event.date, event.fullDescription);
-        });
-    }
+function renderEvents() {
+    const eventsContainer = document.getElementById('events-container');
+    events.forEach(event => {
+        const eventCard = createEventCard(event);
+        eventsContainer.appendChild(eventCard);
+    });
 }
 
 function createCalendar() {
@@ -60,7 +73,15 @@ function createCalendar() {
         if ((firstDay + day - 1) % 7 === 0) {
             calendarHtml += '</tr><tr>';
         }
-        calendarHtml += `<td class="calendar-day" data-date="${year}-${now.getMonth() + 1}-${day}">${day}</td>`;
+
+        const currentDate = `${year}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const eventOnThisDay = events.find(event => event.date === currentDate);
+
+        calendarHtml += `<td class="calendar-day" data-date="${currentDate}">${day}`;
+        if (eventOnThisDay) {
+            calendarHtml += `<div class="event-indicator"></div>`;
+        }
+        calendarHtml += `</td>`;
     }
     calendarHtml += '</tr></table>';
 
@@ -69,16 +90,11 @@ function createCalendar() {
     document.querySelectorAll('.calendar-day').forEach(day => {
         day.addEventListener('click', function () {
             const date = this.getAttribute('data-date');
-            const event = prompt('Enter event title:');
+            const event = events.find(e => e.date === date);
             if (event) {
-                addEvent(
-                    'https://via.placeholder.com/150',
-                    event,
-                    'No description available',
-                    date,
-                    'No full description was set.'
-                );
-                saveEventsToLocalStorage();
+                alert(`Event: ${event.title}\nDate: ${new Date(event.date).toLocaleDateString()}\nDescription: ${event.fullDescription}`);
+            } else {
+                alert('No event on this date.');
             }
         });
     });
@@ -86,16 +102,5 @@ function createCalendar() {
 
 document.addEventListener('DOMContentLoaded', () => {
     createCalendar();
-    loadEventsFromLocalStorage();
-
-    // Example of adding an initial event
-    addEvent(
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/France_Icon.svg/400px-France_Icon.svg.png', 
-        'More Soon!', 
-        'Stay updated on the latest posts and events!', 
-        'August 12, 2024',
-        'No full description was set.'
-    );
-
-    saveEventsToLocalStorage();
+    renderEvents();
 });
