@@ -20,14 +20,32 @@ body {
     position: relative;
 }
 
-#dialog {
+#chatBox {
+    text-align: left;
     margin-bottom: 1rem;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #fafafa;
 }
 
-#message {
-    font-size: 1.2rem;
+#conversation {
+    line-height: 1.5;
+}
+
+#conversation .message {
+    margin-bottom: 10px;
+}
+
+#conversation .message.friend {
     color: #333;
-    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+#conversation .message.user {
+    color: #555;
 }
 
 #controls {
