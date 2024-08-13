@@ -1,62 +1,91 @@
 const questions = [
-    { question: "What is your name?", answer: "Quel est ton nom?", hint: "It's a common phrase for asking someone's identity." },
-    { question: "How are you?", answer: "Comment ça va?", hint: "It's a common greeting." },
-    { question: "Where do you live?", answer: "Où habites-tu?", hint: "It's about asking someone's residence." },
-    { question: "What time is it?", answer: "Quelle heure est-il?", hint: "It's a question about time." }
+    { question: "How do you say 'Hello' in French?", answer: "bonjour" },
+    { question: "What is the French word for 'Book'?", answer: "livre" },
+    { question: "How do you say 'Thank you' in French?", answer: "merci" },
+    { question: "What is the French word for 'Apple'?", answer: "pomme" },
+    { question: "How do you say 'Goodbye' in French?", answer: "au revoir" },
+    { question: "What is the French word for 'Cat'?", answer: "chat" },
+    { question: "How do you say 'Please' in French?", answer: "s'il vous plaît" },
+    { question: "What is the French word for 'Dog'?", answer: "chien" },
+    { question: "How do you say 'Yes' in French?", answer: "oui" },
+    { question: "What is the French word for 'House'?", answer: "maison" }
+    // Add more questions as needed
 ];
 
+let currentQuestionIndex = 0;
 let score = 0;
-const questionElement = document.getElementById('question');
-const answerInput = document.getElementById('answerInput');
-const submitButton = document.getElementById('submitAnswer');
-const feedbackElement = document.getElementById('feedback');
-const scoreElement = document.getElementById('score');
-const hintElement = document.getElementById('hint');
-const hintButton = document.getElementById('hintButton');
-const exampleAnswerElement = document.getElementById('exampleAnswer');
+let timer;
+let timeLeft = 30;
+const maxQuestions = questions.length;
 
-function getRandomQuestion() {
-    const randomIndex = Math.floor(Math.random() * questions.length);
-    return questions[randomIndex];
+document.addEventListener('DOMContentLoaded', () => {
+    loadQuestion();
+
+    document.getElementById('submitButton').addEventListener('click', handleSubmit);
+    document.getElementById('answerInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSubmit();
+    });
+});
+
+function loadQuestion() {
+    if (currentQuestionIndex >= maxQuestions) {
+        endGame();
+        return;
+    }
+
+    const currentQuestion = questions[currentQuestionIndex];
+    document.getElementById('message').textContent = currentQuestion.question;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('answerInput').value = '';
+    document.getElementById('time').textContent = timeLeft;
+    document.getElementById('questionNumber').textContent = `Question: ${currentQuestionIndex + 1}`;
+    document.getElementById('totalQuestions').textContent = `of ${maxQuestions}`;
+    document.getElementById('questionHistory').innerHTML += `<li>${currentQuestion.question}</li>`;
+
+    startTimer();
 }
 
-function normalizeString(str) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
+function handleSubmit() {
+    const answer = document.getElementById('answerInput').value.trim().toLowerCase();
+    const correctAnswer = questions[currentQuestionIndex].answer.toLowerCase();
 
-function displayNewQuestion() {
-    const { question, hint } = getRandomQuestion();
-    questionElement.textContent = question;
-    answerInput.value = '';
-    feedbackElement.textContent = '';
-    hintElement.textContent = ''; // Clear hint
-    hintButton.disabled = false; // Enable hint button
-    exampleAnswerElement.textContent = hint;
-}
+    stopTimer();
 
-function checkAnswer() {
-    const answer = normalizeString(answerInput.value.trim());
-    const correctAnswer = normalizeString(questions.find(q => q.question === questionElement.textContent).answer);
-    
     if (answer === correctAnswer) {
-        feedbackElement.textContent = 'Correct!';
-        feedbackElement.className = 'correct';
+        document.getElementById('feedback').textContent = 'Correct!';
+        document.getElementById('feedback').className = 'correct';
         score++;
     } else {
-        feedbackElement.textContent = `Incorrect! The correct answer is: ${questions.find(q => q.question === questionElement.textContent).answer}`;
-        feedbackElement.className = 'incorrect';
+        document.getElementById('feedback').textContent = `Incorrect! The correct answer was: ${questions[currentQuestionIndex].answer}`;
+        document.getElementById('feedback').className = 'incorrect';
     }
-    
-    scoreElement.textContent = `Score: ${score}`;
-    displayNewQuestion();
+
+    currentQuestionIndex++;
+    setTimeout(loadQuestion, 2000);
 }
 
-function showHint() {
-    const hint = questions.find(q => q.question === questionElement.textContent).hint;
-    hintElement.textContent = hint;
-    hintButton.disabled = true; // Disable hint button after use
+function startTimer() {
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time').textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            handleSubmit();
+        }
+    }, 1000);
 }
 
-submitButton.addEventListener('click', checkAnswer);
-hintButton.addEventListener('click', showHint);
-window.addEventListener('load', displayNewQuestion);
+function stopTimer() {
+    clearInterval(timer);
+    timeLeft = 30; // reset timer for next question
+}
+
+function endGame() {
+    document.getElementById('message').textContent = `Game Over! Your final score is ${score}`;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('controls').style.display = 'none';
+    document.getElementById('progress').style.display = 'none';
+    document.getElementById('timer').style.display = 'none';
+    document.getElementById('questionHistory').style.display = 'none';
+}
