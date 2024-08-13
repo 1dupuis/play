@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Define the actual paths
     const isOnVerificationPage = currentPath === '/index.html' || currentPath === '/';
-    const isOnHomepage = currentPath === '/homepage.html';
+    const isOnHomepage = currentPath === '/homepage' || currentPath === '/homepage.html';
 
     // Prevent continuous redirection by using session storage
     const hasRedirected = sessionStorage.getItem('hasRedirected');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (verifiedUser && !isOnVerificationPage) {
         if (!isOnHomepage && !hasRedirected) {
             sessionStorage.setItem('hasRedirected', 'true');
-            window.location.href = 'homepage.html'; // Redirect to homepage.html
+            window.location.href = 'homepage'; // Redirect to homepage.html
         }
         return;
     }
