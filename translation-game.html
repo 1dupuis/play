@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English to French Translation Game</title>
-    <link rel="stylesheet" href="translation.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="gameContainer">
@@ -12,13 +12,18 @@
         <div id="questionContainer">
             <p id="question">What is your name?</p>
         </div>
+        <div id="hintContainer">
+            <button id="hintButton" class="button">Show Hint</button>
+            <p id="hint"></p>
+        </div>
         <input type="text" id="answerInput" placeholder="Enter French translation">
         <button id="submitAnswer" class="button">Submit</button>
         <div id="feedback"></div>
         <div id="scoreBoard">
             <p id="score">Score: 0</p>
+            <p id="example">Example format: <span id="exampleAnswer">Quel est ton nom?</span></p>
         </div>
     </div>
-    <script src="translation.js"></script>
+    <script src="game.js"></script>
 </body>
 </html>
