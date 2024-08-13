@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'More Soon!', 
         'Stay updated on the latest posts and events!', 
         'August 12, 2024',
-        'Full description.'
+        'No full description was set.'
     );
 
     // Save to local storage
