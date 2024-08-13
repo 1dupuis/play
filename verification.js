@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (validUsernames.includes(enteredUsername)) {
                     localStorage.setItem('verifiedUser', enteredUsername);
                     sessionStorage.setItem('hasRedirected', 'true');
-                    window.location.href = 'homepage.html'; // Redirect to homepage.html
+                    window.location.href = 'homepage'; // Redirect to homepage.html
                 } else {
                     displayError('Username not recognized.');
                 }
