@@ -18,7 +18,7 @@ function onYouTubeIframeAPIReady() {
 
 function initializePlayers() {
     try {
-        const defaultMusicVideo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; // Replace with your desired music video URL
+        const defaultMusicVideo = 'https://www.youtube.com/watch?v=J_TTQDCLzmo'; // Replace with your desired music video URL
         const musicVideoId = extractVideoId(defaultMusicVideo);
 
         player = new YT.Player('player', {
