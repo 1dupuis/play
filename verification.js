@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Define valid usernames
     const validUsernames = ['username1', 'username2', 'username3'].map(username => username.toLowerCase());
 
+    // Check if the user is verified
     const verifiedUser = localStorage.getItem('verifiedUser');
     const currentPath = window.location.pathname;
-
-    // Check if the current page is the homepage
-    const isOnHomepage = currentPath.endsWith('homepage.html');
-    const isOnVerificationPage = currentPath.endsWith('index.html');
+    
+    // Define the actual paths
+    const isOnVerificationPage = currentPath === '/index.html' || currentPath === '/';
+    const isOnHomepage = currentPath === '/homepage.html';
 
     // Prevent continuous redirection by using session storage
     const hasRedirected = sessionStorage.getItem('hasRedirected');
