@@ -2,9 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifiedUser = localStorage.getItem('verifiedUser');
     const validUsernames = ['username1', 'username2', 'username3']; // Replace with actual usernames
 
-    // Check if the user is already verified
+    // If the user is already verified, redirect them to the homepage
     if (verifiedUser) {
-        window.location.href = 'homepage.html';
+        window.location.href = 'homepage.html'; // Redirect to homepage.html
         return;
     }
 
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (validUsernames.includes(enteredUsername)) {
             localStorage.setItem('verifiedUser', enteredUsername);
-            window.location.href = 'homepage.html';
+            window.location.href = 'homepage.html'; // Redirect to homepage.html
         } else {
             errorMessage.style.display = 'block';
         }
