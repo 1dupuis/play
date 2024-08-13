@@ -1,4 +1,4 @@
-const events = [
+//const events = [
     {
         imageUrl: 'https://via.placeholder.com/150',
         title: 'French Language Workshop',
