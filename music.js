@@ -1,52 +1,42 @@
-// scripts.js
-document.addEventListener('DOMContentLoaded', () => {
-    const audio = document.getElementById('background-music');
+let player;
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        height: '315',
+        width: '560',
+        videoId: 'la-vie-en-rose-url', // Default video
+        events: {
+            'onReady': onPlayerReady,
+        }
+    });
+}
+
+function onPlayerReady(event) {
     const playButton = document.getElementById('play-button');
     const pauseButton = document.getElementById('pause-button');
     const stopButton = document.getElementById('stop-button');
     const volumeControl = document.getElementById('volume-control');
-    const progressBar = document.getElementById('progress-bar');
     const trackSelect = document.getElementById('track-select');
-    const musicSource = document.getElementById('music-source');
 
-    // Play button functionality
     playButton.addEventListener('click', () => {
-        audio.play();
+        player.playVideo();
     });
 
-    // Pause button functionality
     pauseButton.addEventListener('click', () => {
-        audio.pause();
+        player.pauseVideo();
     });
 
-    // Stop button functionality
     stopButton.addEventListener('click', () => {
-        audio.pause();
-        audio.currentTime = 0;
+        player.stopVideo();
     });
 
-    // Volume control functionality
     volumeControl.addEventListener('input', (event) => {
-        audio.volume = event.target.value;
+        player.setVolume(event.target.value * 100);
     });
 
-    // Progress bar functionality
-    progressBar.addEventListener('input', (event) => {
-        const newTime = audio.duration * (event.target.value / 100);
-        audio.currentTime = newTime;
-    });
-
-    // Update progress bar as the audio plays
-    audio.addEventListener('timeupdate', () => {
-        const progress = (audio.currentTime / audio.duration) * 100;
-        progressBar.value = progress;
-    });
-
-    // Change track functionality
     trackSelect.addEventListener('change', (event) => {
-        const newTrack = event.target.value;
-        musicSource.src = newTrack;
-        audio.load(); // Reload the audio element to apply the new track
-        audio.play(); // Automatically play the new track
+        const newTrackUrl = event.target.value;
+        const videoId = new URL(newTrackUrl).searchParams.get('v');
+        player.loadVideoById(videoId);
     });
-});
+}
