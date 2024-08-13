@@ -18,14 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // Function to display an error message
+    // Function to display an error message only once
     function displayError(message) {
-        document.getElementById('event-detail-container').innerHTML = `<p>${message}</p>`;
+        const container = document.getElementById('event-detail-container');
+        if (!container.querySelector('.error-message')) {
+            container.innerHTML = `<p class="error-message">${message}</p>`;
+        }
     }
 
     // Function to retrieve event by ID from local storage
     function getEventById(id) {
-        // Retrieve the events array from local storage
         const eventsJSON = localStorage.getItem('events');
         if (!eventsJSON) {
             return null;
