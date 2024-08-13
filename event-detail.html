@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Details</title>
+    <title>Event Detail</title>
     <link rel="stylesheet" href="events.css">
 </head>
 <body>
-    <div id="event-detail-container"></div>
-    <button onclick="goBack()" class="back-button">Back to Events</button>
+    <div class="event-detail-container" id="event-detail-container">
+        <!-- Content will be injected here by JavaScript -->
+    </div>
+    <a href="events.html" class="back-button">Back to Events</a>
 
-    <script src="events.js"></script>
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const eventId = urlParams.get('id');
-        displayEventDetails(eventId);
-    </script>
+    <script src="event-detail.js"></script>
 </body>
 </html>
