@@ -1,43 +1,66 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    font-family: 'Arial', sans-serif;
     margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
 }
 
-.music-player {
-    text-align: center;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-button {
+.tabs {
+    display: flex;
     background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    margin: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    padding: 10px;
 }
 
-button:hover {
+.tab-button {
+    flex: 1;
+    padding: 10px;
+    color: white;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.tab-button.active {
     background-color: #0056b3;
 }
 
-input[type="range"], select {
-    width: 100%;
-    margin: 10px 0;
+.tab-button:hover {
+    background-color: #0056b3;
 }
 
-label {
+.content {
+    padding: 20px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
     display: block;
-    margin: 5px 0;
+}
+
+#player, #artist-player {
+    width: 560px;
+    height: 315px;
+    margin-bottom: 10px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    width: 100px;
+}
+
+select {
+    margin-top: 10px;
+    padding: 5px;
 }
