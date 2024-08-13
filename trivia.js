@@ -53,6 +53,7 @@ const questions = [
 
 let currentQuestionIndex = 0;
 let score = 0;
+let highScore = localStorage.getItem('highScore') || 0;
 let timer;
 const timeLimit = 30;
 
@@ -70,6 +71,7 @@ function loadQuestion() {
         btn.onclick = () => checkAnswer(q.answers[index], q.correct);
     });
 
+    document.getElementById('feedback').textContent = '';
     startTimer();
 }
 
@@ -80,6 +82,7 @@ function checkAnswer(selected, correct) {
         feedback.textContent = 'Correct!';
         feedback.className = 'feedback correct';
         score++;
+        updateScore();
     } else {
         feedback.textContent = `Incorrect! The correct answer was "${correct}".`;
         feedback.className = 'feedback incorrect';
@@ -113,20 +116,35 @@ function stopTimer() {
 }
 
 function endGame() {
-    const finalScore = document.getElementById('score');
+    const finalScore = document.getElementById('finalScore');
     finalScore.textContent = `Final Score: ${score}`;
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        document.getElementById('highScore').textContent = `High Score: ${highScore}`;
+    }
     document.getElementById('gameOverScreen').classList.remove('hidden');
     document.getElementById('questionContainer').style.display = 'none';
     document.getElementById('timer').style.display = 'none';
 }
 
+function updateScore() {
+    document.getElementById('score').textContent = `Score: ${score}`;
+}
+
 document.getElementById('restartButton').addEventListener('click', () => {
     currentQuestionIndex = 0;
     score = 0;
+    updateScore();
+    document.getElementById('highScore').textContent = `High Score: ${highScore}`;
     document.getElementById('gameOverScreen').classList.add('hidden');
     document.getElementById('questionContainer').style.display = 'block';
     document.getElementById('timer').style.display = 'block';
     loadQuestion();
 });
 
-window.onload = () => loadQuestion();
+window.onload = () => {
+    updateScore();
+    document.getElementById('highScore').textContent = `High Score: ${highScore}`;
+    loadQuestion();
+};
