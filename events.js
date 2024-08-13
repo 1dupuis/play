@@ -3,7 +3,7 @@ const events = [
         imageUrl: 'https://via.placeholder.com/150',
         title: 'French Language Workshop',
         description: 'Learn the basics of French in a fun and interactive workshop!',
-        date: '2024-08-15',
+        date: '2024-08-14',
         fullDescription: 'This workshop will cover basic French phrases, vocabulary, and grammar. Suitable for beginners!'
     },
     {
@@ -22,6 +22,13 @@ const events = [
     }
 ];
 
+function correctDate(dateString) {
+    // Create a Date object and extract the date in a reliable way, ensuring no timezone issues
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset()); // Adjust for timezone difference
+    return date.toISOString().split('T')[0];
+}
+
 function createEventCard(event) {
     const eventCard = document.createElement('div');
     eventCard.className = 'event-card';
@@ -33,7 +40,7 @@ function createEventCard(event) {
         <img src="${event.imageUrl}" alt="${event.title}">
         <h3>${event.title}</h3>
         <p>${event.description}</p>
-        <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString()}</p>
+        <p><strong>Date:</strong> ${new Date(correctDate(event.date)).toLocaleDateString()}</p>
     `;
 
     return eventCard;
@@ -51,11 +58,13 @@ function renderEvents() {
 function createCalendar() {
     const calendarContainer = document.getElementById('calendar-container');
     const now = new Date();
-    const month = now.toLocaleString('default', { month: 'long' });
     const year = now.getFullYear();
-    const daysInMonth = new Date(year, now.getMonth() + 1, 0).getDate();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    let calendarHtml = `<h2>${month} ${year}</h2>`;
+    const monthName = now.toLocaleString('default', { month: 'long' });
+
+    let calendarHtml = `<h2>${monthName} ${year}</h2>`;
     calendarHtml += `
         <div class="calendar-nav">
             <button id="prev-month">&lt;</button>
@@ -69,7 +78,7 @@ function createCalendar() {
     });
     calendarHtml += '</tr></thead><tbody><tr>';
 
-    const firstDay = new Date(year, now.getMonth(), 1).getDay();
+    const firstDay = new Date(year, month, 1).getDay();
 
     for (let i = 0; i < firstDay; i++) {
         calendarHtml += '<td></td>';
@@ -80,8 +89,8 @@ function createCalendar() {
             calendarHtml += '</tr><tr>';
         }
 
-        const currentDate = `${year}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const eventOnThisDay = events.find(event => event.date === currentDate);
+        const currentDate = new Date(year, month, day).toISOString().split('T')[0];
+        const eventOnThisDay = events.find(event => correctDate(event.date) === currentDate);
 
         calendarHtml += `<td class="calendar-day" data-date="${currentDate}">${day}`;
         if (eventOnThisDay) {
@@ -96,9 +105,9 @@ function createCalendar() {
     document.querySelectorAll('.calendar-day').forEach(day => {
         day.addEventListener('click', function () {
             const date = this.getAttribute('data-date');
-            const event = events.find(e => e.date === date);
+            const event = events.find(e => correctDate(e.date) === date);
             if (event) {
-                alert(`Event: ${event.title}\nDate: ${new Date(event.date).toLocaleDateString()}\nDescription: ${event.fullDescription}`);
+                alert(`Event: ${event.title}\nDate: ${new Date(correctDate(event.date)).toLocaleDateString()}\nDescription: ${event.fullDescription}`);
             } else {
                 alert('No event on this date.');
             }
@@ -116,7 +125,7 @@ function createCalendar() {
 
 function changeMonth(offset) {
     const calendarContainer = document.getElementById('calendar-container');
-    let date = new Date(calendarContainer.getAttribute('data-date'));
+    let date = new Date(calendarContainer.getAttribute('data-date') || new Date());
     date.setMonth(date.getMonth() + offset);
     calendarContainer.setAttribute('data-date', date.toISOString());
     createCalendar();
