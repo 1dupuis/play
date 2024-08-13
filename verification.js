@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // If the user is already verified, redirect them to the homepage
     if (verifiedUser) {
-        window.location.href = 'homepage.html'; // Redirect to homepage.html
+        //window.location.href = 'homepage.html'; // Redirect to homepage.html
         return;
     }
 
