@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const stopButton = document.getElementById('stop-button');
     const volumeControl = document.getElementById('volume-control');
     const progressBar = document.getElementById('progress-bar');
+    const trackSelect = document.getElementById('track-select');
+    const musicSource = document.getElementById('music-source');
 
     // Play button functionality
     playButton.addEventListener('click', () => {
@@ -38,5 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.addEventListener('timeupdate', () => {
         const progress = (audio.currentTime / audio.duration) * 100;
         progressBar.value = progress;
+    });
+
+    // Change track functionality
+    trackSelect.addEventListener('change', (event) => {
+        const newTrack = event.target.value;
+        musicSource.src = newTrack;
+        audio.load(); // Reload the audio element to apply the new track
+        audio.play(); // Automatically play the new track
     });
 });
