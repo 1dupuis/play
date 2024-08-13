@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Convert usernames to lowercase for comparison
-    const validUsernames = ['username1', 'username2', 'username3'].map(username => username.toLowerCase());
+    const validUsernames = ['loellen'].map(username => username.toLowerCase());
 
     const verifiedUser = localStorage.getItem('verifiedUser');
     const currentPath = window.location.pathname;
