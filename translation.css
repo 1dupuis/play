@@ -16,40 +16,22 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
+    position: relative;
 }
 
-h1 {
+#dialog {
+    margin-bottom: 1rem;
+}
+
+#message {
+    font-size: 1.2rem;
     color: #333;
     margin-bottom: 1rem;
 }
 
-#questionContainer {
-    margin: 1rem 0;
-}
-
-#question {
-    font-size: 1.5rem;
-    color: #444;
-}
-
-#hintContainer {
-    margin: 1rem 0;
-}
-
-#hintButton {
-    background-color: #FFC107;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#hintButton:hover {
-    background-color: #FFB300;
+#controls {
+    margin-bottom: 1rem;
 }
 
 #answerInput {
@@ -57,8 +39,7 @@ h1 {
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: calc(100% - 22px); /* Adjust width to account for padding and border */
-    margin-top: 1rem;
+    width: calc(100% - 22px);
 }
 
 .button {
@@ -69,10 +50,8 @@ h1 {
     font-size: 1.2rem;
     border: none;
     border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-    margin-top: 1rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .button:hover {
@@ -92,17 +71,34 @@ h1 {
     color: #F44336;
 }
 
-#scoreBoard {
-    margin-top: 1rem;
-}
-
-#example {
+#progress {
     margin-top: 1rem;
     font-size: 1rem;
     color: #555;
 }
 
-#exampleAnswer {
-    font-style: italic;
-    color: #777;
+#timer {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+#history {
+    margin-top: 1rem;
+    text-align: left;
+}
+
+#history h2 {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+#questionHistory {
+    list-style-type: none;
+    padding: 0;
+}
+
+#questionHistory li {
+    padding: 5px 0;
+    color: #666;
 }
