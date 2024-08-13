@@ -144,6 +144,11 @@ document.getElementById('restartButton').addEventListener('click', () => {
     loadQuestion();
 });
 
+document.getElementById('homeButton').addEventListener('click', () => {
+    // Redirect to the home page or main menu
+    window.location.href = 'index.html'; // Update with the correct path to your home page
+});
+
 window.onload = () => {
     updateScore();
     document.getElementById('highScore').textContent = `High Score: ${highScore}`;
