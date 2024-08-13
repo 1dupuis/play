@@ -3,15 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Events</title>
+    <title>Events Page</title>
     <link rel="stylesheet" href="events.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Events</h1>
-        <div id="eventsContainer" class="events-container"></div>
-    </div>
+    <header>
+        <h1>Upcoming Events</h1>
+    </header>
+
+    <div id="events-container"></div>
 
     <script src="events.js"></script>
+    <script>
+        addEvent(
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/France_Icon.svg/400px-France_Icon.svg.png', 
+            'Paris Fashion Week', 
+            'Experience the latest trends and styles from top designers around the world.', 
+            'September 28, 2024',
+            'Full Description of Paris Fashion Week. This is where you can put detailed information about the event, such as the schedule, guest speakers, ticket information, etc.'
+        );
+
+        addEvent(
+            'https://upload.wikimedia.org/wikipedia/commons/4/47/Parade_in_Paris_%28France%29_14.jpg',
+            'Bastille Day Parade',
+            'Celebrate French national pride with a grand parade on the Champs-Élysées.',
+            'July 14, 2024',
+            'The Bastille Day Parade is a major event in France, featuring a grand military parade, fireworks, and celebrations all over the country.'
+        );
+
+        // Add more events here
+    </script>
 </body>
 </html>
