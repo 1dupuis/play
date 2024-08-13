@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+    background-color: #f4f4f9;
     margin: 0;
     padding: 0;
     display: flex;
@@ -12,44 +12,51 @@ body {
 
 #gameContainer {
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #ffffff;
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     max-width: 600px;
     width: 100%;
 }
 
 #scoreBoard {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#score, #highScore {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0.5rem 1rem;
 }
 
 #questionContainer {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 #question {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #333;
     margin-bottom: 1rem;
 }
 
 .answer-btn {
-    display: block;
     background-color: #4CAF50;
     color: white;
-    padding: 12px 24px;
-    font-size: 1.2rem;
+    padding: 12px 20px;
+    font-size: 1.1rem;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 8px;
     margin: 0.5rem auto;
     width: 80%;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .answer-btn:hover {
     background-color: #45a049;
+    transform: scale(1.05);
 }
 
 .feedback {
@@ -57,9 +64,20 @@ body {
     margin: 1rem 0;
 }
 
+.feedback.correct {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.feedback.incorrect {
+    color: #f44336;
+    font-weight: bold;
+}
+
 #timer {
     font-size: 1.2rem;
     margin: 1rem 0;
+    color: #333;
 }
 
 .overlay {
@@ -68,13 +86,14 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 2rem;
+    z-index: 10;
 }
 
 .hidden {
@@ -82,15 +101,16 @@ body {
 }
 
 #restartButton {
-    margin-top: 1rem;
     background-color: #4CAF50;
     color: white;
-    padding: 12px 24px;
-    border-radius: 5px;
+    padding: 12px 20px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #restartButton:hover {
     background-color: #45a049;
+    transform: scale(1.05);
 }
