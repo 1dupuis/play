@@ -8,8 +8,20 @@
 </head>
 <body>
     <div class="event-detail-container" id="event-detail-container">
-        <!-- Content will be injected here by JavaScript -->
+        <!-- Event details will be injected here by JavaScript -->
     </div>
+
+    <!-- Comment Section -->
+    <div class="comment-section">
+        <h2>Comments</h2>
+        <form id="comment-form">
+            <input type="text" id="username" placeholder="Your Username" required>
+            <textarea id="comment" placeholder="Write your comment here..." required></textarea>
+            <button type="submit">Submit Comment</button>
+        </form>
+        <div id="comments-container"></div>
+    </div>
+
     <a href="events.html" class="back-button">Back to Events</a>
 
     <script src="event-detail.js"></script>
