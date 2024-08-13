@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const verifiedUser = localStorage.getItem('verifiedUser');
-    const validUsernames = ['username1', 'username2', 'username3']; // Replace with actual usernames
+    const validUsernames = ['loellen']; // Replace with actual usernames
 
     // Get the current path
     const currentPath = window.location.pathname;
