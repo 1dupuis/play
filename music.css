@@ -33,7 +33,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-input[type="range"] {
+input[type="range"], select {
     width: 100%;
     margin: 10px 0;
 }
