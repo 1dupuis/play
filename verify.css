@@ -17,9 +17,10 @@ body {
     text-align: center;
 }
 
-.verification-container h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+#loading-indicator {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #007bff;
 }
 
 .verification-container input {
