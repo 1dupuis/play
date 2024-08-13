@@ -19,9 +19,7 @@ function onYouTubeIframeAPIReady() {
 function initializePlayers() {
     try {
         const defaultMusicVideo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; // Replace with your desired music video URL
-        const defaultArtistVideo = 'https://www.youtube.com/watch?v=9bZkp7q19f0'; // Replace with your desired artist video URL
         const musicVideoId = extractVideoId(defaultMusicVideo);
-        const artistVideoId = extractVideoId(defaultArtistVideo);
 
         player = new YT.Player('player', {
             height: '315',
@@ -41,11 +39,10 @@ function initializePlayers() {
         artistPlayer = new YT.Player('artist-player', {
             height: '315',
             width: '560',
-            videoId: artistVideoId,
+            videoId: '', // No default video
             playerVars: {
-                'autoplay': 1,
-                'loop': 1,
-                'playlist': artistVideoId
+                'autoplay': 0,
+                'loop': 1
             },
             events: {
                 'onError': onPlayerError
@@ -113,14 +110,28 @@ function setupEventListeners() {
         musicSelect.addEventListener('change', (event) => {
             const newTrackUrl = event.target.value;
             const videoId = extractVideoId(newTrackUrl);
-            player.loadVideoById(videoId);
+            player.loadVideoById({
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': videoId
+                }
+            });
         });
     }
     if (artistSelect) {
         artistSelect.addEventListener('change', (event) => {
             const newTrackUrl = event.target.value;
             const videoId = extractVideoId(newTrackUrl);
-            artistPlayer.loadVideoById(videoId);
+            artistPlayer.loadVideoById({
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': videoId
+                }
+            });
         });
     }
 
