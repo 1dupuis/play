@@ -1,4 +1,5 @@
 let player;
+let currentTab = 'music';
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
@@ -6,52 +7,84 @@ function onYouTubeIframeAPIReady() {
         width: '560',
         videoId: 'la-vie-en-rose-id', // Default video ID
         playerVars: {
-            'autoplay': 1, // Autoplay video
-            'loop': 1, // Loop video
+            'autoplay': 1,
+            'loop': 1,
             'playlist': 'la-vie-en-rose-id' // Required for looping
         },
         events: {
             'onReady': onPlayerReady,
         }
     });
-}
 
-function onPlayerReady(event) {
-    const playButton = document.getElementById('play-button');
-    const pauseButton = document.getElementById('pause-button');
-    const stopButton = document.getElementById('stop-button');
-    const volumeControl = document.getElementById('volume-control');
-    const trackSelect = document.getElementById('track-select');
+    let artistPlayer = new YT.Player('artist-player', {
+        height: '315',
+        width: '560',
+        videoId: '', // Default to no video
+        playerVars: {
+            'autoplay': 1,
+            'loop': 1,
+            'playlist': ''
+        }
+    });
 
-    if (playButton) {
-        playButton.addEventListener('click', () => {
-            player.playVideo();
-        });
+    function onPlayerReady(event) {
+        const playButton = document.getElementById('play-button');
+        const pauseButton = document.getElementById('pause-button');
+        const stopButton = document.getElementById('stop-button');
+        const volumeControl = document.getElementById('volume-control');
+        const musicSelect = document.getElementById('music-select');
+        const artistSelect = document.getElementById('artist-select');
+
+        if (playButton) {
+            playButton.addEventListener('click', () => {
+                player.playVideo();
+            });
+        }
+
+        if (pauseButton) {
+            pauseButton.addEventListener('click', () => {
+                player.pauseVideo();
+            });
+        }
+
+        if (stopButton) {
+            stopButton.addEventListener('click', () => {
+                player.stopVideo();
+            });
+        }
+
+        if (volumeControl) {
+            volumeControl.addEventListener('input', (event) => {
+                player.setVolume(event.target.value * 100);
+            });
+        }
+
+        if (musicSelect) {
+            musicSelect.addEventListener('change', (event) => {
+                const newTrackUrl = event.target.value;
+                const videoId = new URL(newTrackUrl).searchParams.get('v');
+                player.loadVideoById(videoId);
+            });
+        }
+
+        if (artistSelect) {
+            artistSelect.addEventListener('change', (event) => {
+                const newTrackUrl = event.target.value;
+                const videoId = new URL(newTrackUrl).searchParams.get('v');
+                artistPlayer.loadVideoById(videoId);
+            });
+        }
     }
 
-    if (pauseButton) {
-        pauseButton.addEventListener('click', () => {
-            player.pauseVideo();
-        });
-    }
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    if (stopButton) {
-        stopButton.addEventListener('click', () => {
-            player.stopVideo();
+            this.classList.add('active');
+            document.getElementById(this.dataset.tab).classList.add('active');
         });
-    }
+    });
 
-    if (volumeControl) {
-        volumeControl.addEventListener('input', (event) => {
-            player.setVolume(event.target.value * 100);
-        });
-    }
-
-    if (trackSelect) {
-        trackSelect.addEventListener('change', (event) => {
-            const newTrackUrl = event.target.value;
-            const videoId = new URL(newTrackUrl).searchParams.get('v');
-            player.loadVideoById(videoId);
-        });
-    }
+    document.querySelector('.tab-button.active').click();
 }
