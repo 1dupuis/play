@@ -8,25 +8,21 @@
 </head>
 <body>
     <div class="music-player">
-        <audio id="background-music" loop>
-            <source id="music-source" src="music/la-vie-en-rose.mp3" type="audio/mp3">
-            Your browser does not support the audio element.
-        </audio>
+        <div id="player"></div>
         <button id="play-button">Play</button>
         <button id="pause-button">Pause</button>
         <button id="stop-button">Stop</button>
         <label for="volume-control">Volume:</label>
         <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
-        <label for="progress-bar">Progress:</label>
-        <input type="range" id="progress-bar" min="0" max="100" step="0.1" value="0">
         <label for="track-select">Select Track:</label>
         <select id="track-select">
-            <option value="music/la-vie-en-rose.mp3">La Vie en Rose</option>
-            <option value="music/je-te-promets.mp3">Je te promets</option>
-            <option value="music/derniere-danse.mp3">Dernière danse</option>
+            <option value="https://www.youtube.com/watch?v=la-vie-en-rose-url">La Vie en Rose</option>
+            <option value="https://www.youtube.com/watch?v=je-te-promets-url">Je te promets</option>
+            <option value="https://www.youtube.com/watch?v=derniere-danse-url">Dernière danse</option>
         </select>
     </div>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="scripts.js"></script>
 </body>
 </html>
