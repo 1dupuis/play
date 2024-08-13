@@ -18,24 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // Function to load event details
-    function loadEventDetails() {
-        const { id } = getQueryParams();
-        if (id === null || isNaN(id)) {
-            displayError('Invalid event ID.');
-            return;
-        }
-
-        const eventId = parseInt(id, 10);
-        const event = getEventById(eventId);
-
-        if (event) {
-            displayEventDetails(event);
-        } else {
-            displayError('Event not found.');
-        }
-    }
-
     // Function to display an error message
     function displayError(message) {
         document.getElementById('event-detail-container').innerHTML = `<p>${message}</p>`;
@@ -50,7 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const events = JSON.parse(eventsJSON);
+        console.log('Loaded events:', events); // Debugging statement
         return events[id] || null;
+    }
+
+    // Function to load event details
+    function loadEventDetails() {
+        const { id } = getQueryParams();
+        if (id === null || isNaN(id)) {
+            displayError('Invalid event ID.');
+            return;
+        }
+
+        const eventId = parseInt(id, 10);
+        console.log('Requested event ID:', eventId); // Debugging statement
+        const event = getEventById(eventId);
+
+        if (event) {
+            displayEventDetails(event);
+        } else {
+            displayError('Event not found.');
+        }
     }
 
     // Load event details on page load
