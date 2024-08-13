@@ -1,15 +1,14 @@
 const questions = [
-    { question: "How do you say 'Hello' in French?", answer: "bonjour" },
-    { question: "What is the French word for 'Book'?", answer: "livre" },
-    { question: "How do you say 'Thank you' in French?", answer: "merci" },
-    { question: "What is the French word for 'Apple'?", answer: "pomme" },
-    { question: "How do you say 'Goodbye' in French?", answer: "au revoir" },
-    { question: "What is the French word for 'Cat'?", answer: "chat" },
-    { question: "How do you say 'Please' in French?", answer: "s'il vous plaît" },
-    { question: "What is the French word for 'Dog'?", answer: "chien" },
-    { question: "How do you say 'Yes' in French?", answer: "oui" },
-    { question: "What is the French word for 'House'?", answer: "maison" },
-    // Add more questions as needed
+    { question: "What do you like to do in your free time?", answer: "temps libre" },
+    { question: "What is your favorite French dish?", answer: "plat préféré" },
+    { question: "Have you visited any other countries?", answer: "d'autres pays" },
+    { question: "Do you prefer the beach or the mountains?", answer: "plage ou montagne" },
+    { question: "What’s your favorite French city and why?", answer: "ville préférée" },
+    { question: "Do you have any pets?", answer: "animaux de compagnie" },
+    { question: "What kind of music do you enjoy?", answer: "genre de musique" },
+    { question: "What are your plans for the weekend?", answer: "plans pour week-end" },
+    { question: "Do you prefer coffee or tea?", answer: "café ou thé" },
+    { question: "How do you usually celebrate your birthday?", answer: "célébrer anniversaire" },
 ];
 
 let currentQuestionIndex = 0;
@@ -78,22 +77,25 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timer);
-            handleSubmit();
+            document.getElementById('feedback').textContent = 'Time is up!';
+            document.getElementById('feedback').className = 'incorrect';
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 2000);
         }
     }, 1000);
 }
 
 function stopTimer() {
     clearInterval(timer);
-    timeLeft = 30; // reset timer for next question
 }
 
 function endGame() {
     const conversation = document.getElementById('conversation');
-    conversation.innerHTML += `<div class="message friend">Friend: Game Over! Your final score is ${score}</div>`;
-    document.getElementById('feedback').textContent = '';
-    document.getElementById('controls').style.display = 'none';
+    conversation.innerHTML += `<div class="message friend">Friend: Great chatting with you! Your final score is ${score}/${maxQuestions}.</div>`;
+    document.getElementById('answerInput').style.display = 'none';
+    document.getElementById('submitButton').style.display = 'none';
     document.getElementById('progress').style.display = 'none';
     document.getElementById('timer').style.display = 'none';
-    document.getElementById('questionHistory').style.display = 'none';
 }
