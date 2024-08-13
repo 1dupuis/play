@@ -55,7 +55,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
 let timer;
-const timeLimit = 5;
+const timeLimit = 30;
 
 function loadQuestion() {
     if (currentQuestionIndex >= questions.length) {
