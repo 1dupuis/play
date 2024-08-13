@@ -23,7 +23,6 @@ function onPlayerReady(event) {
     const volumeControl = document.getElementById('volume-control');
     const trackSelect = document.getElementById('track-select');
 
-    // Check if elements are available before adding event listeners
     if (playButton) {
         playButton.addEventListener('click', () => {
             player.playVideo();
