@@ -146,7 +146,7 @@ document.getElementById('restartButton').addEventListener('click', () => {
 
 document.getElementById('homeButton').addEventListener('click', () => {
     // Redirect to the home page or main menu
-    window.location.href = 'homepage.html'; // Update with the correct path to your home page
+    window.location.href = 'homepage'; // Update with the correct path to your home page
 });
 
 window.onload = () => {
