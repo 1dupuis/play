@@ -8,7 +8,7 @@ const questions = [
     { question: "How do you say 'Please' in French?", answer: "s'il vous plaît" },
     { question: "What is the French word for 'Dog'?", answer: "chien" },
     { question: "How do you say 'Yes' in French?", answer: "oui" },
-    { question: "What is the French word for 'House'?", answer: "maison" }
+    { question: "What is the French word for 'House'?", answer: "maison" },
     // Add more questions as needed
 ];
 
@@ -34,7 +34,8 @@ function loadQuestion() {
     }
 
     const currentQuestion = questions[currentQuestionIndex];
-    document.getElementById('message').textContent = currentQuestion.question;
+    const conversation = document.getElementById('conversation');
+    conversation.innerHTML += `<div class="message friend">Friend: ${currentQuestion.question}</div>`;
     document.getElementById('feedback').textContent = '';
     document.getElementById('answerInput').value = '';
     document.getElementById('time').textContent = timeLeft;
@@ -51,13 +52,19 @@ function handleSubmit() {
 
     stopTimer();
 
+    const conversation = document.getElementById('conversation');
+
     if (answer === correctAnswer) {
         document.getElementById('feedback').textContent = 'Correct!';
         document.getElementById('feedback').className = 'correct';
+        conversation.innerHTML += `<div class="message user">You: ${answer}</div>`;
+        conversation.innerHTML += `<div class="message friend">Friend: Well done!</div>`;
         score++;
     } else {
         document.getElementById('feedback').textContent = `Incorrect! The correct answer was: ${questions[currentQuestionIndex].answer}`;
         document.getElementById('feedback').className = 'incorrect';
+        conversation.innerHTML += `<div class="message user">You: ${answer}</div>`;
+        conversation.innerHTML += `<div class="message friend">Friend: The correct answer is ${questions[currentQuestionIndex].answer}.</div>`;
     }
 
     currentQuestionIndex++;
@@ -82,7 +89,8 @@ function stopTimer() {
 }
 
 function endGame() {
-    document.getElementById('message').textContent = `Game Over! Your final score is ${score}`;
+    const conversation = document.getElementById('conversation');
+    conversation.innerHTML += `<div class="message friend">Friend: Game Over! Your final score is ${score}</div>`;
     document.getElementById('feedback').textContent = '';
     document.getElementById('controls').style.display = 'none';
     document.getElementById('progress').style.display = 'none';
