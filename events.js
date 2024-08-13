@@ -1,4 +1,3 @@
-// Array of static events added to the calendar
 const events = [
     {
         imageUrl: 'https://via.placeholder.com/150',
@@ -56,12 +55,18 @@ function createCalendar() {
     const daysInMonth = new Date(year, now.getMonth() + 1, 0).getDate();
 
     let calendarHtml = `<h2>${month} ${year}</h2>`;
-    calendarHtml += '<table><tr>';
+    calendarHtml += `
+        <div class="calendar-nav">
+            <button id="prev-month">&lt;</button>
+            <button id="next-month">&gt;</button>
+        </div>
+    `;
+    calendarHtml += '<table><thead><tr>';
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     daysOfWeek.forEach(day => {
         calendarHtml += `<th>${day}</th>`;
     });
-    calendarHtml += '</tr><tr>';
+    calendarHtml += '</tr></thead><tbody><tr>';
 
     const firstDay = new Date(year, now.getMonth(), 1).getDay();
 
@@ -83,7 +88,7 @@ function createCalendar() {
         }
         calendarHtml += `</td>`;
     }
-    calendarHtml += '</tr></table>';
+    calendarHtml += '</tr></tbody></table>';
 
     calendarContainer.innerHTML = calendarHtml;
 
@@ -98,6 +103,22 @@ function createCalendar() {
             }
         });
     });
+
+    document.getElementById('prev-month').addEventListener('click', () => {
+        changeMonth(-1);
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+        changeMonth(1);
+    });
+}
+
+function changeMonth(offset) {
+    const calendarContainer = document.getElementById('calendar-container');
+    let date = new Date(calendarContainer.getAttribute('data-date'));
+    date.setMonth(date.getMonth() + offset);
+    calendarContainer.setAttribute('data-date', date.toISOString());
+    createCalendar();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
