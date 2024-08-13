@@ -3,22 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>French Music Auto-Loop</title>
+    <title>YouTube Video Player</title>
     <link rel="stylesheet" href="music.css">
 </head>
 <body>
-    <div class="music-player">
-        <div id="player"></div>
-        <button id="play-button">Play</button>
-        <button id="pause-button">Pause</button>
-        <button id="stop-button">Stop</button>
-        <label for="volume-control">Volume:</label>
-        <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
-        <label for="track-select">Select Track:</label>
-        <select id="track-select">
-            <option value="https://www.youtube.com/watch?v=hXAn36q3wyQ">Test 1</option>
-            <option value="https://www.youtube.com/watch?v=hXAn36q3wyQ">Test 2</option>
-        </select>
+    <div class="tabs">
+        <button class="tab-button active" data-tab="music">Music</button>
+        <button class="tab-button" data-tab="french-artists">French Artists</button>
+    </div>
+    <div class="content">
+        <div id="music" class="tab-content active">
+            <div id="player"></div>
+            <button id="play-button">Play</button>
+            <button id="pause-button">Pause</button>
+            <button id="stop-button">Stop</button>
+            <label for="volume-control">Volume:</label>
+            <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
+            <label for="music-select">Select Music:</label>
+            <select id="music-select">
+                <option value="https://www.youtube.com/watch?v=la-vie-en-rose-id">La Vie en Rose</option>
+                <option value="https://www.youtube.com/watch?v=je-te-promets-id">Je te promets</option>
+                <option value="https://www.youtube.com/watch?v=derniere-danse-id">Dernière danse</option>
+            </select>
+        </div>
+        <div id="french-artists" class="tab-content">
+            <div id="artist-player"></div>
+            <label for="artist-select">Select French Artist:</label>
+            <select id="artist-select">
+                <option value="https://www.youtube.com/watch?v=ed-sheeran-id">Ed Sheeran</option>
+                <option value="https://www.youtube.com/watch?v=adele-id">Adele</option>
+                <option value="https://www.youtube.com/watch?v=justin-bieber-id">Justin Bieber</option>
+            </select>
+        </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
