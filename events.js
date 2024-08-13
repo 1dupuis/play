@@ -9,7 +9,7 @@ function addEvent(imageUrl, title, description, date, fullDescription) {
     eventCard.setAttribute('data-id', eventId);
     eventCard.onclick = () => {
         // Ensure eventId is used correctly in the URL
-        window.location.href = `event-detail.html?id=${eventId}`;
+        window.location.href = `event-detail?id=${eventId}`;
     };
 
     eventCard.innerHTML = `
