@@ -11,62 +11,43 @@ body {
     flex-direction: column;
 }
 
-#gameContainer {
-    position: relative;
+.container {
     text-align: center;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    width: 100%;
-    height: 600px; /* Adjust as needed */
+    z-index: 1;
+    max-width: 600px;
+    margin-bottom: auto;
 }
 
-#gameCanvas {
-    width: 100%;
-    height: 100%;
-    background-color: #000; /* Background color for the game area */
-}
-
-#scoreBoard {
-    margin: 1rem 0;
-}
-
-#score, #highScore {
-    font-size: 1.2rem;
+h1 {
     color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
 }
 
-#controls {
-    margin: 1rem 0;
-    font-size: 1rem;
-    color: #666;
-}
-
-#frenchWord {
-    margin: 1rem 0;
-    font-size: 1.2rem;
+h2 {
     color: #444;
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
 }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
+p {
+    color: #666;
+    line-height: 1.6;
 }
 
-.hidden {
-    display: none;
+ul {
+    text-align: left;
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+li {
+    color: #555;
+    margin-bottom: 0.5rem;
 }
 
 .button {
@@ -85,21 +66,55 @@ body {
     background-color: #45a049;
 }
 
-.difficulty-btn {
-    background-color: #2196F3;
-    color: white;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    margin: 0.5rem;
-    cursor: pointer;
+.flag-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
 }
 
-.difficulty-btn.active {
-    background-color: #0b7dda;
+.flag {
+    position: absolute;
+    width: 100px;
+    height: 60px;
+    background: linear-gradient(to right, #0055A4 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #EF4135 66.66%);
+    opacity: 0.2;
+    animation: moveFlag 15s linear infinite;
 }
 
-.difficulty-btn:hover {
-    background-color: #1976D2;
+.flag:nth-child(2) {
+    animation-delay: -5s;
+    top: 40%;
+}
+
+.flag:nth-child(3) {
+    animation-delay: -10s;
+    top: 70%;
+}
+
+@keyframes moveFlag {
+    0% {
+        transform: translateX(-100%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(100vw) rotate(360deg);
+    }
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 100%;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+footer p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
 }
