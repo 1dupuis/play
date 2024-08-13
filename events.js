@@ -21,6 +21,11 @@ function addEvent(imageUrl, title, description, date, fullDescription) {
     document.getElementById('events-container').appendChild(eventCard);
 }
 
+// Save events to local storage
+function saveEventsToLocalStorage() {
+    localStorage.setItem('events', JSON.stringify(events));
+}
+
 // Initial events data
 document.addEventListener('DOMContentLoaded', () => {
     addEvent(
@@ -31,5 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'Full description.'
     );
 
-    // Add more events here
+    // Save to local storage
+    saveEventsToLocalStorage();
 });
