@@ -47,10 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (event) {
             displayEventDetails(event);
+            enableCommentForm(); // Enable the comment form after event details are loaded
             loadComments(id);  // Load comments specific to this event
         } else {
             displayError('Event not found.');
+            disableCommentForm(); // Disable the comment form if the event is not found
         }
+    }
+
+    // Function to enable the comment form
+    function enableCommentForm() {
+        document.getElementById('comment-form').style.display = 'block';
+    }
+
+    // Function to disable the comment form
+    function disableCommentForm() {
+        document.getElementById('comment-form').style.display = 'none';
     }
 
     // Handle comment form submission
