@@ -72,6 +72,7 @@ function loadQuestion() {
     });
 
     document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';  // Clear previous feedback class
     startTimer();
 }
 
