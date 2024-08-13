@@ -41,6 +41,7 @@ function createEventCard(event) {
 
 function renderEvents() {
     const eventsContainer = document.getElementById('events-container');
+    eventsContainer.innerHTML = ''; // Clear existing events to avoid duplication
     events.forEach(event => {
         const eventCard = createEventCard(event);
         eventsContainer.appendChild(eventCard);
