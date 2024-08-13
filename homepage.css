@@ -8,7 +8,7 @@ body {
     align-items: center;
     flex-direction: column;
     min-height: 100vh;
-    overflow: hidden;
+    position: relative;
 }
 
 .container {
@@ -109,7 +109,7 @@ li {
     padding: 10px 0;
     font-size: 14px;
     width: 100%;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     z-index: 2;
 }
