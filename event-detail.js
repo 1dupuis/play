@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayEventDetails(event) {
         const container = document.getElementById('event-detail-container');
         container.innerHTML = `
-            <img src="${event.imageUrl}" alt="${event.title}">
+            <img src="${event.imageUrl}" alt="${event.title}" />
             <h1>${event.title}</h1>
             <p><strong>Date:</strong> ${event.date}</p>
             <p>${event.fullDescription}</p>
@@ -32,27 +32,110 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const events = JSON.parse(eventsJSON);
-        console.log('Loaded events:', events); // Debugging statement
-        return events[id] || null;
+        return events.find(event => event.id === id) || null;
     }
 
     // Function to load event details
     function loadEventDetails() {
         const { id } = getQueryParams();
-        if (id === null || isNaN(id)) {
+        if (!id) {
             displayError('Invalid event ID.');
             return;
         }
 
-        const eventId = parseInt(id, 10);
-        console.log('Requested event ID:', eventId); // Debugging statement
-        const event = getEventById(eventId);
+        const event = getEventById(id);
 
         if (event) {
             displayEventDetails(event);
+            loadComments(id);  // Load comments specific to this event
         } else {
             displayError('Event not found.');
         }
+    }
+
+    // Handle comment form submission
+    const commentForm = document.getElementById('comment-form');
+    commentForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        addComment();
+    });
+
+    // Function to add a comment
+    function addComment() {
+        const username = document.getElementById('username').value.trim();
+        const commentText = document.getElementById('comment').value.trim();
+
+        if (!username || !commentText) {
+            alert("Please fill out both the username and comment fields.");
+            return;
+        }
+
+        const { id } = getQueryParams();
+        const comments = getComments(id);
+
+        const newComment = {
+            username,
+            comment: commentText,
+            timestamp: new Date().toISOString()
+        };
+
+        comments.push(newComment);
+        saveComments(id, comments);
+        displayComments(comments);
+
+        // Clear the form
+        commentForm.reset();
+    }
+
+    // Function to display comments
+    function displayComments(comments) {
+        const commentsContainer = document.getElementById('comments-container');
+        commentsContainer.innerHTML = '';
+        comments.forEach((comment, index) => {
+            const commentElement = document.createElement('div');
+            commentElement.classList.add('comment');
+            commentElement.innerHTML = `
+                <p><strong>${comment.username}</strong> <em>${new Date(comment.timestamp).toLocaleString()}</em></p>
+                <p>${comment.comment}</p>
+                <button class="delete-button" data-index="${index}">Delete</button>
+            `;
+            commentsContainer.appendChild(commentElement);
+        });
+
+        // Attach delete event listeners to each delete button
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const index = event.target.getAttribute('data-index');
+                deleteComment(index);
+            });
+        });
+    }
+
+    // Function to delete a comment
+    function deleteComment(index) {
+        const { id } = getQueryParams();
+        const comments = getComments(id);
+        comments.splice(index, 1);
+        saveComments(id, comments);
+        displayComments(comments);
+    }
+
+    // Function to get comments from local storage
+    function getComments(eventId) {
+        const commentsJSON = localStorage.getItem(`comments_${eventId}`);
+        return commentsJSON ? JSON.parse(commentsJSON) : [];
+    }
+
+    // Function to save comments to local storage
+    function saveComments(eventId, comments) {
+        localStorage.setItem(`comments_${eventId}`, JSON.stringify(comments));
+    }
+
+    // Load and display comments for the current event
+    function loadComments(eventId) {
+        const comments = getComments(eventId);
+        displayComments(comments);
     }
 
     // Load event details on page load
