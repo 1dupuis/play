@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const verifiedUser = localStorage.getItem('verifiedUser');
-    const validUsernames = ['loellen']; // Replace with actual usernames
+    // Convert usernames to lowercase for comparison
+    const validUsernames = ['username1', 'username2', 'username3'].map(username => username.toLowerCase());
 
-    // Get the current path
+    const verifiedUser = localStorage.getItem('verifiedUser');
     const currentPath = window.location.pathname;
 
     // Check if the current page is the homepage
