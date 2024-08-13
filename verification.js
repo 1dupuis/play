@@ -2,18 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const verifiedUser = localStorage.getItem('verifiedUser');
     const validUsernames = ['username1', 'username2', 'username3']; // Replace with actual usernames
 
-    // Check if the user is on the verification page
-    const isOnVerificationPage = window.location.pathname.endsWith('index.html');
-    // Check if the user is already verified
-    const isVerified = !!verifiedUser;
+    // Get the current path
+    const currentPath = window.location.pathname;
 
-    // If the user is already verified and is not on the verification page, redirect them to the homepage
-    //if (isVerified && !isOnVerificationPage) {
-    //    window.location.href = 'homepage.html'; // Redirect to homepage.html
-    //    return;
-    //}
+    // Check if the current page is the homepage
+    const isOnHomepage = currentPath.endsWith('homepage.html');
+    const isOnVerificationPage = currentPath.endsWith('index.html');
 
-    // Proceed with verification if the user is on the verification page
+    // Prevent continuous redirection by using session storage
+    const hasRedirected = sessionStorage.getItem('hasRedirected');
+
+    // If the user is already verified and is not on the verification page
+    if (verifiedUser && !isOnVerificationPage) {
+        if (!isOnHomepage && !hasRedirected) {
+            sessionStorage.setItem('hasRedirected', 'true');
+            window.location.href = 'homepage.html'; // Redirect to homepage.html
+        }
+        return;
+    }
+
+    // If the user is on the verification page
     if (isOnVerificationPage) {
         const usernameInput = document.getElementById('username-input');
         const verifyButton = document.getElementById('verify-button');
@@ -24,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (validUsernames.includes(enteredUsername)) {
                 localStorage.setItem('verifiedUser', enteredUsername);
+                sessionStorage.setItem('hasRedirected', 'true');
                 window.location.href = 'homepage.html'; // Redirect to homepage.html
             } else {
                 errorMessage.style.display = 'block';
