@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Your Access</title>
-    <link rel="stylesheet" href="verify.css">
-    <script src="verification.js" defer></script>
+    <title>Verify User</title>
+    <link rel="stylesheet" href="verification.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Verification</h1>
+    <div class="verification-container">
+        <h1>User Verification</h1>
         <input type="text" id="username-input" placeholder="Enter your username">
         <button id="verify-button">Verify</button>
-        <p id="error-message" style="display: none; color: red;">Invalid username. Please try again.</p>
+        <p id="error-message" style="display: none; color: red;"></p>
+        <div id="loading-indicator" style="display: none;">Loading...</div>
     </div>
+    <script src="verification.js"></script>
 </body>
 </html>
