@@ -1,26 +1,43 @@
-// Function to add an event
-function addEvent(imageUrl, title, description, date) {
-    const eventsContainer = document.getElementById('eventsContainer');
+const events = [];
 
-    const event = document.createElement('div');
-    event.classList.add('event');
+function addEvent(imageUrl, title, description, date, fullDescription) {
+    const eventId = events.length;
+    events.push({ imageUrl, title, description, date, fullDescription });
 
-    event.innerHTML = `
+    const eventCard = document.createElement('div');
+    eventCard.className = 'event-card';
+    eventCard.setAttribute('data-id', eventId);
+    eventCard.onclick = () => {
+        window.location.href = `event-detail.html?id=${eventId}`;
+    };
+
+    eventCard.innerHTML = `
         <img src="${imageUrl}" alt="${title}">
-        <div class="event-details">
-            <h2 class="event-title">${title}</h2>
-            <p class="event-date">${date}</p>
-            <p class="event-description">${description}</p>
-        </div>
+        <h3>${title}</h3>
+        <p>${description}</p>
+        <p><strong>Date:</strong> ${date}</p>
     `;
 
-    eventsContainer.appendChild(event);
+    document.getElementById('events-container').appendChild(eventCard);
 }
 
-// Add events using the function
-addEvent(
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/France_Icon.svg/400px-France_Icon.svg.png', 
-  'dupuis.lol!', 
-  'Learn french while playing games!', 
-  'August 12, 2024'
-);
+function displayEventDetails(eventId) {
+    const event = events[eventId];
+    if (!event) {
+        document.getElementById('event-detail-container').innerHTML = '<p>Event not found.</p>';
+        return;
+    }
+
+    const container = document.getElementById('event-detail-container');
+    
+    container.innerHTML = `
+        <img src="${event.imageUrl}" alt="${event.title}">
+        <h1>${event.title}</h1>
+        <p><strong>Date:</strong> ${event.date}</p>
+        <p>${event.fullDescription}</p>
+    `;
+}
+
+function goBack() {
+    window.history.back();
+}
