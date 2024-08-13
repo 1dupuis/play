@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isVerified = !!verifiedUser;
 
     // If the user is already verified and is not on the verification page, redirect them to the homepage
-    if (isVerified && !isOnVerificationPage) {
-        window.location.href = 'homepage.html'; // Redirect to homepage.html
-        return;
-    }
+    //if (isVerified && !isOnVerificationPage) {
+    //    window.location.href = 'homepage.html'; // Redirect to homepage.html
+    //    return;
+    //}
 
     // Proceed with verification if the user is on the verification page
     if (isOnVerificationPage) {
