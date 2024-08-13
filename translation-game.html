@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English to French Translation Game</title>
+    <title>French Dialog Game</title>
     <link rel="stylesheet" href="translation.css">
 </head>
 <body>
     <div id="gameContainer">
-        <h1>Translate to French</h1>
-        <div id="questionContainer">
-            <p id="question">What is your name?</p>
+        <div id="dialog">
+            <div id="message"></div>
         </div>
-        <div id="hintContainer">
-            <button id="hintButton" class="button">Show Hint</button>
-            <p id="hint"></p>
+        <div id="controls">
+            <input type="text" id="answerInput" placeholder="Type your answer here...">
+            <button id="submitButton" class="button">Submit Answer</button>
         </div>
-        <input type="text" id="answerInput" placeholder="Enter French translation">
-        <button id="submitAnswer" class="button">Submit</button>
         <div id="feedback"></div>
-        <div id="scoreBoard">
-            <p id="score">Score: 0</p>
-            <p id="example">Example format: <span id="exampleAnswer">Quel est ton nom?</span></p>
+        <div id="progress">
+            <span id="questionNumber">Question: 1</span>
+            <span id="totalQuestions">of 10</span>
+        </div>
+        <div id="timer">Time left: <span id="time">30</span> seconds</div>
+        <div id="history">
+            <h2>Previous Questions:</h2>
+            <ul id="questionHistory"></ul>
         </div>
     </div>
+
     <script src="translation.js"></script>
 </body>
 </html>
