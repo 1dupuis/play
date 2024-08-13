@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>French Music Auto-Loop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="music-player">
+        <audio id="background-music" loop>
+            <source src="path-to-your-french-music-file.mp3" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        <button id="play-button">Play</button>
+        <button id="pause-button">Pause</button>
+        <button id="stop-button">Stop</button>
+        <label for="volume-control">Volume:</label>
+        <input type="range" id="volume-control" min="0" max="1" step="0.01" value="0.5">
+        <label for="progress-bar">Progress:</label>
+        <input type="range" id="progress-bar" min="0" max="100" step="0.1" value="0">
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
