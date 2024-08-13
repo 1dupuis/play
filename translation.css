@@ -33,6 +33,18 @@ h1 {
     color: #444;
 }
 
+#hintContainer {
+    margin: 1rem 0;
+}
+
+#hintButton {
+    background-color: #FFC107;
+}
+
+#hintButton:hover {
+    background-color: #FFB300;
+}
+
 #answerInput {
     padding: 10px;
     font-size: 1rem;
@@ -73,4 +85,8 @@ h1 {
 
 #scoreBoard {
     margin-top: 1rem;
+}
+
+#exampleAnswer {
+    font-style: italic;
 }
