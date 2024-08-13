@@ -25,18 +25,10 @@ function addEvent(imageUrl, title, description, date, fullDescription) {
 document.addEventListener('DOMContentLoaded', () => {
     addEvent(
         'https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/France_Icon.svg/400px-France_Icon.svg.png', 
-        'Paris Fashion Week', 
-        'Experience the latest trends and styles from top designers around the world.', 
-        'September 28, 2024',
-        'Full Description of Paris Fashion Week. This is where you can put detailed information about the event, such as the schedule, guest speakers, ticket information, etc.'
-    );
-
-    addEvent(
-        'https://upload.wikimedia.org/wikipedia/commons/4/47/Parade_in_Paris_%28France%29_14.jpg',
-        'Bastille Day Parade',
-        'Celebrate French national pride with a grand parade on the Champs-Élysées.',
-        'July 14, 2024',
-        'The Bastille Day Parade is a major event in France, featuring a grand military parade, fireworks, and celebrations all over the country.'
+        'More Soon!', 
+        'Stay updated on the latest posts and events!', 
+        'August 12, 2024',
+        'Full description.'
     );
 
     // Add more events here
