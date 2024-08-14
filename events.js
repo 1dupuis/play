@@ -2,25 +2,25 @@ const events = [
     // Sample events for testing
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'French Language Workshop',
-        description: 'Learn the basics of French in a fun and interactive workshop!',
+        title: 'Test Announcement 1',
+        description: 'This is a test description...',
         date: '2024-08-14',
-        fullDescription: 'This workshop will cover basic French phrases, vocabulary, and grammar. Suitable for beginners!'
+        fullDescription: 'This is the long form of the test description...'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'French Culture Day',
-        description: 'A day to celebrate French culture with food, music, and art!',
+        title: 'Test Announcement 1',
+        description: 'This is a test description...',
         date: '2024-08-20',
-        fullDescription: 'Enjoy a full day of activities dedicated to French culture, including cooking classes, music performances, and art exhibitions.'
+        fullDescription: 'This is the long form of the test description...'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Advanced French Grammar Session',
-        description: 'Dive deep into advanced French grammar with our experts!',
-        date: '2024-08-25',
-        fullDescription: 'This session is designed for those who already have a basic understanding of French and want to improve their grammar skills.'
-    }
+        title: 'Test Announcement 1',
+        description: 'This is a test description...',
+        date: '2024-09-5',
+        fullDescription: 'This is the long form of the test description...'
+    },
 ];
 
 function adjustTimezone(date) {
