@@ -71,7 +71,7 @@ header .description {
 
 /* Game Board Styles */
 #game {
-    margin-top: 20px;
+    display: none; /* Hidden initially */
 }
 
 #board {
@@ -116,6 +116,7 @@ header .description {
 
 /* Keyboard Styles */
 #keyboard {
+    display: none; /* Hidden initially */
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 5px;
@@ -139,6 +140,7 @@ header .description {
 
 /* Result Section */
 #result {
+    display: none; /* Hidden initially */
     margin-top: 20px;
 }
 
@@ -175,4 +177,13 @@ header .description {
 
 .home-button:hover {
     color: #0056b3;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
 }
