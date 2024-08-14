@@ -19,7 +19,7 @@
             id: 1,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 1',
-            description: 'This is a test description...',
+            description: 'This is a test description! 0123456789, abcdefg',
             date: '2024-08-14',
             fullDescription: 'This is the long form of the test description...'
         },
@@ -27,7 +27,7 @@
             id: 2,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 2',
-            description: 'This is another test description...',
+            description: 'This is a test description! 0123456789, abcdefg',
             date: '2024-08-20',
             fullDescription: 'This is the long form of another test description...'
         },
@@ -35,7 +35,7 @@
             id: 3,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 3',
-            description: 'Yet another test description...',
+            description: 'This is a test description! 0123456789, abcdefg',
             date: '2024-09-05',
             fullDescription: 'This is the long form of yet another test description...'
         },
