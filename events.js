@@ -40,7 +40,7 @@
             fullDescription: 'This is the long form of yet another test description...'
         },
         {
-            id: 1,
+            id: 4,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 4',
             description: 'This is a test description! 0123456789, abcdefg',
@@ -48,7 +48,7 @@
             fullDescription: 'This is the long form of the test description...'
         },
         {
-            id: 2,
+            id: 5,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 5',
             description: 'This is a test description! 0123456789, abcdefg',
@@ -56,7 +56,7 @@
             fullDescription: 'This is the long form of another test description...'
         },
         {
-            id: 3,
+            id: 6,
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 6',
             description: 'This is a test description! 0123456789, abcdefg',
