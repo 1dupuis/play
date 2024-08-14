@@ -104,3 +104,9 @@ button:hover {
     min-height: 50px;
     word-wrap: break-word;
 }
+
+.translated-text.error {
+    color: #d9534f;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
