@@ -56,15 +56,17 @@ function renderEvents() {
 
 function createCalendar(monthOffset = 0) {
     const calendarContainer = document.getElementById('calendar-container');
+    calendarContainer.innerHTML = '';
+
     const now = new Date();
     const year = now.getFullYear();
     const currentMonth = now.getMonth();
-    
-    // Apply the month offset
-    const month = new Date(year, currentMonth + monthOffset, 1).getMonth();
+
+    const targetDate = new Date(year, currentMonth + monthOffset, 1);
+    const month = targetDate.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    const monthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
+
+    const monthName = targetDate.toLocaleString('default', { month: 'long' });
 
     let calendarHtml = `<h2>${monthName} ${year}</h2>`;
     calendarHtml += `
@@ -73,6 +75,7 @@ function createCalendar(monthOffset = 0) {
             <button id="next-month">&gt;</button>
         </div>
     `;
+
     calendarHtml += '<table><thead><tr>';
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     daysOfWeek.forEach(day => {
@@ -80,7 +83,7 @@ function createCalendar(monthOffset = 0) {
     });
     calendarHtml += '</tr></thead><tbody><tr>';
 
-    const firstDay = new Date(year, month, 1).getDay();
+    const firstDay = targetDate.getDay();
 
     for (let i = 0; i < firstDay; i++) {
         calendarHtml += '<td></td>';
@@ -100,6 +103,7 @@ function createCalendar(monthOffset = 0) {
         }
         calendarHtml += `</td>`;
     }
+
     calendarHtml += '</tr></tbody></table>';
 
     calendarContainer.innerHTML = calendarHtml;
