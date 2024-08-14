@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation System</title>
+    <link rel="stylesheet" href="translate.css">
+</head>
+<body>
+    <header>
+        <a href="/homepage" class="home-button">Home</a>
+    </header>
+    <main>
+        <h1>Translation System</h1>
+        <div class="translation-container">
+            <div class="form-group">
+                <label for="languageSelect">Translate to:</label>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="fr">French</option>
+                </select>
+            </div>
+            <textarea id="sourceText" placeholder="Enter text here..."></textarea>
+            <button id="translateButton">Translate</button>
+            <div id="translatedText" class="translated-text"></div>
+        </div>
+    </main>
+    <script src="translate.js"></script>
+</body>
+</html>
