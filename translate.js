@@ -1,7 +1,9 @@
 const MAX_RETRIES = 3; // Maximum number of retries
 const RETRY_DELAY = 2000; // Delay between retries in milliseconds
-const API_KEY = 'OnKRZVRuo23GtI7HjtViOl1I0FFtI1CH'; // Your API key
-const MAX_TRANSLATIONS_PER_DAY = 5; // Maximum translations allowed per day
+const OLD_API_KEY = 'OnKRZVRuo23GtI7HjtViOl1I0FFtI1CH'; // Old API key
+const OLD_API_URL = 'https://api.apilayer.com/language_translation/translate?target='; // Old API URL
+const LIBRE_TRANSLATE_URL = 'https://libretranslate.com/translate'; // New API URL
+const MAX_TRANSLATIONS_PER_DAY = 15; // Maximum translations allowed per day
 
 document.addEventListener('DOMContentLoaded', () => {
     updateButtonState();
@@ -31,10 +33,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function translateText(text, targetLang, retries, onComplete) {
-    const url = `https://api.apilayer.com/language_translation/translate?target=${targetLang}`;
+async function translateText(text, targetLang, retries, onComplete) {
+    try {
+        // Attempt to use LibreTranslate API
+        const response = await fetch(LIBRE_TRANSLATE_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                q: text,
+                source: 'auto',
+                target: targetLang,
+                format: 'text',
+                alternatives: 3,
+                api_key: '' // LibreTranslate does not require an API key
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!response.ok) throw new Error(`LibreTranslate HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        if (data.translatedText) {
+            document.getElementById('translatedText').innerText = data.translatedText;
+            updateTranslationQuota();
+        } else {
+            throw new Error('No translation data available from LibreTranslate');
+        }
+    } catch (error) {
+        console.error('LibreTranslate error:', error);
+        if (retries > 0) {
+            console.log(`Retrying LibreTranslate in ${RETRY_DELAY / 1000} seconds... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+            setTimeout(() => translateText(text, targetLang, retries - 1, onComplete), RETRY_DELAY);
+        } else {
+            // Fallback to old API
+            console.log('Using old API due to failure of LibreTranslate');
+            translateTextWithOldAPI(text, targetLang, retries, onComplete);
+        }
+    } finally {
+        // Call the onComplete callback to re-enable the button
+        if (onComplete) {
+            onComplete();
+        }
+    }
+}
+
+async function translateTextWithOldAPI(text, targetLang, retries, onComplete) {
+    const url = `${OLD_API_URL}${targetLang}`;
     const myHeaders = new Headers();
-    myHeaders.append("apikey", API_KEY);
+    myHeaders.append("apikey", OLD_API_KEY);
 
     const requestBody = {
         q: text
@@ -47,39 +92,32 @@ function translateText(text, targetLang, retries, onComplete) {
         redirect: 'follow'
     };
 
-    fetch(url, requestOptions)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.translations && data.translations.length > 0) {
-                const translatedText = data.translations[0].translation;
-                document.getElementById('translatedText').innerText = translatedText;
+    try {
+        const response = await fetch(url, requestOptions);
+        if (!response.ok) throw new Error(`Old API HTTP error! Status: ${response.status}`);
 
-                // Update translation quota
-                updateTranslationQuota();
-            } else {
-                throw new Error('No translation data available');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (retries > 0) {
-                console.log(`Retrying in ${RETRY_DELAY / 1000} seconds... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
-                setTimeout(() => translateText(text, targetLang, retries - 1, onComplete), RETRY_DELAY);
-            } else {
-                displayError('Translation failed after multiple attempts. Please try again later.');
-            }
-        })
-        .finally(() => {
-            // Call the onComplete callback to re-enable the button
-            if (onComplete) {
-                onComplete();
-            }
-        });
+        const data = await response.json();
+        if (data.translations && data.translations.length > 0) {
+            const translatedText = data.translations[0].translation;
+            document.getElementById('translatedText').innerText = translatedText;
+            updateTranslationQuota();
+        } else {
+            throw new Error('No translation data available from old API');
+        }
+    } catch (error) {
+        console.error('Old API error:', error);
+        if (retries > 0) {
+            console.log(`Retrying old API in ${RETRY_DELAY / 1000} seconds... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+            setTimeout(() => translateTextWithOldAPI(text, targetLang, retries - 1, onComplete), RETRY_DELAY);
+        } else {
+            displayError('Translation failed after multiple attempts. Please try again later.');
+        }
+    } finally {
+        // Call the onComplete callback to re-enable the button
+        if (onComplete) {
+            onComplete();
+        }
+    }
 }
 
 function displayError(message) {
