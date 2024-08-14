@@ -84,68 +84,68 @@ li {
 }
 
 .flag:nth-child(1) {
-    animation-delay: 0s;
     top: 10%;
-    left: 10%;
+    left: -100px; /* Start off-screen */
+    animation-delay: 0s;
 }
 
 .flag:nth-child(2) {
-    animation-delay: -3s;
     top: 20%;
-    left: 30%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -3s;
 }
 
 .flag:nth-child(3) {
-    animation-delay: -6s;
     top: 30%;
-    left: 50%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -6s;
 }
 
 .flag:nth-child(4) {
-    animation-delay: -9s;
     top: 40%;
-    left: 70%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -9s;
 }
 
 .flag:nth-child(5) {
-    animation-delay: -12s;
     top: 50%;
-    left: 20%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -12s;
 }
 
 .flag:nth-child(6) {
-    animation-delay: -15s;
     top: 60%;
-    left: 40%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -15s;
 }
 
 .flag:nth-child(7) {
-    animation-delay: -18s;
     top: 70%;
-    left: 60%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -18s;
 }
 
 .flag:nth-child(8) {
-    animation-delay: -21s;
     top: 80%;
-    left: 80%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -21s;
 }
 
 .flag:nth-child(9) {
-    animation-delay: -24s;
     top: 90%;
-    left: 10%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -24s;
 }
 
 .flag:nth-child(10) {
-    animation-delay: -27s;
     top: 20%;
-    left: 90%;
+    left: -100px; /* Start off-screen */
+    animation-delay: -27s;
 }
 
 @keyframes moveFlag {
     0% {
-        transform: translateX(-100%) rotate(0deg);
+        transform: translateX(0) rotate(0deg);
     }
     100% {
         transform: translateX(100vw) rotate(360deg);
