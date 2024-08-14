@@ -1,3 +1,4 @@
+/* Base styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -109,4 +110,34 @@ button:hover {
     color: #d9534f;
     background-color: #f2dede;
     border-color: #ebccd1;
+}
+
+/* New styles for translation services description */
+#translationSites {
+    font-size: 16px;
+    color: #666;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+#translationSites ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#translationSites li {
+    margin: 5px 0;
+}
+
+#translationSites a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#translationSites a:hover {
+    text-decoration: underline;
 }
