@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const validUsernames = ['loellen'].map(username => username.toLowerCase());
+    const validUsernames = ['loellen','lep'].map(username => username.toLowerCase());
 
     // Check if the user is verified
     const verifiedUser = localStorage.getItem('verifiedUser');
