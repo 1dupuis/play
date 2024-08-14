@@ -4,12 +4,12 @@ let correctWord = "";
 let currentAttempt = [];
 let attempts = 0;
 let gameOver = false;
-let mode = ''; // Track the game mode
+let mode = '';
 
 const words = [
     "table", "pomme", "chien", "fleur", "livre",
     "porte", "blanc", "votre", "jeune", "poulet"
-]; // Only 5-letter words
+];
 
 function initGame() {
     document.getElementById('daily-mode').addEventListener('click', () => startGame('daily'));
@@ -19,6 +19,7 @@ function initGame() {
 
 function startGame(selectedMode) {
     mode = selectedMode;
+    showIntro();
     if (mode === 'daily') {
         fetchDailyWord();
     } else {
@@ -27,8 +28,13 @@ function startGame(selectedMode) {
     }
 }
 
+function showIntro() {
+    const intro = document.getElementById('intro');
+    intro.classList.remove('hidden');
+}
+
 function fetchDailyWord() {
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD format
+    const today = new Date().toISOString().slice(0, 10);
     const index = hashString(today) % words.length;
     correctWord = words[index];
     beginGame();
@@ -43,13 +49,14 @@ function hashString(str) {
     for (let i = 0; i < str.length; i++) {
         const char = str.charCodeAt(i);
         hash = (hash << 5) - hash + char;
-        hash |= 0; // Convert to 32bit integer
+        hash |= 0;
     }
-    return Math.abs(hash); // Return absolute value to ensure positive index
+    return Math.abs(hash);
 }
 
 function beginGame() {
     document.querySelector('header').classList.add('hidden');
+    document.getElementById('intro').classList.add('hidden');
     document.getElementById('game').classList.remove('hidden');
     attempts = 0;
     currentAttempt = [];
