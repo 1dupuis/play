@@ -1,4 +1,5 @@
 const events = [
+    // Sample events for testing
     {
         imageUrl: 'https://via.placeholder.com/150',
         title: 'French Language Workshop',
@@ -22,10 +23,11 @@ const events = [
     }
 ];
 
-function correctDate(dateString) {
-    const date = new Date(dateString);
-    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-    return date.toISOString().split('T')[0];
+function adjustTimezone(date) {
+    const dateObj = new Date(date);
+    const userTimezoneOffset = dateObj.getTimezoneOffset() * 60000;
+    const adjustedDate = new Date(dateObj.getTime() - userTimezoneOffset);
+    return adjustedDate.toISOString().split('T')[0];
 }
 
 function createEventCard(event) {
@@ -39,7 +41,7 @@ function createEventCard(event) {
         <img src="${event.imageUrl}" alt="${event.title}">
         <h3>${event.title}</h3>
         <p>${event.description}</p>
-        <p><strong>Date:</strong> ${new Date(correctDate(event.date)).toLocaleDateString()}</p>
+        <p><strong>Date:</strong> ${new Date(adjustTimezone(event.date)).toLocaleDateString()}</p>
     `;
 
     return eventCard;
@@ -54,15 +56,15 @@ function renderEvents() {
     });
 }
 
-function createCalendar(monthOffset = 0) {
+function createCalendar(monthOffset = 0, yearOffset = 0) {
     const calendarContainer = document.getElementById('calendar-container');
     calendarContainer.innerHTML = '';
 
     const now = new Date();
-    const year = now.getFullYear();
-    const currentMonth = now.getMonth();
+    const year = now.getFullYear() + yearOffset;
+    const currentMonth = now.getMonth() + monthOffset;
 
-    const targetDate = new Date(year, currentMonth + monthOffset, 1);
+    const targetDate = new Date(year, currentMonth, 1);
     const month = targetDate.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -71,8 +73,10 @@ function createCalendar(monthOffset = 0) {
     let calendarHtml = `<h2>${monthName} ${year}</h2>`;
     calendarHtml += `
         <div class="calendar-nav">
+            <button id="prev-year">&lt;&lt;</button>
             <button id="prev-month">&lt;</button>
             <button id="next-month">&gt;</button>
+            <button id="next-year">&gt;&gt;</button>
         </div>
     `;
 
@@ -95,7 +99,7 @@ function createCalendar(monthOffset = 0) {
         }
 
         const currentDate = new Date(year, month, day).toISOString().split('T')[0];
-        const eventOnThisDay = events.find(event => correctDate(event.date) === currentDate);
+        const eventOnThisDay = events.find(event => adjustTimezone(event.date) === currentDate);
 
         calendarHtml += `<td class="calendar-day" data-date="${currentDate}">${day}`;
         if (eventOnThisDay) {
@@ -111,9 +115,9 @@ function createCalendar(monthOffset = 0) {
     document.querySelectorAll('.calendar-day').forEach(day => {
         day.addEventListener('click', function () {
             const date = this.getAttribute('data-date');
-            const event = events.find(e => correctDate(e.date) === date);
+            const event = events.find(e => adjustTimezone(e.date) === date);
             if (event) {
-                alert(`Event: ${event.title}\nDate: ${new Date(correctDate(event.date)).toLocaleDateString()}\nDescription: ${event.fullDescription}`);
+                alert(`Event: ${event.title}\nDate: ${new Date(adjustTimezone(event.date)).toLocaleDateString()}\nDescription: ${event.fullDescription}`);
             } else {
                 alert('No event on this date.');
             }
@@ -121,11 +125,19 @@ function createCalendar(monthOffset = 0) {
     });
 
     document.getElementById('prev-month').addEventListener('click', () => {
-        createCalendar(monthOffset - 1);
+        createCalendar(monthOffset - 1, yearOffset);
     });
 
     document.getElementById('next-month').addEventListener('click', () => {
-        createCalendar(monthOffset + 1);
+        createCalendar(monthOffset + 1, yearOffset);
+    });
+
+    document.getElementById('prev-year').addEventListener('click', () => {
+        createCalendar(monthOffset, yearOffset - 1);
+    });
+
+    document.getElementById('next-year').addEventListener('click', () => {
+        createCalendar(monthOffset, yearOffset + 1);
     });
 }
 
