@@ -22,8 +22,8 @@ body {
 }
 
 .logo {
-    max-width: 150px; /* Smaller size */
-    margin-bottom: 1rem;
+    max-width: 500px; /* Smaller size */
+    margin-bottom: 0.05rem;
 }
 
 h2 {
