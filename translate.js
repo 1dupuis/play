@@ -3,7 +3,7 @@ const RETRY_DELAY = 2000; // Delay between retries in milliseconds
 const OLD_API_KEY = 'OnKRZVRuo23GtI7HjtViOl1I0FFtI1CH'; // Old API key
 const OLD_API_URL = 'https://api.apilayer.com/language_translation/translate?target='; // Old API URL
 const LIBRE_TRANSLATE_URL = 'https://libretranslate.com/translate'; // New API URL
-const MAX_TRANSLATIONS_PER_DAY = 15; // Maximum translations allowed per day
+const MAX_TRANSLATIONS_PER_DAY = 30; // Maximum translations allowed per day
 
 document.addEventListener('DOMContentLoaded', () => {
     updateButtonState();
