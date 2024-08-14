@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     redirect: 'follow'
                 };
 
-                const response = await fetch(`${TRANSLATION_URL}?target=${targetLang}&source=${sourceLang}`, requestOptions);
+                const response = await fetch(`${TRANSLATION_URL}?target=${targetLang}`, requestOptions);
 
                 if (!response.ok) {
                     throw new Error(`API request failed with status ${response.status}`);
