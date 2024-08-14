@@ -6,13 +6,13 @@ let attempts = 0;
 let gameOver = false;
 
 const words = [
-    "bonjour", "amour", "chat", "chien", "maison", 
-    "voiture", "pomme", "arbre", "table", "porte"
-]; // Add more words here, without accents
+    "table", "pomme", "chien", "fleur", "livre",
+    "porte", "blanc", "votre", "jeune", "poulet"
+]; // Only 5-letter words
 
 function initGame() {
     loadGame(() => {
-        correctWord = words[Math.floor(Math.random() * words.length)].substring(0, WORD_LENGTH);
+        correctWord = words[Math.floor(Math.random() * words.length)].toLowerCase();
         attempts = 0;
         currentAttempt = [];
         gameOver = false;
@@ -41,7 +41,7 @@ function createBoard() {
 function createKeyboard() {
     const keyboard = document.getElementById('keyboard');
     keyboard.innerHTML = '';
-    const keys = 'azertyuiopqsdfghjklmwxcvbn'.split('');
+    const keys = 'qwertyuiopasdfghjklzxcvbnm'.split('');
 
     keys.forEach(key => {
         const button = document.createElement('button');
@@ -129,11 +129,11 @@ function submitAttempt() {
 }
 
 function showResult(message) {
-    gameOver = true;
     const result = document.getElementById('result');
     const messageEl = document.getElementById('message');
     messageEl.textContent = message;
     result.classList.remove('hidden');
+    gameOver = true;
 }
 
 function resetGame() {
