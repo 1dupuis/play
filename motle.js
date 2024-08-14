@@ -1,5 +1,5 @@
 const WORD_LENGTH = 5;
-const MAX_ATTEMPTS = 6;
+const MAX_ATTEMPTS = 5;
 let correctWord = "";
 let currentAttempt = [];
 let attempts = 0;
