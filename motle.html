@@ -11,26 +11,18 @@
         <header>
             <a href="/homepage" class="home-button">🏠 Home</a>
             <h1>Motle</h1>
-            <p class="description">Select a mode to start playing:</p>
-            <div class="mode-buttons">
-                <button id="daily-mode">Daily Word</button>
-                <button id="infinite-mode">Motle Infinite</button>
-            </div>
-        </header>
-
-        <div id="intro" class="hidden">
             <p>Guess the 5-letter French word!</p>
             <p><em>Did you know 'mot' means 'word' in French?</em></p>
-        </div>
+        </header>
 
-        <div id="game" class="hidden">
+        <div id="game">
             <div id="board"></div>
             <div id="keyboard"></div>
         </div>
 
         <div id="result" class="hidden">
             <p id="message"></p>
-            <button id="play-again">Play Again</button>
+            <button onclick="resetGame()">Play Again</button>
         </div>
     </div>
 
