@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     position: relative;
-    overflow: hidden; /* Prevents scrollbars from appearing due to animations */
+    overflow: hidden;
 }
 
 .container {
@@ -23,7 +23,7 @@ body {
 }
 
 .logo {
-    max-width: 500px; /* Smaller size */
+    max-width: 500px;
     margin-bottom: 0.05rem;
 }
 
@@ -80,79 +80,30 @@ li {
     width: 100px;
     height: 60px;
     background: linear-gradient(to right, #0055A4 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #EF4135 66.66%);
-    opacity: 0.15; /* Reduced opacity for a softer effect */
+    opacity: 0.15;
     animation: moveFlag 20s linear infinite;
-    border-radius: 5px; /* Slightly rounded corners for flags */
-    filter: blur(0.5px); /* Subtle blur for a more ethereal look */
+    border-radius: 5px;
+    filter: blur(0.5px);
     background-size: cover;
 }
 
-.flag:nth-child(1) {
-    top: 5%;
-    left: -100px;
-    animation-delay: 0s;
-}
-
-.flag:nth-child(2) {
-    top: 15%;
-    left: -100px;
-    animation-delay: -4s;
-}
-
-.flag:nth-child(3) {
-    top: 25%;
-    left: -100px;
-    animation-delay: -8s;
-}
-
-.flag:nth-child(4) {
-    top: 35%;
-    left: -100px;
-    animation-delay: -12s;
-}
-
-.flag:nth-child(5) {
-    top: 45%;
-    left: -100px;
-    animation-delay: -16s;
-}
-
-.flag:nth-child(6) {
-    top: 55%;
-    left: -100px;
-    animation-delay: -20s;
-}
-
-.flag:nth-child(7) {
-    top: 65%;
-    left: -100px;
-    animation-delay: -24s;
-}
-
-.flag:nth-child(8) {
-    top: 75%;
-    left: -100px;
-    animation-delay: -28s;
-}
-
-.flag:nth-child(9) {
-    top: 85%;
-    left: -100px;
-    animation-delay: -32s;
-}
-
-.flag:nth-child(10) {
-    top: 95%;
-    left: -100px;
-    animation-delay: -36s;
-}
+.flag:nth-child(1) { top: 5%; left: -100px; animation-delay: 0s; }
+.flag:nth-child(2) { top: 15%; left: -100px; animation-delay: -4s; }
+.flag:nth-child(3) { top: 25%; left: -100px; animation-delay: -8s; }
+.flag:nth-child(4) { top: 35%; left: -100px; animation-delay: -12s; }
+.flag:nth-child(5) { top: 45%; left: -100px; animation-delay: -16s; }
+.flag:nth-child(6) { top: 55%; left: -100px; animation-delay: -20s; }
+.flag:nth-child(7) { top: 65%; left: -100px; animation-delay: -24s; }
+.flag:nth-child(8) { top: 75%; left: -100px; animation-delay: -28s; }
+.flag:nth-child(9) { top: 85%; left: -100px; animation-delay: -32s; }
+.flag:nth-child(10) { top: 95%; left: -100px; animation-delay: -36s; }
 
 @keyframes moveFlag {
     0% {
         transform: translateX(-100px) rotate(0deg); /* Start off-screen to the left */
     }
     100% {
-        transform: translateX(100vw) rotate(720deg); /* Move to off-screen on the right with more rotation */
+        transform: translateX(calc(100vw + 100px)) rotate(720deg); /* Move past the right edge of the screen */
     }
 }
 
