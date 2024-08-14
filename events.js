@@ -204,7 +204,7 @@
                         modal.innerHTML = `
                             <div class="modal-content">
                                 <span class="close">&times;</span>
-                                <h2>Events on ${utils.formatDate(date)}</h2>
+                                <h2>Events on ${utils.formatDate(new Date(date.getTime() + 86400000))}</h2>
                                 <ul>${eventList}</ul>
                             </div>
                         `;
