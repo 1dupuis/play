@@ -6,16 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const translatedText = document.getElementById('translatedText');
 
     const API_KEYS = {
-        LIBRE_TRANSLATE: "",
-        APILAYER: "OnKRZVRuo23GtI7HjtViOl1I0FFtI1CH"
+        APILAYER: "OnKRZVRuo23GtI7HjtViOl1I0FFtI1CH",
+        LIBRE_TRANSLATE: "" // LibreTranslate does not require an API key
     };
 
     const TRANSLATION_URLS = {
-        LIBRE_TRANSLATE: "https://libretranslate.com/translate",
-        APILAYER: "https://api.apilayer.com/language_translation/translate?target="
+        APILAYER: "https://api.apilayer.com/language_translation/translate?target=",
+        LIBRE_TRANSLATE: "https://libretranslate.com/translate"
     };
 
-    const MAX_TRANSLATIONS_PER_DAY = 5;
+    const MAX_TRANSLATIONS_PER_DAY = 15;
     const QUOTA_KEY = 'translationQuota';
     const LAST_RESET_KEY = 'lastQuotaReset';
 
@@ -49,48 +49,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const translateText = async (inputText, sourceLang, targetLang) => {
         let translation = '';
         try {
-            // First, attempt to use LibreTranslate API
-            let response = await fetch(TRANSLATION_URLS.LIBRE_TRANSLATE, {
-                method: "POST",
+            // Primary: Apilayer API
+            let response = await fetch(TRANSLATION_URLS.APILAYER + targetLang, {
+                method: 'POST',
                 body: JSON.stringify({
                     q: inputText,
-                    source: sourceLang,
-                    target: targetLang,
-                    format: "text",
-                    alternatives: 3,
-                    api_key: API_KEYS.LIBRE_TRANSLATE
+                    source: sourceLang
                 }),
-                headers: { "Content-Type": "application/json" }
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": API_KEYS.APILAYER
+                }
             });
 
             if (response.ok) {
                 const data = await response.json();
-                translation = data.translatedText || 'No translation available';
+                translation = data.translations[0].translation || 'No translation available';
             } else {
-                throw new Error('LibreTranslate API request failed');
+                throw new Error('Apilayer API request failed');
             }
         } catch (error) {
-            console.error('LibreTranslate failed, trying fallback API...', error);
+            console.error('Apilayer failed, trying fallback API...', error);
 
-            // Fallback to Apilayer API if LibreTranslate fails
+            // Fallback: LibreTranslate API
             try {
-                let fallbackResponse = await fetch(TRANSLATION_URLS.APILAYER + targetLang, {
-                    method: 'POST',
+                let fallbackResponse = await fetch(TRANSLATION_URLS.LIBRE_TRANSLATE, {
+                    method: "POST",
                     body: JSON.stringify({
                         q: inputText,
-                        source: sourceLang
+                        source: sourceLang,
+                        target: targetLang,
+                        format: "text",
+                        alternatives: 3
                     }),
-                    headers: {
-                        "Content-Type": "application/json",
-                        "apikey": API_KEYS.APILAYER
-                    }
+                    headers: { "Content-Type": "application/json" }
                 });
 
                 if (fallbackResponse.ok) {
                     const fallbackData = await fallbackResponse.json();
-                    translation = fallbackData.translations[0].translation || 'No translation available';
+                    translation = fallbackData.translatedText || 'No translation available';
                 } else {
-                    throw new Error('Fallback API request failed');
+                    throw new Error('LibreTranslate API request failed');
                 }
             } catch (fallbackError) {
                 console.error('Fallback API also failed.', fallbackError);
