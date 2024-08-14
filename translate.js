@@ -30,43 +30,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function translateText(text, targetLang, retries) {
     const url = `https://api.apilayer.com/language_translation/translate?target=${targetLang}`;
+    const myHeaders = new Headers();
+    myHeaders.append("apikey", API_KEY);
 
-    fetch(url, {
+    const requestOptions = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}` // Use the API key for authorization
-        },
+        headers: myHeaders,
         body: JSON.stringify({
             q: text
+        }),
+        redirect: 'follow'
+    };
+
+    fetch(url, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
         })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.translations && data.translations.length > 0) {
-            const translatedText = data.translations[0].translation;
-            document.getElementById('translatedText').innerText = translatedText;
-            
-            // Update translation quota
-            updateTranslationQuota();
-        } else {
-            throw new Error('No translation data available');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        if (retries > 0) {
-            console.log(`Retrying in ${RETRY_DELAY / 1000} seconds... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
-            setTimeout(() => translateText(text, targetLang, retries - 1), RETRY_DELAY);
-        } else {
-            displayError('Translation failed after multiple attempts. Please try again later.');
-        }
-    });
+        .then(data => {
+            if (data.translations && data.translations.length > 0) {
+                const translatedText = data.translations[0].translation;
+                document.getElementById('translatedText').innerText = translatedText;
+                
+                // Update translation quota
+                updateTranslationQuota();
+            } else {
+                throw new Error('No translation data available');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (retries > 0) {
+                console.log(`Retrying in ${RETRY_DELAY / 1000} seconds... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                setTimeout(() => translateText(text, targetLang, retries - 1), RETRY_DELAY);
+            } else {
+                displayError('Translation failed after multiple attempts. Please try again later.');
+            }
+        });
 }
 
 function displayError(message) {
