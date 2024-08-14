@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motle - French Word Game</title>
+    <link rel="stylesheet" href="motle.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/homepage" class="home-button">🏠 Home</a>
+            <h1>Motle</h1>
+            <p>Guess the French word! (No accents required)</p>
+            <p><em>Each guess must be a valid French word.</em></p>
+        </header>
+
+        <div id="game">
+            <div id="board"></div>
+            <div id="keyboard"></div>
+        </div>
+
+        <div id="result" class="hidden">
+            <p id="message"></p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="motle.js"></script>
+</body>
+</html>
