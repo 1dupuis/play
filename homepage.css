@@ -1,6 +1,17 @@
+:root {
+    --primary-color: #0055A4;
+    --secondary-color: #EF4135;
+    --background-color: #f0f0f0;
+    --text-color: #333;
+    --container-bg: rgba(255, 255, 255, 0.95);
+    --sub-container-bg: rgba(240, 240, 240, 0.7);
+    --button-color: #4CAF50;
+    --button-hover-color: #45a049;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
     margin: 0;
     padding: 0;
     display: flex;
@@ -9,60 +20,72 @@ body {
     flex-direction: column;
     min-height: 100vh;
     position: relative;
+    color: var(--text-color);
 }
 
 .container {
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--container-bg);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     z-index: 1;
     max-width: 800px;
+    width: 90%;
 }
 
 h1 {
-    color: #333;
-    font-size: 2.5rem;
+    color: var(--primary-color);
+    font-size: 3rem;
     margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    color: #444;
-    font-size: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-p {
-    color: #666;
+.intro {
+    font-size: 1.1rem;
     line-height: 1.6;
+    margin-bottom: 2rem;
 }
 
-ul {
-    text-align: left;
-    margin: 1rem 0;
-    padding-left: 1.5rem;
+.sub-container {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background-color: var(--sub-container-bg);
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 2px solid var(--primary-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-li {
-    color: #555;
-    margin-bottom: 0.5rem;
+.sub-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sub-container h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--secondary-color);
+    font-size: 1.8rem;
 }
 
 .button {
     display: inline-block;
-    background-color: #4CAF50;
+    background-color: var(--button-color);
     color: white;
     padding: 12px 24px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    margin-top: 1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .button:hover {
-    background-color: #45a049;
+    background-color: var(--button-hover-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .flag-container {
@@ -77,20 +100,20 @@ li {
 
 .flag {
     position: absolute;
-    width: 100px;
-    height: 60px;
-    background: linear-gradient(to right, #0055A4 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #EF4135 66.66%);
-    opacity: 0.2;
-    animation: moveFlag 15s linear infinite;
+    width: 150px;
+    height: 90px;
+    background: linear-gradient(to right, var(--primary-color) 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, var(--secondary-color) 66.66%);
+    opacity: 0.1;
+    animation: moveFlag 20s linear infinite;
 }
 
 .flag:nth-child(2) {
-    animation-delay: -5s;
+    animation-delay: -7s;
     top: 40%;
 }
 
 .flag:nth-child(3) {
-    animation-delay: -10s;
+    animation-delay: -14s;
     top: 70%;
 }
 
@@ -104,10 +127,11 @@ li {
 }
 
 .footer {
-    background-color: #f1f1f1;
+    background-color: var(--primary-color);
+    color: white;
     text-align: center;
-    padding: 10px 0;
-    font-size: 14px;
+    padding: 15px 0;
+    font-size: 0.9rem;
     width: 100%;
     position: absolute;
     bottom: 0;
@@ -115,27 +139,27 @@ li {
 }
 
 .footer a {
-    color: #007bff;
+    color: #FFD700;
     text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 .footer a:hover {
+    color: #FFA500;
     text-decoration: underline;
 }
 
-.sub-container {
-    margin-top: 2rem;
-    padding: 1rem;
-    background-color: rgba(240, 240, 240, 0.5);
-    border-radius: 8px;
-}
+@media (max-width: 600px) {
+    .container {
+        padding: 2rem;
+    }
 
-.sub-container h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: #333;
-}
+    h1 {
+        font-size: 2.5rem;
+    }
 
-.sub-container .button {
-    margin: 0.5rem;
+    .button {
+        display: block;
+        margin: 1rem auto;
+    }
 }
