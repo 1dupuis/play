@@ -1,0 +1,150 @@
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.home-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    text-decoration: none;
+    font-size: 1.5em;
+    color: #3b5998;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin: 0;
+    color: #3b5998;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+#game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(5, 60px);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tile {
+    width: 60px;
+    height: 60px;
+    font-size: 2em;
+    text-transform: uppercase;
+    background-color: #f8f8f8;
+    border: 2px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.tile.correct {
+    background-color: #6aaa64;
+    border-color: #6aaa64;
+    color: white;
+}
+
+.tile.present {
+    background-color: #c9b458;
+    border-color: #c9b458;
+    color: white;
+}
+
+.tile.absent {
+    background-color: #787c7e;
+    border-color: #787c7e;
+    color: white;
+}
+
+#keyboard {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#keyboard button {
+    padding: 10px;
+    font-size: 1.2em;
+    background-color: #3b5998;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#keyboard button:hover {
+    background-color: #324a86;
+}
+
+#keyboard button:active {
+    transform: scale(0.95);
+}
+
+#result {
+    text-align: center;
+}
+
+#result.hidden {
+    display: none;
+}
+
+#result p {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#result button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #3b5998;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#result button:hover {
+    background-color: #324a86;
+}
+
+#result button:active {
+    transform: scale(0.95);
+}
