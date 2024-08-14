@@ -7,8 +7,13 @@ let gameOver = false;
 
 const words = [
     "table", "pomme", "chien", "fleur", "livre",
-    "porte", "blanc", "votre", "jeune", "poulet"
-]; // Only 5-letter words
+    "porte", "blanc", "votre", "jeune", "piano",
+    "brise", "bleue", "salle", "vache", "nuit",
+    "pente", "soupe", "plage", "grise", "tigre",
+    "champ", "soire", "rose", "frais", "ciel",
+    "motel", "feux", "vif", "sable", "garde",
+    "pluie", "ombre", "femme", "mieux", "joies"
+];
 
 function initGame() {
     loadGame(() => {
