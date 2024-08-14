@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Motle</title>
+    <title>Motle - French Word Game</title>
     <link rel="stylesheet" href="motle.css">
-    <link rel="icon" href="https://vectorflags.s3.amazonaws.com/flags/fr-circle-01.png">
 </head>
 <body>
     <div class="container">
         <header>
             <a href="/homepage" class="home-button">🏠 Home</a>
             <h1>Motle</h1>
-            <p>Guess the French word!</p>
-            <p><em>Did you know 'mot' means 'word' in French?</em></p>
+            <p>Select a mode to start playing:</p>
+            <div class="mode-buttons">
+                <button id="daily-mode">Daily Word</button>
+                <button id="infinite-mode">Motle Infinite</button>
+            </div>
         </header>
 
-        <div id="game">
+        <div id="game" class="hidden">
             <div id="board"></div>
             <div id="keyboard"></div>
         </div>
 
         <div id="result" class="hidden">
             <p id="message"></p>
-            <button onclick="resetGame()">Play Again</button>
+            <button id="play-again">Play Again</button>
         </div>
     </div>
 
