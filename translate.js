@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         APILAYER: "https://api.apilayer.com/language_translation/translate?target="
     };
 
-    const MAX_TRANSLATIONS_PER_DAY = 15;
+    const MAX_TRANSLATIONS_PER_DAY = 50;
     const QUOTA_KEY = 'translationQuota';
     const LAST_RESET_KEY = 'lastQuotaReset';
 
