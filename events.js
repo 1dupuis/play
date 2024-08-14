@@ -39,30 +39,6 @@
             date: '2025-10-05',
             fullDescription: 'This is the long form of yet another test description...'
         },
-        {
-            id: 4,
-            imageUrl: config.placeholderImageUrl,
-            title: 'Test Announcement 4',
-            description: 'This is a test description! 0123456789, abcdefg',
-            date: '2024-11-14',
-            fullDescription: 'This is the long form of the test description...'
-        },
-        {
-            id: 5,
-            imageUrl: config.placeholderImageUrl,
-            title: 'Test Announcement 5',
-            description: 'This is a test description! 0123456789, abcdefg',
-            date: '2026-01-5',
-            fullDescription: 'This is the long form of another test description...'
-        },
-        {
-            id: 6,
-            imageUrl: config.placeholderImageUrl,
-            title: 'Test Announcement 6',
-            description: 'This is a test description! 0123456789, abcdefg',
-            date: '2024-10-05',
-            fullDescription: 'This is the long form of yet another test description...'
-        },
     ];
 
     // Utility functions
