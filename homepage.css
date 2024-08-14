@@ -145,10 +145,10 @@ li {
 
 @keyframes moveFlag {
     0% {
-        transform: translateX(0) rotate(0deg);
+        transform: translateX(-100px) rotate(0deg); /* Start off-screen to the left */
     }
     100% {
-        transform: translateX(100vw) rotate(360deg);
+        transform: translateX(100vw) rotate(360deg); /* Move to off-screen on the right */
     }
 }
 
