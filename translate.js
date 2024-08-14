@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Check and manage daily translation quota
-    const MAX_TRANSLATIONS_PER_DAY = 15;
+    const MAX_TRANSLATIONS_PER_DAY = 100;
     const quotaKey = 'translationQuota';
     const lastResetKey = 'lastQuotaReset';
     
