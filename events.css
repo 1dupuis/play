@@ -5,6 +5,7 @@ body {
     padding: 0;
     background-color: #f4f4f9;
     color: #333;
+    line-height: 1.6;
 }
 
 header {
@@ -35,7 +36,7 @@ h1 {
 }
 
 .home-button:hover {
-    background-color: #007bff;
+    background-color: #0056b3;
     color: #fff;
 }
 
@@ -103,18 +104,17 @@ h1 {
 }
 
 .calendar-day:hover {
-    background-color: #007bff;
-    color: white;
+    background-color: #e6f2ff;
 }
 
 .event-indicator {
-    width: 12px;
-    height: 12px;
-    background-color: red;
+    width: 8px;
+    height: 8px;
+    background-color: #ff4d4d;
     border-radius: 50%;
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 4px;
+    right: 4px;
 }
 
 /* Events Styles */
@@ -164,19 +164,56 @@ h1 {
     font-size: 1rem;
 }
 
-/* Additional Styles for Better Readability */
-.table-container {
-    overflow-x: auto;
+/* Modal Styles */
+.event-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
 }
 
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     #calendar-container {
         padding: 1rem;
+        margin: 1rem;
     }
 
     #calendar-container th, #calendar-container td {
         padding: 0.5rem;
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .event-card {
@@ -190,4 +227,39 @@ h1 {
         margin-right: 0;
         margin-bottom: 1rem;
     }
+
+    .calendar-nav button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 20% auto;
+    }
+}
+
+/* Accessibility Improvements */
+.calendar-nav button:focus,
+.calendar-day:focus,
+.event-card:focus,
+.close:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Additional Styles for Better Readability */
+.event-card .event-details {
+    flex: 1;
+}
+
+.calendar-day.today {
+    background-color: #e6f2ff;
+    font-weight: bold;
+}
+
+.no-events {
+    text-align: center;
+    color: #666;
+    font-style: italic;
 }
