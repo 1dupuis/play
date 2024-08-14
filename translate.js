@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: JSON.stringify({
                     q: inputText,
-                    source: sourceLang
+                    source: sourceLang,  // Explicitly specifying source language
                 }),
                 headers: {
                     "Content-Type": "application/json",
