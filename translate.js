@@ -33,12 +33,14 @@ function translateText(text, targetLang, retries) {
     const myHeaders = new Headers();
     myHeaders.append("apikey", API_KEY);
 
+    const requestBody = {
+        q: text
+    };
+
     const requestOptions = {
         method: 'POST',
         headers: myHeaders,
-        body: JSON.stringify({
-            q: text
-        }),
+        body: JSON.stringify(requestBody),
         redirect: 'follow'
     };
 
