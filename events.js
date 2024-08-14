@@ -1,31 +1,30 @@
 const events = [
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Test Announcement 1',
-        description: 'Test!',
+        title: 'French Language Workshop',
+        description: 'Learn the basics of French in a fun and interactive workshop!',
         date: '2024-08-14',
-        fullDescription: 'Test!!!'
+        fullDescription: 'This workshop will cover basic French phrases, vocabulary, and grammar. Suitable for beginners!'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Test Announcement 2',
-        description: 'Test!',
+        title: 'French Culture Day',
+        description: 'A day to celebrate French culture with food, music, and art!',
         date: '2024-08-20',
-        fullDescription: 'Test!!!'
+        fullDescription: 'Enjoy a full day of activities dedicated to French culture, including cooking classes, music performances, and art exhibitions.'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Test Announcement 3',
-        description: 'Test!',
+        title: 'Advanced French Grammar Session',
+        description: 'Dive deep into advanced French grammar with our experts!',
         date: '2024-08-25',
-        fullDescription: 'Test!!!'
+        fullDescription: 'This session is designed for those who already have a basic understanding of French and want to improve their grammar skills.'
     }
 ];
 
 function correctDate(dateString) {
-    // Create a Date object and extract the date in a reliable way, ensuring no timezone issues
     const date = new Date(dateString);
-    date.setMinutes(date.getMinutes() + date.getTimezoneOffset()); // Adjust for timezone difference
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     return date.toISOString().split('T')[0];
 }
 
@@ -48,21 +47,24 @@ function createEventCard(event) {
 
 function renderEvents() {
     const eventsContainer = document.getElementById('events-container');
-    eventsContainer.innerHTML = ''; // Clear existing events to avoid duplication
+    eventsContainer.innerHTML = '';
     events.forEach(event => {
         const eventCard = createEventCard(event);
         eventsContainer.appendChild(eventCard);
     });
 }
 
-function createCalendar() {
+function createCalendar(monthOffset = 0) {
     const calendarContainer = document.getElementById('calendar-container');
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth();
+    const currentMonth = now.getMonth();
+    
+    // Apply the month offset
+    const month = new Date(year, currentMonth + monthOffset, 1).getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const monthName = now.toLocaleString('default', { month: 'long' });
+    
+    const monthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
 
     let calendarHtml = `<h2>${monthName} ${year}</h2>`;
     calendarHtml += `
@@ -115,20 +117,12 @@ function createCalendar() {
     });
 
     document.getElementById('prev-month').addEventListener('click', () => {
-        changeMonth(-1);
+        createCalendar(monthOffset - 1);
     });
 
     document.getElementById('next-month').addEventListener('click', () => {
-        changeMonth(1);
+        createCalendar(monthOffset + 1);
     });
-}
-
-function changeMonth(offset) {
-    const calendarContainer = document.getElementById('calendar-container');
-    let date = new Date(calendarContainer.getAttribute('data-date') || new Date());
-    date.setMonth(date.getMonth() + offset);
-    calendarContainer.setAttribute('data-date', date.toISOString());
-    createCalendar();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
