@@ -20,7 +20,7 @@
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 1',
             description: 'This is a test description! 0123456789, abcdefg',
-            date: '2024-08-14',
+            date: '2024-09-14',
             fullDescription: 'This is the long form of the test description...'
         },
         {
@@ -28,7 +28,7 @@
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 2',
             description: 'This is a test description! 0123456789, abcdefg',
-            date: '2024-08-20',
+            date: '2024-09-20',
             fullDescription: 'This is the long form of another test description...'
         },
         {
@@ -36,7 +36,7 @@
             imageUrl: config.placeholderImageUrl,
             title: 'Test Announcement 3',
             description: 'This is a test description! 0123456789, abcdefg',
-            date: '2024-09-05',
+            date: '2024-10-05',
             fullDescription: 'This is the long form of yet another test description...'
         },
     ];
