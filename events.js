@@ -7,11 +7,14 @@
         eventsContainerId: 'events-container',
         calendarContainerId: 'calendar-container',
         placeholderImageUrl: 'https://via.placeholder.com/150',
-        dateFormat: { year: 'numeric', month: 'long', day: 'numeric' }
+        dateFormat: { year: 'numeric', month: 'long', day: 'numeric' },
+        reloadDelay: 5000, // 5 seconds delay before reload
+        maxReloadAttempts: 3,
+        daysOfWeek: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     };
 
     // Sample events (in production, this would likely come from an API)
-    const events = [
+    let events = [
         {
             id: 1,
             imageUrl: config.placeholderImageUrl,
@@ -46,7 +49,7 @@
             return new Date(dateObj.getTime() - userTimezoneOffset);
         },
         formatDate: function(date) {
-            return new Date(this.adjustTimezone(date)).toLocaleDateString(undefined, config.dateFormat);
+            return this.adjustTimezone(date).toLocaleDateString(undefined, config.dateFormat);
         },
         createElement: function(tag, className, innerHTML) {
             const element = document.createElement(tag);
@@ -60,6 +63,20 @@
                 console.error(`Element with id "${id}" not found`);
             }
             return element;
+        },
+        reloadPage: function(attemptCount = 0) {
+            if (attemptCount < config.maxReloadAttempts) {
+                console.log(`Reload attempt ${attemptCount + 1}. Reloading in ${config.reloadDelay / 1000} seconds...`);
+                setTimeout(() => {
+                    location.reload();
+                }, config.reloadDelay);
+            } else {
+                console.error(`Failed to load content after ${config.maxReloadAttempts} attempts.`);
+                alert('Unable to load content. Please check your connection and try again later.');
+            }
+        },
+        sortEventsByDate: function(events) {
+            return events.sort((a, b) => new Date(a.date) - new Date(b.date));
         }
     };
 
@@ -78,15 +95,46 @@
         },
         renderEvents: function() {
             const eventsContainer = utils.getElement(config.eventsContainerId);
-            if (!eventsContainer) return;
+            if (!eventsContainer) return false;
+
+            if (events.length === 0) {
+                console.warn('No events to display.');
+                eventsContainer.innerHTML = '<p>No upcoming events at this time.</p>';
+                return true; // We've handled the no-events case, so return true
+            }
 
             eventsContainer.innerHTML = '';
-            events.forEach(event => {
+            const sortedEvents = utils.sortEventsByDate(events);
+            sortedEvents.forEach(event => {
                 eventsContainer.appendChild(this.createEventCard(event));
             });
+            return true;
         },
         showEventDetails: function(event) {
-            alert(`Event: ${event.title}\nDate: ${utils.formatDate(event.date)}\nDescription: ${event.fullDescription}`);
+            const modal = utils.createElement('div', 'event-modal');
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>${event.title}</h2>
+                    <p><strong>Date:</strong> ${utils.formatDate(event.date)}</p>
+                    <p>${event.fullDescription}</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+
+            const closeBtn = modal.querySelector('.close');
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+                modal.remove();
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    modal.remove();
+                }
+            }
         }
     };
 
@@ -94,7 +142,7 @@
     const calendarFunctions = {
         createCalendar: function(monthOffset = 0, yearOffset = 0) {
             const calendarContainer = utils.getElement(config.calendarContainerId);
-            if (!calendarContainer) return;
+            if (!calendarContainer) return false;
 
             const now = new Date();
             const year = now.getFullYear() + yearOffset;
@@ -116,7 +164,7 @@
                 </div>
                 <table>
                     <thead>
-                        <tr>${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => `<th>${day}</th>`).join('')}</tr>
+                        <tr>${config.daysOfWeek.map(day => `<th>${day}</th>`).join('')}</tr>
                     </thead>
                     <tbody>
             `;
@@ -143,16 +191,40 @@
             calendarContainer.innerHTML = calendarHtml;
 
             this.addCalendarEventListeners(monthOffset, yearOffset);
+            return true;
         },
         addCalendarEventListeners: function(monthOffset, yearOffset) {
             document.querySelectorAll('.calendar-day').forEach(day => {
                 day.addEventListener('click', function() {
                     const date = this.getAttribute('data-date');
-                    const event = events.find(e => utils.adjustTimezone(e.date).toISOString().split('T')[0] === date);
-                    if (event) {
-                        eventFunctions.showEventDetails(event);
+                    const eventsOnThisDay = events.filter(e => utils.adjustTimezone(e.date).toISOString().split('T')[0] === date);
+                    if (eventsOnThisDay.length > 0) {
+                        const eventList = eventsOnThisDay.map(event => `<li>${event.title}</li>`).join('');
+                        const modal = utils.createElement('div', 'event-modal');
+                        modal.innerHTML = `
+                            <div class="modal-content">
+                                <span class="close">&times;</span>
+                                <h2>Events on ${utils.formatDate(date)}</h2>
+                                <ul>${eventList}</ul>
+                            </div>
+                        `;
+                        document.body.appendChild(modal);
+                        modal.style.display = 'block';
+
+                        const closeBtn = modal.querySelector('.close');
+                        closeBtn.onclick = function() {
+                            modal.style.display = 'none';
+                            modal.remove();
+                        }
+
+                        window.onclick = function(event) {
+                            if (event.target == modal) {
+                                modal.style.display = 'none';
+                                modal.remove();
+                            }
+                        }
                     } else {
-                        alert('No event on this date.');
+                        alert('No events on this date.');
                     }
                 });
             });
@@ -165,26 +237,33 @@
     };
 
     // Main initialization function
-    function init() {
+    function init(attemptCount = 0) {
         console.log('Initializing events and calendar...');
+        let eventsRendered = false;
+        let calendarCreated = false;
+
         try {
-            eventFunctions.renderEvents();
+            eventsRendered = eventFunctions.renderEvents();
             console.log('Events rendered successfully');
         } catch (error) {
             console.error('Error rendering events:', error);
         }
 
         try {
-            calendarFunctions.createCalendar();
+            calendarCreated = calendarFunctions.createCalendar();
             console.log('Calendar created successfully');
         } catch (error) {
             console.error('Error creating calendar:', error);
+        }
+
+        if (!eventsRendered || !calendarCreated) {
+            utils.reloadPage(attemptCount);
         }
     }
 
     // Run initialization when DOM is fully loaded
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => init());
     } else {
         init();
     }
@@ -192,6 +271,7 @@
     // Expose necessary functions to global scope if needed
     window.eventsApp = {
         renderEvents: eventFunctions.renderEvents,
-        createCalendar: calendarFunctions.createCalendar
+        createCalendar: calendarFunctions.createCalendar,
+        reloadPage: utils.reloadPage
     };
 })();
