@@ -19,7 +19,11 @@ function initGame() {
 
 function startGame(selectedMode) {
     mode = selectedMode;
-    showIntro();
+    document.getElementById('intro').classList.remove('hidden');
+    document.getElementById('intro').classList.add('visible');
+    document.getElementById('game').classList.add('hidden');
+    document.getElementById('result').classList.add('hidden');
+
     if (mode === 'daily') {
         fetchDailyWord();
     } else {
@@ -31,6 +35,7 @@ function startGame(selectedMode) {
 function showIntro() {
     const intro = document.getElementById('intro');
     intro.classList.remove('hidden');
+    intro.classList.add('visible');
 }
 
 function fetchDailyWord() {
@@ -57,7 +62,9 @@ function hashString(str) {
 function beginGame() {
     document.querySelector('header').classList.add('hidden');
     document.getElementById('intro').classList.add('hidden');
+    document.getElementById('intro').classList.remove('visible');
     document.getElementById('game').classList.remove('hidden');
+    document.getElementById('keyboard').classList.remove('hidden');
     attempts = 0;
     currentAttempt = [];
     gameOver = false;
@@ -138,12 +145,15 @@ function submitAttempt() {
     currentAttempt.forEach((letter, i) => {
         const tileIndex = attempts * WORD_LENGTH + i;
         const tile = tiles[tileIndex];
+        const isCorrect = letter === correctWord[i];
+        const isPresent = !isCorrect && correctWord.includes(letter);
 
-        if (letter === correctWord[i]) {
+        tile.classList.remove('correct', 'present', 'absent');
+        if (isCorrect) {
             tile.classList.add('correct');
-            letterCounts[letter]--;
             correct++;
-        } else if (correctWord.includes(letter) && letterCounts[letter] > 0) {
+            letterCounts[letter]--;
+        } else if (isPresent && letterCounts[letter] > 0) {
             tile.classList.add('present');
             letterCounts[letter]--;
         } else {
@@ -152,14 +162,13 @@ function submitAttempt() {
     });
 
     if (correct === WORD_LENGTH) {
-        showResult(`🎉 Congratulations! The correct word is "${correctWord.toUpperCase()}".`);
+        showResult('Congratulations! You guessed the word!');
+    } else if (attempts >= MAX_ATTEMPTS - 1) {
+        showResult(`Game Over! The correct word was "${correctWord}".`);
     } else {
         attempts++;
-        if (attempts >= MAX_ATTEMPTS) {
-            showResult(`❌ Game Over! The correct word was "${correctWord.toUpperCase()}".`);
-        } else {
-            currentAttempt = [];
-        }
+        currentAttempt = [];
+        updateBoard();
     }
 }
 
@@ -167,12 +176,15 @@ function showResult(message) {
     gameOver = true;
     document.getElementById('message').textContent = message;
     document.getElementById('result').classList.remove('hidden');
+    document.getElementById('result').classList.add('visible');
 }
 
 function resetGame() {
     document.getElementById('result').classList.add('hidden');
     document.querySelector('header').classList.remove('hidden');
     document.getElementById('game').classList.add('hidden');
+    document.getElementById('intro').classList.remove('hidden');
+    document.getElementById('intro').classList.add('visible');
 }
 
-initGame();
+document.addEventListener('DOMContentLoaded', initGame);
