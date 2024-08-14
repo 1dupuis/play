@@ -1,24 +1,24 @@
 const events = [
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'French Language Workshop',
-        description: 'Learn the basics of French in a fun and interactive workshop!',
+        title: 'Test Announcement 1',
+        description: 'Test!',
         date: '2024-08-14',
-        fullDescription: 'This workshop will cover basic French phrases, vocabulary, and grammar. Suitable for beginners!'
+        fullDescription: 'Test!!!'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'French Culture Day',
-        description: 'A day to celebrate French culture with food, music, and art!',
+        title: 'Test Announcement 2',
+        description: 'Test!',
         date: '2024-08-20',
-        fullDescription: 'Enjoy a full day of activities dedicated to French culture, including cooking classes, music performances, and art exhibitions.'
+        fullDescription: 'Test!!!'
     },
     {
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Advanced French Grammar Session',
-        description: 'Dive deep into advanced French grammar with our experts!',
+        title: 'Test Announcement 3',
+        description: 'Test!',
         date: '2024-08-25',
-        fullDescription: 'This session is designed for those who already have a basic understanding of French and want to improve their grammar skills.'
+        fullDescription: 'Test!!!'
     }
 ];
 
