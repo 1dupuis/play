@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f5f5f5;
@@ -13,21 +14,37 @@ body {
 .container {
     text-align: center;
     background-color: #fff;
-    padding: 20px;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 320px;
+}
+
+/* Header and Intro Styles */
+header {
+    margin-bottom: 20px;
 }
 
 header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 28px;
     color: #007BFF;
 }
 
-.mode-buttons button {
+header .description {
     margin: 10px 0;
-    padding: 10px 20px;
+    font-size: 16px;
+    color: #666;
+}
+
+.mode-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.mode-buttons button {
+    padding: 10px 15px;
     border: none;
     background-color: #007BFF;
     color: white;
@@ -41,20 +58,33 @@ header h1 {
     background-color: #0056b3;
 }
 
+#intro p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+#intro em {
+    font-style: italic;
+    color: #777;
+}
+
+/* Game Board Styles */
 #game {
     margin-top: 20px;
 }
 
 #board {
     display: grid;
-    grid-template-columns: repeat(5, 50px);
+    grid-template-columns: repeat(5, 60px);
     gap: 5px;
     justify-content: center;
+    margin-bottom: 15px;
 }
 
 .tile {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border: 2px solid #ccc;
     display: flex;
     justify-content: center;
@@ -84,8 +114,8 @@ header h1 {
     border-color: #dc3545;
 }
 
+/* Keyboard Styles */
 #keyboard {
-    margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 5px;
@@ -107,21 +137,39 @@ header h1 {
     background-color: #0056b3;
 }
 
+/* Result Section */
 #result {
     margin-top: 20px;
 }
 
-.hidden {
-    display: none;
+#result p {
+    font-size: 18px;
+    color: #555;
 }
 
+#play-again {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+}
+
+#play-again:hover {
+    background-color: #0056b3;
+}
+
+/* Home Button */
 .home-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 24px;
-    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 18px;
     color: #007BFF;
+    text-decoration: none;
     transition: color 0.3s;
 }
 
