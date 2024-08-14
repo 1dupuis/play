@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const translateText = async (inputText, sourceLang, targetLang) => {
+        let translation = '';
         try {
+            // First, attempt to use LibreTranslate API
             let response = await fetch(TRANSLATION_URLS.LIBRE_TRANSLATE, {
                 method: "POST",
                 body: JSON.stringify({
@@ -61,32 +63,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { "Content-Type": "application/json" }
             });
 
-            if (!response.ok) throw new Error('LibreTranslate API request failed');
-
-            const data = await response.json();
-            return data.translatedText || 'No translation available';
+            if (response.ok) {
+                const data = await response.json();
+                translation = data.translatedText || 'No translation available';
+            } else {
+                throw new Error('LibreTranslate API request failed');
+            }
         } catch (error) {
             console.error('LibreTranslate failed, trying fallback API...', error);
 
+            // Fallback to Apilayer API if LibreTranslate fails
             try {
                 let fallbackResponse = await fetch(TRANSLATION_URLS.APILAYER + targetLang, {
                     method: 'POST',
-                    body: JSON.stringify({ q: inputText, source: sourceLang }),
+                    body: JSON.stringify({
+                        q: inputText,
+                        source: sourceLang
+                    }),
                     headers: {
                         "Content-Type": "application/json",
                         "apikey": API_KEYS.APILAYER
                     }
                 });
 
-                if (!fallbackResponse.ok) throw new Error('Fallback API request failed');
-
-                const fallbackData = await fallbackResponse.json();
-                return fallbackData.translations[0].translation || 'No translation available';
+                if (fallbackResponse.ok) {
+                    const fallbackData = await fallbackResponse.json();
+                    translation = fallbackData.translations[0].translation || 'No translation available';
+                } else {
+                    throw new Error('Fallback API request failed');
+                }
             } catch (fallbackError) {
                 console.error('Fallback API also failed.', fallbackError);
-                return 'Error: Unable to fetch translation';
+                translation = 'Error: Unable to fetch translation';
             }
         }
+        return translation;
     };
 
     form.addEventListener('submit', async (event) => {
@@ -101,9 +112,16 @@ document.addEventListener('DOMContentLoaded', () => {
         button.disabled = true;
         button.textContent = 'Translating...';
 
-        const inputText = textInput.value;
+        const inputText = textInput.value.trim();
         const sourceLang = sourceLanguage.value;
         const targetLang = targetLanguage.value;
+
+        if (!inputText) {
+            translatedText.textContent = 'Please enter text to translate.';
+            button.disabled = false;
+            button.textContent = 'Translate';
+            return;
+        }
 
         try {
             const resultText = await translateText(inputText, sourceLang, targetLang);
