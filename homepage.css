@@ -84,61 +84,61 @@ li {
 }
 
 .flag:nth-child(1) {
-    top: 10%;
+    top: 5%;
     left: -100px; /* Start off-screen */
     animation-delay: 0s;
 }
 
 .flag:nth-child(2) {
-    top: 20%;
+    top: 15%;
     left: -100px; /* Start off-screen */
     animation-delay: -3s;
 }
 
 .flag:nth-child(3) {
-    top: 30%;
+    top: 25%;
     left: -100px; /* Start off-screen */
     animation-delay: -6s;
 }
 
 .flag:nth-child(4) {
-    top: 40%;
+    top: 35%;
     left: -100px; /* Start off-screen */
     animation-delay: -9s;
 }
 
 .flag:nth-child(5) {
-    top: 50%;
+    top: 45%;
     left: -100px; /* Start off-screen */
     animation-delay: -12s;
 }
 
 .flag:nth-child(6) {
-    top: 60%;
+    top: 55%;
     left: -100px; /* Start off-screen */
     animation-delay: -15s;
 }
 
 .flag:nth-child(7) {
-    top: 70%;
+    top: 65%;
     left: -100px; /* Start off-screen */
     animation-delay: -18s;
 }
 
 .flag:nth-child(8) {
-    top: 80%;
+    top: 75%;
     left: -100px; /* Start off-screen */
     animation-delay: -21s;
 }
 
 .flag:nth-child(9) {
-    top: 90%;
+    top: 85%;
     left: -100px; /* Start off-screen */
     animation-delay: -24s;
 }
 
 .flag:nth-child(10) {
-    top: 20%;
+    top: 95%;
     left: -100px; /* Start off-screen */
     animation-delay: -27s;
 }
