@@ -4,6 +4,9 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 header {
@@ -36,6 +39,7 @@ main {
     padding: 20px;
     max-width: 800px;
     margin: 60px auto 20px;
+    flex: 1;
 }
 
 h1 {
@@ -116,17 +120,18 @@ button:hover {
 #translationSites {
     font-size: 16px;
     color: #666;
-    margin-top: 20px;
     padding: 10px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
     text-align: center;
+    margin-top: auto;
 }
 
 #translationSites ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 #translationSites li {
