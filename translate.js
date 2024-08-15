@@ -45,9 +45,10 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const response = await fetch(getRequestUrl(query, fromLang, toLang), {
+            const url = getRequestUrl ? getRequestUrl(query, fromLang, toLang) : undefined;
+            const response = await fetch(url, {
                 ...options,
-                body: getRequestBody(query, fromLang, toLang)
+                body: getRequestBody ? getRequestBody(query, fromLang, toLang) : undefined
             });
 
             if (response.ok) {
