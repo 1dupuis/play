@@ -84,24 +84,26 @@ async function translateText(fromLang, toLang, query) {
 async function initializeDOMWithRetry(retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const translateButton = document.getElementById('translateButton');
-            const fromLangInput = document.getElementById('fromLang');
-            const toLangInput = document.getElementById('toLang');
-            const queryInput = document.getElementById('queryText');
-            const resultElement = document.getElementById('result');
+            const translationForm = document.getElementById('translationForm');
+            const sourceLanguageSelect = document.getElementById('sourceLanguage');
+            const targetLanguageSelect = document.getElementById('targetLanguage');
+            const textInput = document.getElementById('textInput');
+            const resultContainer = document.getElementById('translatedText');
 
-            if (translateButton && fromLangInput && toLangInput && queryInput && resultElement) {
-                translateButton.addEventListener('click', async () => {
-                    const fromLang = fromLangInput.value;
-                    const toLang = toLangInput.value;
-                    const query = queryInput.value;
+            if (translationForm && sourceLanguageSelect && targetLanguageSelect && textInput && resultContainer) {
+                translationForm.addEventListener('submit', async (event) => {
+                    event.preventDefault(); // Prevent form submission
+
+                    const fromLang = sourceLanguageSelect.value;
+                    const toLang = targetLanguageSelect.value;
+                    const query = textInput.value;
 
                     const translatedText = await translateText(fromLang, toLang, query);
 
                     if (translatedText) {
-                        resultElement.textContent = translatedText;
+                        resultContainer.textContent = translatedText;
                     } else {
-                        resultElement.textContent = 'Translation failed. Please try again later.';
+                        resultContainer.textContent = 'Translation failed. Please try again later.';
                     }
                 });
                 console.log("DOM initialized successfully.");
