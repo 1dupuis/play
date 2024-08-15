@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .container {
@@ -19,11 +19,14 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1;
-    max-width: 800px;
+    max-width: 90%;
+    width: 800px;
+    margin: 20px;
 }
 
 .logo {
-    max-width: 500px;
+    max-width: 100%;
+    height: auto;
     margin-bottom: 0.05rem;
 }
 
@@ -100,10 +103,10 @@ li {
 
 @keyframes moveFlag {
     0% {
-        transform: translateX(-100px) rotate(0deg); /* Start off-screen to the left */
+        transform: translateX(-100px) rotate(0deg);
     }
     100% {
-        transform: translateX(calc(100vw + 100px)) rotate(720deg); /* Move past the right edge of the screen */
+        transform: translateX(calc(100vw + 100px)) rotate(720deg);
     }
 }
 
@@ -142,4 +145,57 @@ li {
 
 .sub-container .button {
     margin: 0.5rem;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+
+    .sub-container {
+        margin-top: 1rem;
+    }
+
+    .sub-container .button {
+        margin: 0.25rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+    }
+
+    p, li {
+        font-size: 0.9rem;
+    }
+
+    .button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+
+    .sub-container {
+        padding: 0.5rem;
+    }
+
+    .sub-container .button {
+        margin: 0.25rem 0;
+        display: block;
+        width: 100%;
+    }
 }
