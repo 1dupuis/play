@@ -1,1 +1,51 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Bonanza: Daily Rewards</title>
+    <link rel="stylesheet" href="rewards.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Gem Bonanza</h1>
+        <div class="gem-container">
+            <div class="gem-icon"><i class="fas fa-gem"></i></div>
+            <div class="gem-count"><span id="gemCount">0</span></div>
+        </div>
+        <button id="rewardButton" class="reward-button">Claim Daily Reward</button>
+        <div id="timer" class="timer"></div>
+        <div class="info-container">
+            <div id="streakCounter" class="streak"><i class="fas fa-fire"></i> Streak: <span id="streakCount">0</span> days</div>
+            <div id="multiplier" class="multiplier"><i class="fas fa-star"></i> Multiplier: x<span id="multiplierValue">1</span></div>
+        </div>
+        <div id="rewardTiers" class="reward-tiers">
+            <h3><i class="fas fa-trophy"></i> Reward Tiers</h3>
+            <ul>
+                <li>Streak 1-6: 50-100 gems</li>
+                <li>Streak 7-13: 100-200 gems</li>
+                <li>Streak 14-20: 200-400 gems</li>
+                <li>Streak 21+: 400-800 gems</li>
+            </ul>
+        </div>
+        <button id="shopButton" class="shop-button"><i class="fas fa-store"></i> Open Gem Shop</button>
+        <button id="achievementsButton" class="achievements-button"><i class="fas fa-medal"></i> Achievements</button>
+    </div>
+    <div id="shopModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-store"></i> Gem Shop</h2>
+            <div id="shopItems"></div>
+        </div>
+    </div>
+    <div id="achievementsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-medal"></i> Achievements</h2>
+            <div id="achievementsList"></div>
+        </div>
+    </div>
+    <script src="rewards.js"></script>
+</body>
+</html>
