@@ -1,0 +1,258 @@
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #45a049;
+    --background-color: #f5f7fa;
+    --text-color: #333;
+    --timer-color: #666;
+    --streak-color: #ff9800;
+    --modal-background: rgba(0, 0, 0, 0.7);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, var(--background-color) 0%, #c3cfe2 100%);
+    padding: 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    color: var(--text-color);
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+}
+
+.gem-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.gem-icon {
+    font-size: 3rem;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.gem-count {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.reward-button, .shop-button, .achievements-button {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.2rem;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reward-button:hover, .shop-button:hover, .achievements-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reward-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.timer {
+    font-size: 1.2rem;
+    color: var(--timer-color);
+    margin-top: 20px;
+}
+
+.info-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.streak, .multiplier {
+    font-size: 1rem;
+    color: var(--streak-color);
+    font-weight: bold;
+}
+
+.reward-tiers {
+    margin-top: 30px;
+    text-align: left;
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.reward-tiers h3 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.reward-tiers ul {
+    list-style-type: none;
+}
+
+.reward-tiers li {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: var(--modal-background);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#shopItems, #achievementsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.shop-item, .achievement-item {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.shop-item button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.achievement-item.unlocked {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.achievement-item.locked {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.reward-button:not(:disabled) {
+    animation: pulse 2s infinite;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .gem-icon {
+        font-size: 2.5rem;
+    }
+
+    .gem-count {
+        font-size: 1.8rem;
+    }
+
+    .reward-button, .shop-button, .achievements-button {
+        font-size: 1rem;
+        padding: 12px 24px;
+    }
+
+    .timer {
+        font-size: 1rem;
+    }
+
+    .info-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .streak, .multiplier {
+        margin-bottom: 10px;
+    }
+
+    .reward-tiers li {
+        font-size: 0.8rem;
+    }
+}
