@@ -11,7 +11,7 @@ const apiEndpoints = {
             }
         },
         getRequestUrl: (fromLang, toLang, query) => `${apiEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`,
-        getRequestBody: () => JSON.stringify({ translate: 'rapidapi' }) // Update based on actual API requirements
+        getRequestBody: () => JSON.stringify({ translate: 'rapidapi' })
     },
     secondary: {
         url: 'https://microsoft-translator-text.p.rapidapi.com/translate?api-version=3.0&profanityAction=NoAction&textType=plain',
@@ -41,6 +41,28 @@ const apiEndpoints = {
     }
 };
 
+// Function to extract translation text from the API response
+function extractTranslation(response, api) {
+    try {
+        switch (api) {
+            case 'primary':
+                // Adjust extraction based on the actual response structure
+                return response && response.translation ? response.translation : null;
+            case 'secondary':
+                // Microsoft API response usually returns an array
+                return response && response[0] && response[0].Text ? response[0].Text : null;
+            case 'tertiary':
+                // Simple Translate API response structure
+                return response && response.translation ? response.translation : null;
+            default:
+                return null;
+        }
+    } catch (error) {
+        console.error('Error extracting translation:', error);
+        return null;
+    }
+}
+
 // Function to perform translation with retry mechanism
 async function translateWithRetry(endpoint, query, fromLang = '', toLang = '', retries = 3) {
     const { options, getRequestUrl, getRequestBody } = endpoint;
@@ -60,7 +82,10 @@ async function translateWithRetry(endpoint, query, fromLang = '', toLang = '', r
             });
 
             if (response.ok) {
-                return await response.json(); // Ensure correct response handling
+                const data = await response.json();
+                return extractTranslation(data, endpoint === apiEndpoints.primary ? 'primary' :
+                                           endpoint === apiEndpoints.secondary ? 'secondary' :
+                                           'tertiary') || JSON.stringify(data); // Show entire response if extraction fails
             } else {
                 console.error(`Attempt ${attempt} failed: ${response.statusText}`);
             }
@@ -112,7 +137,7 @@ async function initializeDOMWithRetry(retries = 3) {
                     const translatedText = await translateText(fromLang, toLang, query);
 
                     if (translatedText) {
-                        resultContainer.textContent = JSON.stringify(translatedText); // Adjust based on API response format
+                        resultContainer.textContent = translatedText;
                     } else {
                         resultContainer.textContent = 'Translation failed. Please try again later.';
                     }
