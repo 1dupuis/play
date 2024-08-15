@@ -18,7 +18,7 @@ header {
 
 h1 {
     margin: 0;
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 5vw, 2rem);
 }
 
 .home-button {
@@ -45,6 +45,7 @@ h1 {
     margin: 2rem auto;
     padding: 1.5rem;
     max-width: 800px;
+    width: 90%;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -53,7 +54,7 @@ h1 {
 #calendar-container h2 {
     text-align: center;
     margin-bottom: 1rem;
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
     color: #333;
 }
 
@@ -69,7 +70,7 @@ h1 {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: clamp(0.8rem, 3vw, 1rem);
     margin: 0 0.5rem;
     transition: background-color 0.3s ease;
 }
@@ -84,18 +85,18 @@ h1 {
 }
 
 #calendar-container th, #calendar-container td {
-    padding: 1rem;
+    padding: clamp(0.5rem, 2vw, 1rem);
     text-align: center;
     border: 1px solid #ddd;
     vertical-align: top;
     position: relative;
-    font-size: 1.2rem;
+    font-size: clamp(0.8rem, 3vw, 1.2rem);
 }
 
 #calendar-container thead th {
     background-color: #007bff;
     color: white;
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
 }
 
 .calendar-day {
@@ -155,13 +156,13 @@ h1 {
 
 .event-card h3 {
     margin: 0;
-    font-size: 1.4rem;
+    font-size: clamp(1.2rem, 4vw, 1.4rem);
     color: #007bff;
 }
 
 .event-card p {
     margin: 0.5rem 0;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 3vw, 1rem);
 }
 
 /* Modal Styles */
@@ -182,7 +183,7 @@ h1 {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 90%;
     max-width: 600px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -202,41 +203,6 @@ h1 {
     color: #000;
     text-decoration: none;
     cursor: pointer;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    #calendar-container {
-        padding: 1rem;
-        margin: 1rem;
-    }
-
-    #calendar-container th, #calendar-container td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    .event-card {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .event-card img {
-        width: 100%;
-        height: auto;
-        margin-right: 0;
-        margin-bottom: 1rem;
-    }
-
-    .calendar-nav button {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.9rem;
-    }
-
-    .modal-content {
-        width: 90%;
-        margin: 20% auto;
-    }
 }
 
 /* Accessibility Improvements */
@@ -262,4 +228,45 @@ h1 {
     text-align: center;
     color: #666;
     font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #calendar-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    .event-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .event-card img {
+        width: 100%;
+        height: auto;
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    #calendar-container th, #calendar-container td {
+        padding: 0.3rem;
+    }
+
+    .calendar-nav button {
+        padding: 0.3rem 0.6rem;
+        margin: 0 0.2rem;
+    }
 }
