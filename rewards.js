@@ -238,9 +238,9 @@ function receiveChupachup() {
     if (chupachups > 0) {
         chupachups--;
         updateChupachupCount();
-        showRewardNotification('You successfully claimed a Chupa Chup! Show this to your teacher.');
+        alert('You successfully claimed a Chupa Chup! Show this to your teacher. 🍭');
     } else {
-        alert('You don\'t have any Chupa Chups to receive!');
+        alert('You don\'t have any Chupa Chups to receive! ❌');
     }
 }
 
