@@ -83,7 +83,8 @@ function claimReward(instant = false) {
     
     if (!instant) {
         const oneDayInMs = 24 * 60 * 60 * 1000;
-        if (now - lastClaimTime <= oneDayInMs + 5 * 60 * 1000) { // 5 minutes grace period
+        const threeHoursInMs = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+       if (now - lastClaimTime <= oneDayInMs + threeHoursInMs) { // 3 hours grace period
             streak++;
         } else if (streakSaver > 0) {
             streakSaver--;
