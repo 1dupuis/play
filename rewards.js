@@ -19,7 +19,7 @@ let lastClaimTime = parseInt(localStorage.getItem('lastClaimTime')) || 0;
 let streak = parseInt(localStorage.getItem('streak')) || 0;
 
 const shopInventory = [
-    { name: 'Chupa Chup', cost: 1500, effect: () => { buyChupachup(); }, highlight: true },
+    { name: 'Chupa Chup', cost: 10, effect: () => { buyChupachup(); }, highlight: true },
     { name: 'Double Gems (24h)', cost: 1000, effect: () => { applyMultiplier(2, 24 * 60 * 60 * 1000); } },
     { name: 'Triple Gems (12h)', cost: 2000, effect: () => { applyMultiplier(3, 12 * 60 * 60 * 1000); } },
     { name: 'Instant Reward', cost: 500, effect: () => { claimReward(true); } },
