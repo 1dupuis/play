@@ -1,129 +1,52 @@
-// Primary, secondary, and tertiary translation API endpoints
-const apiEndpoints = {
-    primary: {
-        url: 'https://free-google-translator.p.rapidapi.com/external-api/free-google-translator',
-        options: {
-            method: 'POST',
-            headers: {
-                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'free-google-translator.p.rapidapi.com',
-                'Content-Type': 'application/json'
-            },
-            getRequestBody: (query, fromLang, toLang) => JSON.stringify({ translate: 'rapidapi' }),
-            getRequestUrl: (query, fromLang, toLang) => `${apiEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`
-        }
-    },
-    secondary: {
-        url: 'https://microsoft-translator-text.p.rapidapi.com/languages?api-version=3.0',
-        options: {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'microsoft-translator-text.p.rapidapi.com'
-            },
-            getRequestUrl: () => apiEndpoints.secondary.url,
-            getRequestBody: () => null
-        }
-    },
-    tertiary: {
-        url: 'https://simple-translate2.p.rapidapi.com/translate?source_lang=auto&target_lang=ja',
-        options: {
-            method: 'POST',
-            headers: {
-                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'simple-translate2.p.rapidapi.com',
-                'Content-Type': 'application/json'
-            },
-            getRequestBody: (query) => JSON.stringify({ sourceText: query }),
-            getRequestUrl: () => apiEndpoints.tertiary.url
-        }
-    }
-};
-
-async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3) {
-    const { options, getRequestUrl, getRequestBody } = endpoint;
-
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            const response = await fetch(getRequestUrl(query, fromLang, toLang), {
-                ...options,
-                body: getRequestBody(query, fromLang, toLang)
-            });
-
-            if (response.ok) {
-                return await response.text();
-            } else {
-                console.error(`Attempt ${attempt} failed: ${response.statusText}`);
-            }
-        } catch (error) {
-            console.error(`Attempt ${attempt} failed: ${error.message}`);
-        }
-
-        if (attempt < retries) {
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
-        }
-    }
-
-    return null; // Return null if all retries fail
-}
-
-async function translateText(fromLang, toLang, query) {
-    let result = await translateWithRetry(apiEndpoints.primary, query, fromLang, toLang);
-
-    if (!result) {
-        result = await translateWithRetry(apiEndpoints.secondary, query, fromLang, toLang);
-    }
-
-    if (!result) {
-        result = await translateWithRetry(apiEndpoints.tertiary, query);
-    }
-
-    return result;
-}
-
-async function initializeDOMWithRetry(retries = 3) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            const translationForm = document.getElementById('translationForm');
-            const sourceLanguageSelect = document.getElementById('sourceLanguage');
-            const targetLanguageSelect = document.getElementById('targetLanguage');
-            const textInput = document.getElementById('textInput');
-            const resultContainer = document.getElementById('translatedText');
-
-            if (translationForm && sourceLanguageSelect && targetLanguageSelect && textInput && resultContainer) {
-                translationForm.addEventListener('submit', async (event) => {
-                    event.preventDefault(); // Prevent form submission
-
-                    const fromLang = sourceLanguageSelect.value;
-                    const toLang = targetLanguageSelect.value;
-                    const query = textInput.value;
-
-                    const translatedText = await translateText(fromLang, toLang, query);
-
-                    if (translatedText) {
-                        resultContainer.textContent = translatedText;
-                    } else {
-                        resultContainer.textContent = 'Translation failed. Please try again later.';
-                    }
-                });
-                console.log("DOM initialized successfully.");
-                return;
-            } else {
-                throw new Error('One or more elements are missing from the DOM.');
-            }
-        } catch (error) {
-            console.error(`DOM initialization attempt ${attempt} failed: ${error.message}`);
-        }
-
-        if (attempt < retries) {
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
-        }
-    }
-
-    console.error('Failed to initialize DOM after multiple attempts.');
-}
-
-// Run the DOM initialization when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    initializeDOMWithRetry();
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dupuis Translate</title>
+    <link rel="stylesheet" href="translate.css">
+    <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
+</head>
+<body>
+    <header>
+        <a href="/homepage" class="home-button">Home</a>
+    </header>
+    <main>
+        <h1>Dupuis Translate (Testing)</h1>
+        <div class="translation-container">
+            <form id="translationForm">
+                <div class="form-group">
+                    <label for="sourceLanguage">Source Language</label>
+                    <select id="sourceLanguage" required>
+                        <option value="en">English</option>
+                        <option value="fr">French</option>
+                        <option value="es">Spanish</option>
+                        <!-- Add more languages as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="targetLanguage">Target Language</label>
+                    <select id="targetLanguage" required>
+                        <option value="en">English</option>
+                        <option value="fr">French</option>
+                        <option value="es">Spanish</option>
+                        <!-- Add more languages as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="textInput">Text to Translate</label>
+                    <textarea id="textInput" placeholder="Enter text here..." required></textarea>
+                </div>
+                <button type="submit">Translate</button>
+            </form>
+            <div id="resultContainer">
+                <div id="translatedText" class="translated-text"></div>
+            </div>
+        </div>
+        <div class="alternative-translation">
+            <p>If Dupuis Translate doesn't work, you can try <a href="https://www.deepl.com/en/translator" target="_blank">DeepL Translate</a>.</p>
+        </div>
+    </main>
+    <script src="translate.js"></script>
+</body>
+</html>
