@@ -14,15 +14,16 @@ const apiEndpoints = {
         }
     },
     secondary: {
-        url: 'https://microsoft-translator-text.p.rapidapi.com/languages?api-version=3.0',
+        url: 'https://microsoft-translator-text.p.rapidapi.com/translate?api-version=3.0&profanityAction=NoAction&textType=plain',
         options: {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'microsoft-translator-text.p.rapidapi.com'
+                'x-rapidapi-host': 'microsoft-translator-text.p.rapidapi.com',
+                'Content-Type': 'application/json'
             },
-            getRequestUrl: () => apiEndpoints.secondary.url,
-            getRequestBody: () => null
+            getRequestBody: (query) => JSON.stringify([{ Text: query }]),
+            getRequestUrl: () => apiEndpoints.secondary.url
         }
     },
     tertiary: {
@@ -46,9 +47,11 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
             const url = getRequestUrl ? getRequestUrl(query, fromLang, toLang) : undefined;
+            const body = getRequestBody ? getRequestBody(query, fromLang, toLang) : undefined;
+
             const response = await fetch(url, {
                 ...options,
-                body: getRequestBody ? getRequestBody(query, fromLang, toLang) : undefined
+                body: body
             });
 
             if (response.ok) {
