@@ -104,6 +104,15 @@ button:hover {
     background-color: #0056b3;
 }
 
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#resultContainer {
+    position: relative;
+}
+
 .translated-text {
     margin-top: 20px;
     padding: 15px;
@@ -118,6 +127,35 @@ button:hover {
     color: #d9534f;
     background-color: #f2dede;
     border-color: #ebccd1;
+}
+
+/* Voice button styles */
+#voiceButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+    outline: none;
+}
+
+#voiceButton:hover {
+    background-color: #0056b3;
+}
+
+#voiceButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 .alternative-translation {
@@ -140,17 +178,19 @@ button:hover {
     main {
         padding: 10px;
     }
-
     h1 {
         font-size: 20px;
     }
-
     .translation-container {
         padding: 15px;
     }
-
     select, textarea, button {
         font-size: 14px;
+    }
+    #voiceButton {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
     }
 }
 
@@ -159,16 +199,18 @@ button:hover {
         font-size: 14px;
         padding: 3px 8px;
     }
-
     h1 {
         font-size: 18px;
     }
-
     .translation-container {
         padding: 10px;
     }
-
     select, textarea, button {
         font-size: 12px;
+    }
+    #voiceButton {
+        width: 25px;
+        height: 25px;
+        font-size: 14px;
     }
 }
