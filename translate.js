@@ -1,5 +1,5 @@
-// Primary, secondary, and tertiary translation API endpoints
-const apiEndpoints = {
+// Translation API endpoints
+const translationEndpoints = {
     primary: {
         url: 'https://free-google-translator.p.rapidapi.com/external-api/free-google-translator',
         options: {
@@ -10,7 +10,7 @@ const apiEndpoints = {
                 'Content-Type': 'application/json'
             }
         },
-        getRequestUrl: (fromLang, toLang, query) => `${apiEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`,
+        getRequestUrl: (fromLang, toLang, query) => `${translationEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`,
         getRequestBody: () => JSON.stringify({ translate: 'rapidapi' })
     },
     secondary: {
@@ -23,7 +23,7 @@ const apiEndpoints = {
                 'Content-Type': 'application/json'
             }
         },
-        getRequestUrl: (fromLang, toLang) => `${apiEndpoints.secondary.url}?api-version=3.0&from=${fromLang}&to=${toLang}`,
+        getRequestUrl: (fromLang, toLang) => `${translationEndpoints.secondary.url}?api-version=3.0&from=${fromLang}&to=${toLang}`,
         getRequestBody: (query) => JSON.stringify([{ Text: query }])
     },
     tertiary: {
@@ -36,8 +36,53 @@ const apiEndpoints = {
                 'Content-Type': 'application/json'
             }
         },
-        getRequestUrl: (fromLang, toLang) => `${apiEndpoints.tertiary.url}?source_lang=${fromLang}&target_lang=${toLang}`,
+        getRequestUrl: (fromLang, toLang) => `${translationEndpoints.tertiary.url}?source_lang=${fromLang}&target_lang=${toLang}`,
         getRequestBody: (query) => JSON.stringify({ sourceText: query })
+    }
+};
+
+// Text-to-speech API endpoints
+const ttsEndpoints = {
+    primary: {
+        url: 'https://open-ai-text-to-speech1.p.rapidapi.com/',
+        options: {
+            method: 'POST',
+            headers: {
+                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                'x-rapidapi-host': 'open-ai-text-to-speech1.p.rapidapi.com',
+                'Content-Type': 'application/json'
+            }
+        },
+        getRequestBody: (text) => JSON.stringify({
+            model: 'tts-1',
+            input: text,
+            voice: 'alloy'
+        })
+    },
+    secondary: {
+        url: 'https://natural-text-to-speech-converter-at-lowest-price.p.rapidapi.com/backend/ttsNewDemo',
+        options: {
+            method: 'POST',
+            headers: {
+                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                'x-rapidapi-host': 'natural-text-to-speech-converter-at-lowest-price.p.rapidapi.com',
+                'Content-Type': 'application/json'
+            }
+        },
+        getRequestBody: (text) => JSON.stringify({
+            ttsService: 'polly',
+            audioKey: 'ff63037e-6994-4c50-9861-3e162ee56468',
+            storageService: 's3',
+            text: `<speak><p>${text}</p></speak>`,
+            voice: {
+                value: 'en-US_Kevin',
+                lang: 'en-US'
+            },
+            audioOutput: {
+                fileFormat: 'mp3',
+                sampleRate: 24000
+            }
+        })
     }
 };
 
@@ -81,8 +126,8 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
             }
 
             const data = await response.json();
-            const translation = extractTranslation(data, endpoint === apiEndpoints.primary ? 'primary' :
-                                                         endpoint === apiEndpoints.secondary ? 'secondary' :
+            const translation = extractTranslation(data, endpoint === translationEndpoints.primary ? 'primary' :
+                                                         endpoint === translationEndpoints.secondary ? 'secondary' :
                                                          'tertiary');
             
             if (translation) {
@@ -104,48 +149,71 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
 
 // Function to handle text translation
 async function translateText(fromLang, toLang, query) {
-    let result = await translateWithRetry(apiEndpoints.primary, query, fromLang, toLang);
+    let result = await translateWithRetry(translationEndpoints.primary, query, fromLang, toLang);
 
     if (!result) {
-        result = await translateWithRetry(apiEndpoints.secondary, query, fromLang, toLang);
+        result = await translateWithRetry(translationEndpoints.secondary, query, fromLang, toLang);
     }
 
     if (!result) {
-        result = await translateWithRetry(apiEndpoints.tertiary, query, fromLang, toLang);
+        result = await translateWithRetry(translationEndpoints.tertiary, query, fromLang, toLang);
     }
 
     return result;
 }
 
+// Function to perform text-to-speech with retry mechanism
+async function ttsWithRetry(endpoint, text, retries = 3) {
+    const { url, options, getRequestBody } = endpoint;
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                body: getRequestBody(text)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Handle different response types for each API
+            if (endpoint === ttsEndpoints.primary) {
+                const audioBlob = await response.blob();
+                return URL.createObjectURL(audioBlob);
+            } else {
+                const data = await response.json();
+                if (data.audioUrl) {
+                    return data.audioUrl;
+                } else {
+                    throw new Error('Audio URL not found in response');
+                }
+            }
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error.message);
+        }
+
+        if (attempt < retries) {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retrying
+        }
+    }
+
+    return null; // Return null if all retries fail
+}
+
 // Function to handle text-to-speech
 async function textToSpeech(text) {
-    const url = 'https://open-ai-text-to-speech1.p.rapidapi.com/';
-    const options = {
-        method: 'POST',
-        headers: {
-            'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-            'x-rapidapi-host': 'open-ai-text-to-speech1.p.rapidapi.com',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: 'tts-1',
-            input: text,
-            voice: 'alloy'
-        })
-    };
+    let audioUrl = await ttsWithRetry(ttsEndpoints.primary, text);
 
-    try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
+    if (!audioUrl) {
+        audioUrl = await ttsWithRetry(ttsEndpoints.secondary, text);
+    }
+
+    if (audioUrl) {
         const audio = new Audio(audioUrl);
         await audio.play();
-    } catch (error) {
-        console.error('Error in text-to-speech:', error);
-        alert('Failed to generate speech. Please try again.');
+    } else {
+        throw new Error('Failed to generate speech from both APIs');
     }
 }
 
@@ -171,25 +239,35 @@ function initializeDOM() {
         const toLang = targetLanguageSelect.value;
         const query = textInput.value;
 
-        const translatedText = await translateText(fromLang, toLang, query);
+        try {
+            const translatedText = await translateText(fromLang, toLang, query);
 
-        if (translatedText) {
-            resultContainer.textContent = translatedText;
-            voiceButton.style.display = 'inline-block';
-        } else {
+            if (translatedText) {
+                resultContainer.textContent = translatedText;
+                voiceButton.style.display = 'inline-block';
+            } else {
+                throw new Error('Translation failed');
+            }
+        } catch (error) {
+            console.error('Translation error:', error);
             resultContainer.textContent = 'Translation failed. Please try again later.';
         }
     });
 
-    voiceButton.addEventListener('click', () => {
+    voiceButton.addEventListener('click', async () => {
         const textToSpeak = resultContainer.textContent;
         if (textToSpeak && textToSpeak !== 'Translating...' && textToSpeak !== 'Translation failed. Please try again later.') {
             voiceButton.disabled = true;
             voiceButton.textContent = '🔊 Playing...';
-            textToSpeech(textToSpeak).finally(() => {
+            try {
+                await textToSpeech(textToSpeak);
+            } catch (error) {
+                console.error('Text-to-speech failed:', error);
+                alert('Failed to generate speech. Please try again.');
+            } finally {
                 voiceButton.disabled = false;
                 voiceButton.textContent = '🔊';
-            });
+            }
         }
     });
 }
