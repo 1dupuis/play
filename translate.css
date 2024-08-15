@@ -120,6 +120,21 @@ button:hover {
     border-color: #ebccd1;
 }
 
+.alternative-translation {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.alternative-translation a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.alternative-translation a:hover {
+    text-decoration: underline;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 600px) {
     main {
