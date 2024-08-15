@@ -6,8 +6,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .container {
@@ -54,15 +56,16 @@ header p {
 
 #board {
     display: grid;
-    grid-template-columns: repeat(5, 60px);
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 350px;
 }
 
 .tile {
-    width: 60px;
-    height: 60px;
-    font-size: 2em;
+    aspect-ratio: 1 / 1;
+    font-size: 6vw;
     text-transform: uppercase;
     background-color: #f8f8f8;
     border: 2px solid #ddd;
@@ -94,13 +97,15 @@ header p {
 #keyboard {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 10px;
+    gap: 5px;
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 500px;
 }
 
 #keyboard button {
-    padding: 10px;
-    font-size: 1.2em;
+    padding: 10px 5px;
+    font-size: 0.9em;
     background-color: #3b5998;
     color: #fff;
     border: none;
@@ -147,4 +152,48 @@ header p {
 
 #result button:active {
     transform: scale(0.95);
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    header p {
+        font-size: 1em;
+    }
+
+    .tile {
+        font-size: 7vw;
+    }
+
+    #keyboard button {
+        font-size: 0.8em;
+        padding: 8px 3px;
+    }
+
+    #result p {
+        font-size: 1.2em;
+    }
+
+    #result button {
+        font-size: 1em;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 400px) {
+    .tile {
+        font-size: 8vw;
+    }
+
+    #keyboard button {
+        font-size: 0.7em;
+        padding: 6px 2px;
+    }
 }
