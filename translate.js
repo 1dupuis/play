@@ -67,17 +67,27 @@ async function translateText(fromLang, toLang, query) {
 
 // Run when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('translateButton').addEventListener('click', async () => {
-        const fromLang = document.getElementById('fromLang').value;
-        const toLang = document.getElementById('toLang').value;
-        const query = document.getElementById('queryText').value;
+    const translateButton = document.getElementById('translateButton');
+    const fromLangInput = document.getElementById('fromLang');
+    const toLangInput = document.getElementById('toLang');
+    const queryInput = document.getElementById('queryText');
+    const resultElement = document.getElementById('result');
 
-        const translatedText = await translateText(fromLang, toLang, query);
+    if (translateButton && fromLangInput && toLangInput && queryInput && resultElement) {
+        translateButton.addEventListener('click', async () => {
+            const fromLang = fromLangInput.value;
+            const toLang = toLangInput.value;
+            const query = queryInput.value;
 
-        if (translatedText) {
-            document.getElementById('result').textContent = translatedText;
-        } else {
-            document.getElementById('result').textContent = 'Translation failed. Please try again later.';
-        }
-    });
+            const translatedText = await translateText(fromLang, toLang, query);
+
+            if (translatedText) {
+                resultElement.textContent = translatedText;
+            } else {
+                resultElement.textContent = 'Translation failed. Please try again later.';
+            }
+        });
+    } else {
+        console.error('One or more elements are missing from the DOM.');
+    }
 });
