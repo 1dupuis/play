@@ -18,7 +18,7 @@ header {
     left: 0;
     color: #fff;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 1000; /* Ensure header is on top */
+    z-index: 1000;
 }
 
 .home-button {
@@ -28,7 +28,7 @@ header {
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 4px;
-    background-color: #007bff; /* Button color */
+    background-color: #007bff;
     transition: background-color 0.3s;
     display: inline-block;
     text-align: center;
@@ -39,16 +39,20 @@ header {
 }
 
 main {
-    margin-top: 60px; /* Adjust to account for fixed header height */
+    margin-top: 60px;
     padding: 20px;
     max-width: 800px;
-    margin: 60px auto 20px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     flex: 1;
+    box-sizing: border-box;
 }
 
 h1 {
     text-align: center;
     color: #333;
+    font-size: 24px;
 }
 
 .translation-container {
@@ -69,21 +73,17 @@ label {
     color: #333;
 }
 
-select {
+select, textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
+    box-sizing: border-box;
 }
 
 textarea {
-    width: 100%;
     height: 120px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
     margin-bottom: 15px;
     resize: vertical;
 }
@@ -118,4 +118,42 @@ button:hover {
     color: #d9534f;
     background-color: #f2dede;
     border-color: #ebccd1;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 600px) {
+    main {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .translation-container {
+        padding: 15px;
+    }
+
+    select, textarea, button {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .home-button {
+        font-size: 14px;
+        padding: 3px 8px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    .translation-container {
+        padding: 10px;
+    }
+
+    select, textarea, button {
+        font-size: 12px;
+    }
 }
