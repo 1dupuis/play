@@ -49,6 +49,11 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
             const url = getRequestUrl ? getRequestUrl(query, fromLang, toLang) : undefined;
             const body = getRequestBody ? getRequestBody(query, fromLang, toLang) : undefined;
 
+            // Ensure URL and Body are not undefined
+            if (!url) {
+                throw new Error('URL is undefined.');
+            }
+
             const response = await fetch(url, {
                 ...options,
                 body: body
