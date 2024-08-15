@@ -8,10 +8,10 @@ const apiEndpoints = {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
                 'x-rapidapi-host': 'free-google-translator.p.rapidapi.com',
                 'Content-Type': 'application/json'
-            },
-            getRequestBody: (query, fromLang, toLang) => JSON.stringify({ translate: 'rapidapi' }),
-            getRequestUrl: (query, fromLang, toLang) => `${apiEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`
-        }
+            }
+        },
+        getRequestUrl: (fromLang, toLang, query) => `${apiEndpoints.primary.url}?from=${fromLang}&to=${toLang}&query=${encodeURIComponent(query)}`,
+        getRequestBody: () => JSON.stringify({ translate: 'rapidapi' }) // Update based on actual API requirements
     },
     secondary: {
         url: 'https://microsoft-translator-text.p.rapidapi.com/translate?api-version=3.0&profanityAction=NoAction&textType=plain',
@@ -21,10 +21,10 @@ const apiEndpoints = {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
                 'x-rapidapi-host': 'microsoft-translator-text.p.rapidapi.com',
                 'Content-Type': 'application/json'
-            },
-            getRequestBody: (query) => JSON.stringify([{ Text: query }]),
-            getRequestUrl: () => apiEndpoints.secondary.url
-        }
+            }
+        },
+        getRequestUrl: () => apiEndpoints.secondary.url,
+        getRequestBody: (query) => JSON.stringify([{ Text: query }])
     },
     tertiary: {
         url: 'https://simple-translate2.p.rapidapi.com/translate?source_lang=auto&target_lang=ja',
@@ -34,22 +34,22 @@ const apiEndpoints = {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
                 'x-rapidapi-host': 'simple-translate2.p.rapidapi.com',
                 'Content-Type': 'application/json'
-            },
-            getRequestBody: (query) => JSON.stringify({ sourceText: query }),
-            getRequestUrl: () => apiEndpoints.tertiary.url
-        }
+            }
+        },
+        getRequestUrl: () => apiEndpoints.tertiary.url,
+        getRequestBody: (query) => JSON.stringify({ sourceText: query })
     }
 };
 
-async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3) {
+// Function to perform translation with retry mechanism
+async function translateWithRetry(endpoint, query, fromLang = '', toLang = '', retries = 3) {
     const { options, getRequestUrl, getRequestBody } = endpoint;
 
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
-            const url = getRequestUrl ? getRequestUrl(query, fromLang, toLang) : undefined;
-            const body = getRequestBody ? getRequestBody(query, fromLang, toLang) : undefined;
+            const url = getRequestUrl ? getRequestUrl(fromLang, toLang, query) : undefined;
+            const body = getRequestBody ? getRequestBody(query) : undefined;
 
-            // Ensure URL and Body are not undefined
             if (!url) {
                 throw new Error('URL is undefined.');
             }
@@ -60,7 +60,7 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
             });
 
             if (response.ok) {
-                return await response.text();
+                return await response.json(); // Ensure correct response handling
             } else {
                 console.error(`Attempt ${attempt} failed: ${response.statusText}`);
             }
@@ -76,11 +76,12 @@ async function translateWithRetry(endpoint, query, fromLang, toLang, retries = 3
     return null; // Return null if all retries fail
 }
 
+// Function to handle text translation
 async function translateText(fromLang, toLang, query) {
     let result = await translateWithRetry(apiEndpoints.primary, query, fromLang, toLang);
 
     if (!result) {
-        result = await translateWithRetry(apiEndpoints.secondary, query, fromLang, toLang);
+        result = await translateWithRetry(apiEndpoints.secondary, query);
     }
 
     if (!result) {
@@ -90,6 +91,7 @@ async function translateText(fromLang, toLang, query) {
     return result;
 }
 
+// Function to initialize DOM elements and add event listeners with retry mechanism
 async function initializeDOMWithRetry(retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
@@ -110,7 +112,7 @@ async function initializeDOMWithRetry(retries = 3) {
                     const translatedText = await translateText(fromLang, toLang, query);
 
                     if (translatedText) {
-                        resultContainer.textContent = translatedText;
+                        resultContainer.textContent = JSON.stringify(translatedText); // Adjust based on API response format
                     } else {
                         resultContainer.textContent = 'Translation failed. Please try again later.';
                     }
