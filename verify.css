@@ -1,5 +1,3 @@
-/* verify.css */
-
 /* General Styles */
 body {
     font-family: 'Arial', sans-serif;
@@ -9,7 +7,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 /* Container Styles */
@@ -18,9 +17,10 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    max-width: 400px;
-    width: 100%;
+    max-width: 90%;
+    width: 400px;
     text-align: center;
+    box-sizing: border-box;
 }
 
 /* Heading Styles */
@@ -32,7 +32,7 @@ body {
 
 /* Input Styles */
 #username-input {
-    width: calc(100% - 22px);
+    width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
     border: 1px solid #ccc;
@@ -74,4 +74,31 @@ body {
     font-size: 0.875rem;
     margin-top: 1rem;
     display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .verification-container {
+        padding: 1.5rem;
+    }
+
+    #verify-button {
+        width: 100%;
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .verification-container {
+        padding: 1rem;
+    }
+
+    .verification-container h1 {
+        font-size: 1.25rem;
+    }
+
+    #username-input, #verify-button {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+    }
 }
