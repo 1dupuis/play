@@ -6,6 +6,8 @@
     --timer-color: #666;
     --streak-color: #ff9800;
     --modal-background: rgba(0, 0, 0, 0.7);
+    --gold-color: #FFD700;
+    --chupa-chup-color: #FF69B4;
 }
 
 * {
@@ -41,26 +43,40 @@ h1 {
     font-size: 2.5rem;
 }
 
-.gem-container {
+.gem-container, .chupa-chup-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.gem-icon {
+.gem-icon, .chupa-chup-icon {
     font-size: 3rem;
     margin-right: 10px;
+}
+
+.gem-icon {
     color: var(--primary-color);
+}
+
+.chupa-chup-icon {
+    color: var(--chupa-chup-color);
+}
+
+.gem-count, .chupa-chup-count {
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 .gem-count {
-    font-size: 2rem;
-    font-weight: bold;
     color: var(--primary-color);
 }
 
-.reward-button, .shop-button, .achievements-button {
+.chupa-chup-count {
+    color: var(--chupa-chup-color);
+}
+
+.reward-button, .shop-button, .achievements-button, .receive-chupachup-button {
     background-color: var(--primary-color);
     border: none;
     color: white;
@@ -76,17 +92,26 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.reward-button:hover, .shop-button:hover, .achievements-button:hover {
+.reward-button:hover, .shop-button:hover, .achievements-button:hover, .receive-chupachup-button:hover {
     background-color: var(--secondary-color);
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-.reward-button:disabled {
+.reward-button:disabled, .receive-chupachup-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+}
+
+.receive-chupachup-button {
+    background-color: var(--chupa-chup-color);
+    margin-top: 20px;
+}
+
+.receive-chupachup-button:hover {
+    background-color: #FF1493;
 }
 
 .timer {
@@ -217,6 +242,30 @@ h1 {
     animation: pulse 2s infinite;
 }
 
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.shop-button, .achievements-button {
+    flex: 1;
+    margin: 0 5px;
+}
+
+.chupa-chup {
+    background-color: var(--gold-color);
+    border: 2px solid #FFA500;
+    color: #8B4513;
+    font-weight: bold;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.chupa-chup:hover {
+    background-color: #FFE55C;
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 20px;
@@ -226,15 +275,15 @@ h1 {
         font-size: 2rem;
     }
 
-    .gem-icon {
+    .gem-icon, .chupa-chup-icon {
         font-size: 2.5rem;
     }
 
-    .gem-count {
+    .gem-count, .chupa-chup-count {
         font-size: 1.8rem;
     }
 
-    .reward-button, .shop-button, .achievements-button {
+    .reward-button, .shop-button, .achievements-button, .receive-chupachup-button {
         font-size: 1rem;
         padding: 12px 24px;
     }
@@ -254,5 +303,13 @@ h1 {
 
     .reward-tiers li {
         font-size: 0.8rem;
+    }
+
+    .button-container {
+        flex-direction: column;
+    }
+
+    .shop-button, .achievements-button {
+        margin: 5px 0;
     }
 }
