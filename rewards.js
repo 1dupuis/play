@@ -1,4 +1,5 @@
 const gemCount = document.getElementById('gemCount');
+const chupachupCount = document.getElementById('chupachupCount');
 const rewardButton = document.getElementById('rewardButton');
 const timer = document.getElementById('timer');
 const streakCount = document.getElementById('streakCount');
@@ -10,12 +11,15 @@ const achievementsButton = document.getElementById('achievementsButton');
 const achievementsModal = document.getElementById('achievementsModal');
 const achievementsList = document.getElementById('achievementsList');
 const closeButtons = document.getElementsByClassName('close');
+const receiveChupachupButton = document.getElementById('receiveChupachupButton');
 
 let gems = parseInt(localStorage.getItem('gems')) || 0;
+let chupachups = parseInt(localStorage.getItem('chupachups')) || 0;
 let lastClaimTime = parseInt(localStorage.getItem('lastClaimTime')) || 0;
 let streak = parseInt(localStorage.getItem('streak')) || 0;
 
 const shopInventory = [
+    { name: 'Chupa Chup', cost: 1500, effect: () => { buyChupachup(); }, highlight: true },
     { name: 'Double Gems (24h)', cost: 1000, effect: () => { applyMultiplier(2, 24 * 60 * 60 * 1000); } },
     { name: 'Triple Gems (12h)', cost: 2000, effect: () => { applyMultiplier(3, 12 * 60 * 60 * 1000); } },
     { name: 'Instant Reward', cost: 500, effect: () => { claimReward(true); } },
@@ -27,6 +31,7 @@ const achievements = [
     { name: 'Dedicated Player', description: 'Achieve a 7-day streak', check: () => streak >= 7, reward: 200 },
     { name: 'Shopaholic', description: 'Make 5 purchases from the shop', check: () => purchases >= 5, reward: 300 },
     { name: 'Gem Hoarder', description: 'Collect 10,000 gems', check: () => gems >= 10000, reward: 500 },
+    { name: 'Chupa Chup Lover', description: 'Buy 5 Chupa Chups', check: () => chupachupsPurchased >= 5, reward: 1000 },
 ];
 
 let currentMultiplier = parseFloat(localStorage.getItem('currentMultiplier')) || 1;
@@ -34,10 +39,16 @@ let multiplierEndTime = parseInt(localStorage.getItem('multiplierEndTime')) || 0
 let purchases = parseInt(localStorage.getItem('purchases')) || 0;
 let streakSaver = parseInt(localStorage.getItem('streakSaver')) || 0;
 let unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements')) || [];
+let chupachupsPurchased = parseInt(localStorage.getItem('chupachupsPurchased')) || 0;
 
 function updateGemCount() {
     gemCount.textContent = gems.toLocaleString();
     localStorage.setItem('gems', gems);
+}
+
+function updateChupachupCount() {
+    chupachupCount.textContent = chupachups.toLocaleString();
+    localStorage.setItem('chupachups', chupachups);
 }
 
 function updateStreak() {
@@ -156,7 +167,7 @@ function populateShop() {
     shopItems.innerHTML = '';
     shopInventory.forEach((item, index) => {
         const itemElement = document.createElement('div');
-        itemElement.className = 'shop-item';
+        itemElement.className = `shop-item ${item.highlight ? 'chupa-chup' : ''}`;
         itemElement.innerHTML = `
             <h3>${item.name}</h3>
             <p>Cost: ${item.cost} gems</p>
@@ -187,6 +198,14 @@ function buyStreakSaver() {
     showRewardNotification('Streak Saver purchased!');
 }
 
+function buyChupachup() {
+    chupachups++;
+    chupachupsPurchased++;
+    updateChupachupCount();
+    localStorage.setItem('chupachupsPurchased', chupachupsPurchased);
+    showRewardNotification('Chupa Chup purchased! Enjoy your lollipop!');
+}
+
 function checkAchievements() {
     achievements.forEach(achievement => {
         if (!unlockedAchievements.includes(achievement.name) && achievement.check()) {
@@ -214,6 +233,16 @@ function updateAchievementsList() {
     });
 }
 
+function receiveChupachup() {
+    if (chupachups > 0) {
+        chupachups--;
+        updateChupachupCount();
+        showRewardNotification('Enjoy your Chupa Chup!');
+    } else {
+        alert('You don\'t have any Chupa Chups to receive!');
+    }
+}
+
 rewardButton.addEventListener('click', () => claimReward());
 
 shopButton.addEventListener('click', () => {
@@ -225,6 +254,8 @@ achievementsButton.addEventListener('click', () => {
     updateAchievementsList();
     achievementsModal.style.display = 'block';
 });
+
+receiveChupachupButton.addEventListener('click', receiveChupachup);
 
 Array.from(closeButtons).forEach(button => {
     button.addEventListener('click', () => {
@@ -244,6 +275,7 @@ window.addEventListener('click', (event) => {
 
 // Initialize
 updateGemCount();
+updateChupachupCount();
 updateStreak();
 updateButtonState();
 updateMultiplierDisplay();
