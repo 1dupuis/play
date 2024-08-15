@@ -10,10 +10,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>Rewards</h1>
+        <h1>Daily Rewards</h1>
         <div class="gem-container">
             <div class="gem-icon"><i class="fas fa-gem"></i></div>
             <div class="gem-count"><span id="gemCount">0</span></div>
+        </div>
+        <div class="chupa-chup-container">
+            <div class="chupa-chup-icon"><i class="fas fa-candy-cane"></i></div>
+            <div class="chupa-chup-count"><span id="chupachupCount">0</span></div>
         </div>
         <button id="rewardButton" class="reward-button">Claim Daily Reward</button>
         <div id="timer" class="timer"></div>
@@ -30,8 +34,11 @@
                 <li>Streak 21+: 400-800 gems</li>
             </ul>
         </div>
-        <button id="shopButton" class="shop-button"><i class="fas fa-store"></i> Open Gem Shop</button>
-        <button id="achievementsButton" class="achievements-button"><i class="fas fa-medal"></i> Achievements</button>
+        <div class="button-container">
+            <button id="shopButton" class="shop-button"><i class="fas fa-store"></i> Gem Shop</button>
+            <button id="achievementsButton" class="achievements-button"><i class="fas fa-medal"></i> Achievements</button>
+        </div>
+        <button id="receiveChupachupButton" class="receive-chupachup-button"><i class="fas fa-check"></i> I Received a Chupa Chup</button>
     </div>
     <div id="shopModal" class="modal">
         <div class="modal-content">
