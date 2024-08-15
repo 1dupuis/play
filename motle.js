@@ -57,7 +57,7 @@ function createKeyboard() {
     });
 
     const enterButton = document.createElement('button');
-    enterButton.textContent = 'Enter';
+    enterButton.textContent = 'Yes';
     enterButton.addEventListener('click', submitAttempt);
     keyboard.appendChild(enterButton);
 
