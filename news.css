@@ -20,6 +20,7 @@ body {
     margin-top: 20px;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 #search-input {
@@ -55,6 +56,7 @@ body {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .news-card {
@@ -63,6 +65,9 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .news-card:hover {
@@ -78,6 +83,9 @@ body {
 
 .news-card .content {
     padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .news-card .title {
@@ -92,7 +100,8 @@ body {
 .news-card .description {
     font-size: 15px;
     color: #666;
-    height: 60px;
+    height: auto;
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -121,10 +130,23 @@ footer {
     position: relative;
     bottom: 0;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .status-message {
     margin-top: 10px;
     font-size: 16px;
     color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #search-input {
+        width: 80%;
+    }
+
+    #search-button {
+        width: 100%;
+        border-radius: 0 0 5px 5px;
+    }
 }
