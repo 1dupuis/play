@@ -28,69 +28,85 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchNews(query) {
-        const primaryUrl = 'https://newsnow.p.rapidapi.com/';
-        const secondaryUrl = 'https://seeking-alpha.p.rapidapi.com/news/v2/list';
-        
-        const primaryOptions = {
-            method: 'POST',
-            headers: {
-                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'newsnow.p.rapidapi.com',
-                'Content-Type': 'application/json'
+        const apiUrls = [
+            {
+                url: 'https://newsnow.p.rapidapi.com/',
+                options: {
+                    method: 'POST',
+                    headers: {
+                        'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                        'x-rapidapi-host': 'newsnow.p.rapidapi.com',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: `${query} France`,
+                        region: 'fr',
+                        max_results: 10
+                    })
+                },
+                process: data => data.news
             },
-            body: JSON.stringify({
-                text: `${query} France`,
-                region: 'fr',
-                max_results: 10
-            })
-        };
-
-        const secondaryOptions = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'seeking-alpha.p.rapidapi.com'
-            }
-        };
-
-        console.log(`Fetching news with query: ${query}`);
-        loader.style.display = 'block';
-        statusMessage.textContent = 'Fetching news...';
-
-        try {
-            // Try primary API
-            const primaryData = await fetchWithRetry(primaryUrl, primaryOptions);
-            if (primaryData.news && primaryData.news.length > 0) {
-                displayNews(primaryData.news);
-                statusMessage.textContent = 'News loaded successfully from primary source';
-                return;
-            }
-
-            // If primary API fails or returns no results, try secondary API
-            statusMessage.textContent = 'Trying alternate news source...';
-            const secondaryData = await fetchWithRetry(`${secondaryUrl}?query=${encodeURIComponent(query + ' France')}`, secondaryOptions);
-            if (secondaryData.data && secondaryData.data.length > 0) {
-                const formattedNews = secondaryData.data.map(item => ({
+            {
+                url: `https://seeking-alpha.p.rapidapi.com/news/v2/list?query=${encodeURIComponent(query + ' France')}`,
+                options: {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                        'x-rapidapi-host': 'seeking-alpha.p.rapidapi.com'
+                    }
+                },
+                process: data => data.data.map(item => ({
                     title: item.attributes.title,
                     url: item.links.self,
                     body: item.attributes.summary,
                     date: item.attributes.publishOn,
                     image: item.attributes.gettyImageUrl,
-                    source: item.attributes.gettyImageUrl
-                }));
-                displayNews(formattedNews);
-                statusMessage.textContent = 'News loaded successfully from secondary source';
-            } else {
-                displayError('No news articles found from either source.');
-                statusMessage.textContent = 'No news found';
+                    source: 'Seeking Alpha'
+                }))
+            },
+            {
+                url: `https://newsapi90.p.rapidapi.com/search?query=${encodeURIComponent(query + ' France')}&language=fr&region=FR`,
+                options: {
+                    method: 'GET',
+                    headers: {
+                        'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                        'x-rapidapi-host': 'newsapi90.p.rapidapi.com'
+                    }
+                },
+                process: data => data.articles.map(item => ({
+                    title: item.title,
+                    url: item.url,
+                    body: item.description,
+                    date: item.publishedAt,
+                    image: item.urlToImage,
+                    source: item.source.name
+                }))
             }
-        } catch (error) {
-            console.error('Error fetching news:', error);
-            displayError('An error occurred while fetching the news from both sources.');
-            statusMessage.textContent = 'Error fetching news';
-        } finally {
-            loader.style.display = 'none';
+        ];
+
+        console.log(`Fetching news with query: ${query}`);
+        loader.style.display = 'block';
+        statusMessage.textContent = 'Fetching news...';
+
+        for (let i = 0; i < apiUrls.length; i++) {
+            try {
+                const { url, options, process } = apiUrls[i];
+                const data = await fetchWithRetry(url, options);
+                const news = process(data);
+                
+                if (news && news.length > 0) {
+                    displayNews(news);
+                    statusMessage.textContent = `News loaded successfully from source ${i + 1}`;
+                    return;
+                }
+            } catch (error) {
+                console.error(`Error fetching news from source ${i + 1}:`, error);
+            }
         }
+
+        displayError('No news articles found from any source.');
+        statusMessage.textContent = 'No news found';
+        loader.style.display = 'none';
     }
 
     function displayNews(articles) {
@@ -108,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             newsContainer.appendChild(articleElement);
         });
+        loader.style.display = 'none';
     }
 
     function displayError(message) {
@@ -123,9 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     citySelect.addEventListener('change', performSearch);
-
     searchButton.addEventListener('click', performSearch);
-
     searchInput.addEventListener('keypress', function(event) {
         if (event.key === 'Enter') {
             performSearch();
