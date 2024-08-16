@@ -4,9 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById('loader');
     const newsContainer = document.getElementById('news-container');
     const citySelect = document.getElementById('city-select');
-    
-    async function fetchNews(city) {
-        const url = 'https://newsnow.p.rapidapi.com/newsv2';
+
+    async function fetchNews(query) {
+        const url = 'https://newsnow.p.rapidapi.com/';
         const options = {
             method: 'POST',
             headers: {
@@ -15,17 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                query: city, // The selected city or keyword for news
-                time_bounded: true,
-                from_date: '2024-01-01', // Adjust these dates as needed
-                to_date: '2024-12-31',
-                location: 'fr', // Use 'fr' for France
-                language: 'en', // Set language to French
-                page: 1
+                text: query,
+                region: 'wt-wt', // 'wt-wt' for worldwide, adjust as needed
+                max_results: 25
             })
         };
 
-        console.log(`Fetching news for city: ${city}`);
+        console.log(`Fetching news with query: ${query}`);
         try {
             loader.style.display = 'block'; // Show loader
             const response = await fetch(url, options);
@@ -34,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
+            const data = await response.json(); // Changed to JSON parsing
             console.log('Data received:', data);
 
             if (data && data.articles && data.articles.length > 0) {
@@ -78,8 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchNews(selectedCity);
     });
 
-    // Initial fetch with default city or placeholder
-    const defaultCity = 'Paris'; // Default city, can be changed as needed
+    // Initial fetch with default query or placeholder
+    const defaultQuery = 'Top news'; // Default query
     console.log('Initial news fetch');
-    fetchNews(defaultCity);
+    fetchNews(defaultQuery);
 });
