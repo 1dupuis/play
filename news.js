@@ -1,9 +1,31 @@
 // news.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById('loader');
     const newsContainer = document.getElementById('news-container');
     const citySelect = document.getElementById('city-select');
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const statusMessage = document.getElementById('status-message');
+
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000; // 1 second
+
+    async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            if (retries > 0) {
+                console.log(`Retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                return fetchWithRetry(url, options, retries - 1);
+            }
+            throw error;
+        }
+    }
 
     async function fetchNews(query) {
         const url = 'https://newsnow.p.rapidapi.com/';
@@ -15,41 +37,37 @@ document.addEventListener("DOMContentLoaded", () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                text: query,
-                region: 'wt-wt', // 'wt-wt' for worldwide, adjust as needed
-                max_results: 1
+                text: `${query} France`,
+                region: 'fr',
+                max_results: 10
             })
         };
 
         console.log(`Fetching news with query: ${query}`);
+        loader.style.display = 'block';
+        statusMessage.textContent = 'Fetching news...';
+
         try {
-            loader.style.display = 'block'; // Show loader
-            const response = await fetch(url, options);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json(); // Changed to JSON parsing
-            console.log('Data received:', data);
-
-            // Check if 'data' has the correct structure
+            const data = await fetchWithRetry(url, options);
             if (data.news && data.news.length > 0) {
                 displayNews(data.news);
+                statusMessage.textContent = 'News loaded successfully';
             } else {
                 displayError('No news articles found.');
+                statusMessage.textContent = 'No news found';
             }
         } catch (error) {
             console.error('Error fetching news:', error);
             displayError('An error occurred while fetching the news.');
+            statusMessage.textContent = 'Error fetching news';
         } finally {
-            loader.style.display = 'none'; // Hide loader
+            loader.style.display = 'none';
         }
     }
 
     function displayNews(articles) {
         console.log('Displaying news articles');
-        newsContainer.innerHTML = ''; // Clear previous content
+        newsContainer.innerHTML = '';
         articles.forEach(article => {
             const articleElement = document.createElement('div');
             articleElement.classList.add('news-article');
@@ -58,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>${article.body || 'No summary available.'}</p>
                 ${article.image ? `<img src="${article.image}" alt="${article.title}">` : ''}
                 <p><small>Published on: ${new Date(article.date).toLocaleDateString('fr-FR')}</small></p>
+                <p><small>Source: ${article.source || 'Unknown'}</small></p>
             `;
             newsContainer.appendChild(articleElement);
         });
@@ -65,18 +84,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function displayError(message) {
         console.error(message);
-        newsContainer.innerHTML = `<p>${message}</p>`;
+        newsContainer.innerHTML = `<p class="error-message">${message}</p>`;
     }
 
-    // Add event listener to city select dropdown
-    citySelect.addEventListener('change', function() {
-        const selectedCity = this.value;
-        console.log(`City changed to: ${selectedCity}`);
-        fetchNews(selectedCity);
+    function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const selectedCity = citySelect.value;
+        const query = searchTerm || selectedCity;
+        fetchNews(query);
+    }
+
+    citySelect.addEventListener('change', performSearch);
+
+    searchButton.addEventListener('click', performSearch);
+
+    searchInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            performSearch();
+        }
     });
 
-    // Initial fetch with default query or placeholder
-    const defaultQuery = 'France'; // Default query
+    // Initialize news feed
+    const defaultQuery = 'France';
     console.log('Initial news fetch');
     fetchNews(defaultQuery);
 });
