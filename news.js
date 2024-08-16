@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchNews = async (query = 'France') => {
         updateStatus('Connecting to API...', '#ffa500'); // Orange color for connecting
         showLoader(true);
+
         try {
             const url = `${baseUrl}?query=${encodeURIComponent(query)}&limit=25&time_published=anytime&country=FR&lang=fr`;
 
@@ -25,11 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const response = await fetch(url, options);
+
             if (!response.ok) {
                 throw new Error(`API request failed with status ${response.status}`);
             }
 
             const result = await response.json();
+
             if (!result || !result.articles || result.articles.length === 0) {
                 updateStatus('No news articles found.', '#ff0000'); // Red color for error
                 displayError("No news articles found.");
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             newsCard.className = 'news-card';
 
             const img = document.createElement('img');
-            img.src = article.image || 'default-news-image.jpg'; // Fallback image
+            img.src = article.image_url || 'default-news-image.jpg'; // Fallback image
             img.alt = article.title;
 
             const content = document.createElement('div');
