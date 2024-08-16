@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const url = 'https://google-api31.p.rapidapi.com/';
+    const baseUrl = 'https://real-time-news-data.p.rapidapi.com/search';
     const apiKey = '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5';
-    const apiHost = 'google-api31.p.rapidapi.com';
+    const apiHost = 'real-time-news-data.p.rapidapi.com';
 
     const statusMessageElement = document.getElementById('status-message');
 
@@ -10,22 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessageElement.style.color = color;
     };
 
-    const fetchNews = async (city = 'France') => {
+    const fetchNews = async (query = 'France') => {
         updateStatus('Connecting to API...', '#ffa500'); // Orange color for connecting
         showLoader(true);
         try {
+            const url = `${baseUrl}?query=${encodeURIComponent(query)}&limit=25&time_published=anytime&country=FR&lang=fr`;
+
             const options = {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'x-rapidapi-key': apiKey,
-                    'x-rapidapi-host': apiHost,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    text: city,
-                    region: 'wt-wt',
-                    max_results: 25
-                })
+                    'x-rapidapi-host': apiHost
+                }
             };
 
             const response = await fetch(url, options);
@@ -71,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const description = document.createElement('p');
             description.className = 'description';
-            description.textContent = article.description;
+            description.textContent = article.description || 'No description available';
 
             content.appendChild(title);
             content.appendChild(description);
@@ -96,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return city.trim().replace(/[^a-zA-Z\s]/g, '');
     };
 
-    // Initial load for all of France
+    // Initial load for default query (e.g., 'France')
     fetchNews();
 
     document.getElementById('search-button').addEventListener('click', () => {
