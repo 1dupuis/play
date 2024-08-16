@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>France News</title>
+    <link rel="stylesheet" href="news.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Latest News in France</h1>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search news...">
+            <select id="city-select">
+                <option value="France">All Cities</option>
+                <option value="Paris">Paris</option>
+                <option value="Marseille">Marseille</option>
+                <option value="Lyon">Lyon</option>
+                <option value="Toulouse">Toulouse</option>
+                <option value="Nice">Nice</option>
+                <option value="Nantes">Nantes</option>
+                <option value="Strasbourg">Strasbourg</option>
+                <option value="Bordeaux">Bordeaux</option>
+                <option value="Lille">Lille</option>
+            </select>
+            <button id="search-button">Search</button>
+        </div>
+        <div id="status-message" class="status-message">Ready to fetch news</div>
+    </div>
+    <div class="news-container" id="news-container">
+        <!-- News articles will be dynamically loaded here -->
+    </div>
+    <div id="loader" class="loader"></div>
+    <footer>
+        <p>News provided by Dupuis News Service</p>
+    </footer>
+    <script src="news.js"></script>
+</body>
+</html>
