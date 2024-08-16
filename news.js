@@ -1,30 +1,44 @@
 // news.js
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
     const loader = document.getElementById('loader');
     const newsContainer = document.getElementById('news-container');
     const citySelect = document.getElementById('city-select');
     
     async function fetchNews(city) {
-        const url = `https://real-time-news-data.p.rapidapi.com/search?query=${encodeURIComponent(city)}&limit=25&time_published=anytime&country=FR&lang=fr`;
+        const url = 'https://newsnow.p.rapidapi.com/newsv2';
         const options = {
-            method: 'GET',
+            method: 'POST',
             headers: {
-                'X-RapidAPI-Host': 'real-time-news-data.p.rapidapi.com',
-                'X-RapidAPI-Key': 'YOUR_RAPIDAPI_KEY' // Replace with your actual RapidAPI key
-            }
+                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                'x-rapidapi-host': 'newsnow.p.rapidapi.com',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                query: city, // The selected city or keyword for news
+                time_bounded: true,
+                from_date: '2024-01-01', // Adjust these dates as needed
+                to_date: '2024-12-31',
+                location: 'fr', // Use 'fr' for France
+                language: 'fr', // Set language to French
+                page: 1
+            })
         };
 
         console.log(`Fetching news for city: ${city}`);
         try {
             loader.style.display = 'block'; // Show loader
             const response = await fetch(url, options);
-            console.log('Response received:', response);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const data = await response.json();
             console.log('Data received:', data);
 
-            if (data.status === 'OK' && data.data.length > 0) {
-                displayNews(data.data);
+            if (data && data.articles && data.articles.length > 0) {
+                displayNews(data.articles);
             } else {
                 displayError('No news articles found.');
             }
@@ -43,10 +57,10 @@ document.addEventListener("DOMContentLoaded", function() {
             const articleElement = document.createElement('div');
             articleElement.classList.add('news-article');
             articleElement.innerHTML = `
-                <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
-                <p>${article.snippet}</p>
-                <img src="${article.photo_url}" alt="${article.title}">
-                <p><small>Published on: ${new Date(article.published_datetime_utc).toLocaleDateString('fr-FR')}</small></p>
+                <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
+                <p>${article.summary || 'No summary available.'}</p>
+                ${article.image_url ? `<img src="${article.image_url}" alt="${article.title}">` : ''}
+                <p><small>Published on: ${new Date(article.published_at).toLocaleDateString('fr-FR')}</small></p>
             `;
             newsContainer.appendChild(articleElement);
         });
@@ -59,11 +73,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Add event listener to city select dropdown
     citySelect.addEventListener('change', function() {
-        console.log(`City changed to: ${this.value}`);
-        fetchNews(this.value);
+        const selectedCity = this.value;
+        console.log(`City changed to: ${selectedCity}`);
+        fetchNews(selectedCity);
     });
 
     // Initial fetch with default city or placeholder
+    const defaultCity = 'Paris'; // Default city, can be changed as needed
     console.log('Initial news fetch');
-    fetchNews('Paris'); // Default city, can be changed as needed
+    fetchNews(defaultCity);
 });
