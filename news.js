@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 from_date: '2024-01-01', // Adjust these dates as needed
                 to_date: '2024-12-31',
                 location: 'fr', // Use 'fr' for France
-                language: 'fr', // Set language to French
+                language: 'en', // Set language to French
                 page: 1
             })
         };
