@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contactForm');
     const statusMessage = document.getElementById('statusMessage');
+    const submitButton = form.querySelector('button[type="submit"]');
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -30,24 +31,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function isValidEmail(email) {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(String(email).toLowerCase());
     }
 
     async function submitForm() {
-        const fullName = document.getElementById('fullName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const subject = document.getElementById('subject').value.trim();
-        const message = document.getElementById('message').value.trim();
+        const formData = {
+            fullName: document.getElementById('fullName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            subject: document.getElementById('subject').value.trim(),
+            message: document.getElementById('message').value.trim()
+        };
 
         showStatus('Sending message...', 'info');
+        submitButton.disabled = true; // Prevent multiple submissions
 
-        const url = 'https://mail-sender-api1.p.rapidapi.com/';
+        try {
+            // Try to send using the primary API
+            await sendEmailWithAPI('https://mail-sender-api1.p.rapidapi.com/', formData);
+            showStatus('Thank you for your message! We will get back to you soon.', 'success');
+            form.reset();
+        } catch (primaryError) {
+            console.error('Primary API Error:', primaryError);
+            showStatus('Primary service failed, trying secondary...', 'info');
+
+            try {
+                // Try to send using the secondary API
+                await sendEmailWithAPI('https://rapidmail.p.rapidapi.com/', formData);
+                showStatus('Thank you for your message! We will get back to you soon.', 'success');
+                form.reset();
+            } catch (secondaryError) {
+                console.error('Secondary API Error:', secondaryError);
+                showStatus('There was an error sending your message. Please try again later.', 'error');
+            }
+        } finally {
+            submitButton.disabled = false; // Re-enable the submit button
+        }
+    }
+
+    async function sendEmailWithAPI(url, { fullName, email, subject, message }) {
         const options = {
             method: 'POST',
             headers: {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
-                'x-rapidapi-host': 'mail-sender-api1.p.rapidapi.com',
+                'x-rapidapi-host': url.includes('mail-sender') ? 'mail-sender-api1.p.rapidapi.com' : 'rapidmail.p.rapidapi.com',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -60,21 +87,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
         };
 
-        try {
-            const response = await fetch(url, options);
-            const result = await response.text();
-            console.log(result);
-            
-            if (response.ok) {
-                showStatus('Thank you for your message! We will get back to you soon.', 'success');
-                form.reset();
-            } else {
-                showStatus('There was an error sending your message. Please try again later.', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showStatus('There was an error sending your message. Please try again later.', 'error');
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            throw new Error(`API responded with status ${response.status}: ${errorDetails}`);
         }
+
+        return response.text();
     }
 
     function showStatus(message, type) {
