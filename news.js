@@ -33,8 +33,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json(); // Changed to JSON parsing
             console.log('Data received:', data);
 
-            if (data && data.articles && data.articles.length > 0) {
-                displayNews(data.articles);
+            // Check if 'data' has the correct structure
+            if (data.news && data.news.length > 0) {
+                displayNews(data.news);
             } else {
                 displayError('No news articles found.');
             }
@@ -54,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
             articleElement.classList.add('news-article');
             articleElement.innerHTML = `
                 <h2><a href="${article.url}" target="_blank">${article.title}</a></h2>
-                <p>${article.summary || 'No summary available.'}</p>
-                ${article.image_url ? `<img src="${article.image_url}" alt="${article.title}">` : ''}
-                <p><small>Published on: ${new Date(article.published_at).toLocaleDateString('fr-FR')}</small></p>
+                <p>${article.body || 'No summary available.'}</p>
+                ${article.image ? `<img src="${article.image}" alt="${article.title}">` : ''}
+                <p><small>Published on: ${new Date(article.date).toLocaleDateString('fr-FR')}</small></p>
             `;
             newsContainer.appendChild(articleElement);
         });
