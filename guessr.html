@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devinez la Ville</title>
+    <link rel="stylesheet" href="guessr.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <h1>DupuisGuessr <i class="fas fa-map-marker-alt"></i></h1>
+        <a href="/homepage" class="home-button"><i class="fas fa-home"></i> Home</a>
+    </header>
+    <main>
+        <div id="game-container">
+            <div id="language-toggle">
+                <button id="fr-btn" class="active">Français</button>
+                <button id="en-btn">English</button>
+            </div>
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+            <div id="info-panel">
+                <h2 id="city-name"></h2>
+                <p id="city-info"></p>
+            </div>
+            <div id="clue-container">
+                <p id="clue"></p>
+            </div>
+            <div id="score-container">
+                <p>Score: <span id="score">0</span></p>
+            </div>
+            <div id="timer-container">
+                <p>Temps restant: <span id="timer">60</span>s</p>
+            </div>
+            <button id="new-game">Nouvelle Partie</button>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 DupuisGuessr</p>
+    </footer>
+    <div id="instructions-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Comment jouer</h2>
+            <p>1. Lisez l'indice fourni sur une ville française.</p>
+            <p>2. Explorez la carte et survolez les marqueurs pour voir les informations sur les villes.</p>
+            <p>3. Cliquez sur le marqueur de la ville que vous pensez être la bonne réponse.</p>
+            <p>4. Gagnez des points en devinant correctement avant la fin du temps imparti.</p>
+            <p>5. Jouez autant de fois que vous voulez pour améliorer votre score !</p>
+        </div>
+    </div>
+    <button id="instructions-btn"><i class="fas fa-question-circle"></i></button>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="guessr.js"></script>
+</body>
+</html>
