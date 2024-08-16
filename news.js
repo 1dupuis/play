@@ -28,8 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchNews(query) {
-        const url = 'https://newsnow.p.rapidapi.com/';
-        const options = {
+        const primaryUrl = 'https://newsnow.p.rapidapi.com/';
+        const secondaryUrl = 'https://seeking-alpha.p.rapidapi.com/news/v2/list';
+        
+        const primaryOptions = {
             method: 'POST',
             headers: {
                 'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
@@ -43,22 +45,48 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         };
 
+        const secondaryOptions = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': '967cd1f2a5mshb7398c461b5826ep1579f3jsnbb0fa76416d5',
+                'x-rapidapi-host': 'seeking-alpha.p.rapidapi.com'
+            }
+        };
+
         console.log(`Fetching news with query: ${query}`);
         loader.style.display = 'block';
         statusMessage.textContent = 'Fetching news...';
 
         try {
-            const data = await fetchWithRetry(url, options);
-            if (data.news && data.news.length > 0) {
-                displayNews(data.news);
-                statusMessage.textContent = 'News loaded successfully';
+            // Try primary API
+            const primaryData = await fetchWithRetry(primaryUrl, primaryOptions);
+            if (primaryData.news && primaryData.news.length > 0) {
+                displayNews(primaryData.news);
+                statusMessage.textContent = 'News loaded successfully from primary source';
+                return;
+            }
+
+            // If primary API fails or returns no results, try secondary API
+            statusMessage.textContent = 'Trying alternate news source...';
+            const secondaryData = await fetchWithRetry(`${secondaryUrl}?query=${encodeURIComponent(query + ' France')}`, secondaryOptions);
+            if (secondaryData.data && secondaryData.data.length > 0) {
+                const formattedNews = secondaryData.data.map(item => ({
+                    title: item.attributes.title,
+                    url: item.links.self,
+                    body: item.attributes.summary,
+                    date: item.attributes.publishOn,
+                    image: item.attributes.gettyImageUrl,
+                    source: item.attributes.gettyImageUrl
+                }));
+                displayNews(formattedNews);
+                statusMessage.textContent = 'News loaded successfully from secondary source';
             } else {
-                displayError('No news articles found.');
+                displayError('No news articles found from either source.');
                 statusMessage.textContent = 'No news found';
             }
         } catch (error) {
             console.error('Error fetching news:', error);
-            displayError('An error occurred while fetching the news.');
+            displayError('An error occurred while fetching the news from both sources.');
             statusMessage.textContent = 'Error fetching news';
         } finally {
             loader.style.display = 'none';
