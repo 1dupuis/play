@@ -29,9 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function fetchNews(query) {
         const city = citySelect.value;
-        const apiUrl = `https://newsdata.io/api/1/news?apikey=pub_5106560bd34659959ca3d7b9383ee80e06524&q=${encodeURIComponent(query)}&country=fr&language=en,fr`;
+        const searchTerm = searchInput.value.trim();
+        const apiUrl = `https://newsdata.io/api/1/news?apikey=pub_5106560bd34659959ca3d7b9383ee80e06524&category=education,environment,food,sports,tourism&q=${encodeURIComponent(searchTerm || query)}&country=fr&language=en`;
 
-        console.log(`Fetching news with query: ${query}`);
+        console.log(`Fetching news with query: ${searchTerm || query}`);
         loader.style.display = 'block';
         statusMessage.textContent = 'Fetching news...';
 
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (news && news.length > 0) {
                 displayNews(news);
-                statusMessage.textContent = `News loaded successfully for ${city}`;
+                statusMessage.textContent = `News loaded successfully for ${city || 'France'}`;
             } else {
                 displayError('No news articles found.');
                 statusMessage.textContent = 'No news found';
