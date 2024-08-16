@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function fetchNews(query) {
         const city = citySelect.value;
         const searchTerm = searchInput.value.trim();
-        const apiUrl = `https://newsdata.io/api/1/news?apikey=pub_5106560bd34659959ca3d7b9383ee80e06524&category=education,environment,food,sports,tourism&q=${encodeURIComponent(searchTerm || query)}&country=fr&language=en`;
+        const apiUrl = `https://newsdata.io/api/1/news?apikey=pub_5106560bd34659959ca3d7b9383ee80e06524&category=education,environment,food,sports,tourism&q=${encodeURIComponent(searchTerm || query)}&country=fr&language=en,fr`;
 
         console.log(`Fetching news with query: ${searchTerm || query}`);
         loader.style.display = 'block';
@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
             articleElement.innerHTML = `
                 <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
                 <p>${article.description || 'No summary available.'}</p>
-                ${article.image_url ? `<img src="${article.image_url}" alt="${article.title}">` : ''}
                 <p><small>Published on: ${new Date(article.pubDate).toLocaleDateString('fr-FR')}</small></p>
                 <p><small>Source: ${article.source_id || 'Unknown'}</small></p>
             `;
