@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({
                 text: query,
                 region: 'wt-wt', // 'wt-wt' for worldwide, adjust as needed
-                max_results: 25
+                max_results: 1
             })
         };
 
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Initial fetch with default query or placeholder
-    const defaultQuery = 'Top news'; // Default query
+    const defaultQuery = 'France'; // Default query
     console.log('Initial news fetch');
     fetchNews(defaultQuery);
 });
