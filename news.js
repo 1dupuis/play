@@ -15,10 +15,13 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
 
+        console.log(`Fetching news for city: ${city}`);
         try {
             loader.style.display = 'block'; // Show loader
             const response = await fetch(url, options);
+            console.log('Response received:', response);
             const data = await response.json();
+            console.log('Data received:', data);
 
             if (data.status === 'OK' && data.data.length > 0) {
                 displayNews(data.data);
@@ -34,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayNews(articles) {
+        console.log('Displaying news articles');
         newsContainer.innerHTML = ''; // Clear previous content
         articles.forEach(article => {
             const articleElement = document.createElement('div');
@@ -49,14 +53,17 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function displayError(message) {
+        console.error(message);
         newsContainer.innerHTML = `<p>${message}</p>`;
     }
 
     // Add event listener to city select dropdown
     citySelect.addEventListener('change', function() {
+        console.log(`City changed to: ${this.value}`);
         fetchNews(this.value);
     });
 
     // Initial fetch with default city or placeholder
+    console.log('Initial news fetch');
     fetchNews('Paris'); // Default city, can be changed as needed
 });
