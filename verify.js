@@ -1,4 +1,4 @@
-class TypingEffect {
+class TypingEffect {//a
     constructor(element, words, options = {}) {
         this.element = element;
         this.words = words;
