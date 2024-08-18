@@ -33,7 +33,7 @@ body {
     width: 400px;
 }
 
-.typing-container, .verification-container {
+.typing-container, .form-container {
     background-color: #ffffff;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
@@ -43,7 +43,7 @@ body {
     transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-.typing-container:hover, .verification-container:hover {
+.typing-container:hover, .form-container:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -65,19 +65,20 @@ body {
     font-weight: 600;
 }
 
-.verification-container h1 {
+.form-container h1 {
     font-size: 1.8rem;
     color: var(--text-color);
     margin-bottom: 1.5rem;
     font-weight: 600;
 }
 
-#verification-form {
+form {
     display: flex;
     flex-direction: column;
 }
 
-#password-input {
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
@@ -88,13 +89,14 @@ body {
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-#password-input:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
     border-color: var(--primary-color);
     outline: none;
     box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-#verify-button {
+button {
     background-color: var(--primary-color);
     color: #fff;
     border: none;
@@ -105,16 +107,16 @@ body {
     transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
-#verify-button:hover {
+button:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
 }
 
-#verify-button:active {
+button:active {
     transform: translateY(0);
 }
 
-#verify-button:disabled {
+button:disabled {
     background-color: var(--secondary-color);
     cursor: not-allowed;
 }
@@ -126,6 +128,8 @@ body {
     border-radius: var(--border-radius);
     display: none;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .message.error {
@@ -162,20 +166,37 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+#auth-switch {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+#switch-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#switch-link:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 480px) {
     .container {
         width: 95%;
     }
 
-    .verification-container {
+    .form-container {
         padding: 1.5rem;
     }
 
-    .verification-container h1 {
+    .form-container h1 {
         font-size: 1.5rem;
     }
 
-    #password-input, #verify-button {
+    input[type="text"],
+    input[type="password"],
+    button {
         font-size: 0.9rem;
         padding: 0.6rem;
     }
