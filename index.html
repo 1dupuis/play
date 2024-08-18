@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Access - dupuis.lol</title>
+    <title>Access System - dupuis.lol</title>
     <link rel="stylesheet" href="verify.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
@@ -12,17 +12,26 @@
         <div class="typing-container">
             <h2>Make French.. <span id="typing-text"></span></h2>
         </div>
-        <div class="verification-container">
+        <div id="verification-container" class="form-container">
             <h1>Access Verification</h1>
             <form id="verification-form">
-                <input type="password" id="password-input" placeholder="Enter the password" required autocomplete="current-password">
+                <input type="password" id="verification-input" placeholder="Enter the password" required>
                 <button type="submit" id="verify-button">Verify</button>
             </form>
-            <p id="message" class="message"></p>
-            <div id="loading-indicator" class="loading">
-                <div class="spinner"></div>
-                <span>Verifying...</span>
-            </div>
+        </div>
+        <div id="auth-container" class="form-container" style="display: none;">
+            <h1 id="auth-title">Sign Up</h1>
+            <form id="auth-form">
+                <input type="text" id="username-input" placeholder="Username" required>
+                <input type="password" id="password-input" placeholder="Password" required>
+                <button type="submit" id="auth-button">Sign Up</button>
+            </form>
+            <p id="auth-switch">Already have an account? <a href="#" id="switch-link">Log In</a></p>
+        </div>
+        <p id="message" class="message"></p>
+        <div id="loading-indicator" class="loading">
+            <div class="spinner"></div>
+            <span>Processing...</span>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
