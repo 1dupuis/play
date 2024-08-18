@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify User</title>
+    <title>Verify Access - dupuis.lol</title>
     <link rel="stylesheet" href="verify.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="verification-container">
-        <h1>User Verification</h1>
-        <input type="text" id="username-input" placeholder="Enter your username">
-        <button id="verify-button">Verify</button>
-        <p id="error-message" style="display: none; color: red;"></p>
-        <div id="loading-indicator" style="display: none;">Loading...</div>
+    <div class="container">
+        <div class="typing-container">
+            <h2>Make French.. <span id="typing-text"></span></h2>
+        </div>
+        <div class="verification-container">
+            <h1>Access Verification</h1>
+            <form id="verification-form">
+                <input type="password" id="password-input" placeholder="Enter the password" required autocomplete="current-password">
+                <button type="submit" id="verify-button">Verify</button>
+            </form>
+            <p id="message" class="message"></p>
+            <div id="loading-indicator" class="loading">
+                <div class="spinner"></div>
+                <span>Verifying...</span>
+            </div>
+        </div>
     </div>
-    <script src="verification.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+    <script src="verify.js"></script>
 </body>
 </html>
