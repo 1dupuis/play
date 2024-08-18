@@ -1,7 +1,21 @@
-/* General Styles */
+:root {
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --primary-light: #e6f2ff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,94 +25,158 @@ body {
     box-sizing: border-box;
 }
 
-/* Container Styles */
-.verification-container {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     max-width: 90%;
     width: 400px;
-    text-align: center;
+}
+
+.typing-container, .verification-container {
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+    width: 100%;
     box-sizing: border-box;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-/* Heading Styles */
+.typing-container:hover, .verification-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.typing-container {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.typing-container h2 {
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin: 0;
+    font-weight: 400;
+}
+
+#typing-text {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 .verification-container h1 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
 }
 
-/* Input Styles */
-#username-input {
+#verification-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#password-input {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 2px solid var(--secondary-color);
+    border-radius: var(--border-radius);
     margin-bottom: 1rem;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
+    transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
-#username-input:focus {
-    border-color: #007bff;
+#password-input:focus {
+    border-color: var(--primary-color);
     outline: none;
+    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-/* Button Styles */
 #verify-button {
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 #verify-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 #verify-button:active {
-    background-color: #004494;
+    transform: translateY(0);
 }
 
-/* Error Message Styles */
-#error-message {
-    color: #d9534f;
+#verify-button:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+}
+
+.message {
     font-size: 0.875rem;
     margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
     display: none;
+    text-align: center;
 }
 
-/* Responsive Design */
-@media (max-width: 600px) {
+.message.error {
+    color: var(--error-color);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.message.success {
+    color: var(--success-color);
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.spinner {
+    border: 3px solid var(--secondary-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+    }
+
     .verification-container {
         padding: 1.5rem;
     }
 
-    #verify-button {
-        width: 100%;
-        padding: 0.75rem;
-    }
-}
-
-@media (max-width: 400px) {
-    .verification-container {
-        padding: 1rem;
-    }
-
     .verification-container h1 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
     }
 
-    #username-input, #verify-button {
-        font-size: 0.875rem;
-        padding: 0.5rem;
+    #password-input, #verify-button {
+        font-size: 0.9rem;
+        padding: 0.6rem;
     }
 }
