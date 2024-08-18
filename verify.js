@@ -14,7 +14,7 @@ class TypingEffect {
     }
 
     type() {
-        if (!this.element) return; // Bug fix: Check if element exists
+        if (!this.element) return;
 
         const currentWord = this.words[this.wordIndex];
         const shouldDelete = this.isDeleting && this.charIndex > 0;
@@ -54,7 +54,7 @@ class TypingEffect {
     }
 
     start() {
-        if (this.words.length > 0) { // Bug fix: Check if words array is not empty
+        if (this.words.length > 0) {
             this.type();
         }
     }
@@ -81,6 +81,7 @@ class AccessSystem {
 
         this.addEventListeners();
         this.checkSession();
+        this.initializeParticles();
     }
 
     addEventListeners() {
@@ -202,8 +203,8 @@ class AccessSystem {
 
     setSession(username) {
         const expirationTime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-        this.setCookie('accessGranted', 'true', expirationTime);
-        this.setCookie('username', username, expirationTime);
+        document.cookie = `accessGranted=true;expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
+        document.cookie = `username=${username};expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
     }
 
     checkSession() {
@@ -220,12 +221,8 @@ class AccessSystem {
     }
 
     clearSession() {
-        this.deleteCookie('accessGranted');
-        this.deleteCookie('username');
-    }
-
-    setCookie(name, value, expires) {
-        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Strict;Secure`;
+        document.cookie = 'accessGranted=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure';
+        document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure';
     }
 
     getCookie(name) {
@@ -235,10 +232,6 @@ class AccessSystem {
             if (cookieName === name) return cookieValue;
         }
         return null;
-    }
-
-    deleteCookie(name) {
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure`;
     }
 
     showMessage(text, type) {
@@ -267,6 +260,73 @@ class AccessSystem {
         if (this.loadingIndicator) this.loadingIndicator.style.display = 'none';
         if (this.verificationForm) this.verificationForm.querySelector('button').disabled = false;
         if (this.authForm) this.authForm.querySelector('button').disabled = false;
+    }
+
+    initializeParticles() {
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#007bff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: false },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: "#007bff", opacity: 0.4, width: 1 },
+                    move: {
+                        enable: true,
+                        speed: 6,
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: { enable: false, rotateX: 600, rotateY: 1200 }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        bubble: {
+                            distance: 400,
+                            size: 40,
+                            duration: 2,
+                            opacity: 8,
+                            speed: 3
+                        },
+                        repulse: {
+                            distance: 200,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        } else {
+            console.warn('particlesJS is not defined. Make sure to include the particles.js library.');
+        }
     }
 }
 
