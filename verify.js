@@ -202,7 +202,7 @@ class AccessSystem {
     }
 
     setSession(username) {
-        const expirationTime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        const expirationTime = new Date(new Date().getTime() + 48 * 60 * 60 * 1000);
         document.cookie = `accessGranted=true;expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
         document.cookie = `username=${username};expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
     }
