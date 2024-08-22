@@ -1,0 +1,148 @@
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+#container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-sizing: border-box; /* Ensure padding and border are included in the width and height */
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+#form-selection {
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.question {
+    margin-bottom: 15px;
+}
+
+.question-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Ensure padding and border are included in the width and height */
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:disabled {
+    background-color: #6c757d;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    color: #d9534f;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+#form-status {
+    color: #28a745;
+    font-size: 1rem;
+    margin-top: 20px;
+}
+
+.status-message {
+    color: #dc3545;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #container {
+        padding: 15px;
+    }
+
+    #form-selection {
+        font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+        font-size: 0.9rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+    }
+
+    #error-message,
+    #form-status {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #container {
+        padding: 10px;
+    }
+
+    #form-selection {
+        font-size: 0.8rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+        font-size: 0.8rem;
+    }
+
+    button {
+        font-size: 0.8rem;
+    }
+
+    #error-message,
+    #form-status {
+        font-size: 0.8rem;
+    }
+}
