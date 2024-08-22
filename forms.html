@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dupuis Forms</title>
+    <link rel="stylesheet" href="forms.css">
+</head>
+<body>
+    <div id="container">
+        <h1>Dupuis Forms</h1>
+        <p>Select a form to fill out:</p>
+        <select id="form-selection">
+            <option value="">Select a Form</option>
+        </select>
+        <form id="form" action="https://formspree.io/f/xwpernlq" method="POST">
+            <input type="hidden" id="formTitle" name="formTitle" value="">
+            <div id="form-builder"></div>
+            <button type="submit">Submit</button>
+            <p id="form-status"></p>
+        </form>
+        <p id="error-message" class="error-message">
+        This service allows up to 50 submissions per month for everyone.
+        </p>
+    </div>
+    <script src="forms.js"></script>
+</body>
+</html>
