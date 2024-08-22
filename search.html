@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Page</title>
+    <link rel="stylesheet" href="search.css">
+</head>
+<body>
+    <header>
+        <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-icon.png" alt="Dupuis Logo" class="logo">
+        <h1>Search for Resources</h1>
+        <p>Find what you need from our extensive collection.</p>
+    </header>
+    
+    <main>
+        <div class="category-container">
+            <div class="category" data-category="games">
+                <h2>Games</h2>
+                <a href="snake-game" class="button">Snake Game</a>
+                <a href="trivia" class="button">Trivia</a>
+                <a href="motle" class="button">Motle</a>
+                <a href="guessr" class="button">DupuisGuessr</a>
+            </div>
+            
+            <div class="category" data-category="resources">
+                <h2>Other Resources</h2>
+                <a href="videos" class="button">Videos</a>
+                <a href="events" class="button">Events</a>
+                <a href="translate" class="button">Translate</a>
+                <a href="rewards" class="button">Rewards</a>
+                <a href="news" class="button">News</a>
+                <a href="forms" class="button">Forms</a>
+            </div>
+
+            <div class="category" data-category="sub-resources">
+                <h2>Sub-Resources</h2>
+                <a href="#" class="button" onclick="window.location.href='http://info.dupuis.lol'; return false;">Updates</a>
+                <a href="contact" class="button">Contact</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Dupuis. All rights reserved.</p>
+    </footer>
+
+    <div id="scroll-top" class="scroll-top" onclick="scrollToTop()">↑</div>
+
+    <script src="search.js"></script>
+</body>
+</html>
