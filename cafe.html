@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dupuis.lol - Café</title>
+    <link rel="stylesheet" href="cafe.css">
+</head>
+<body>
+    <header>
+        <h1>dupuis.lol Café</h1>
+        <p>Enjoy French desserts and foods!</p>
+        <nav>
+            <button onclick="showSection('menu')">View Menu</button>
+            <button onclick="showSection('info')">More Info</button>
+        </nav>
+    </header>
+    <main>
+        <section id="menu" class="section-active">
+            <h2>Our Menu</h2>
+            <div id="menu-items-container">
+                <!-- Menu items will be dynamically added here -->
+            </div>
+        </section>
+        <section id="info" class="section-hidden">
+            <h2>More Information</h2>
+            <p>Learn more here.</p>
+        </section>
+    </main>
+    <aside id="order-sidebar">
+        <h2>Your Order</h2>
+        <div id="order-items-container">
+            <!-- Ordered items will appear here -->
+        </div>
+        <p class="total-price">Total Price: $<span id="total-price">0.00</span></p>
+        <button id="place-order-btn" disabled>Place Order</button>
+        <button id="clear-order-btn">Clear Order</button>
+    </aside>
+    <div id="falling-leaves"></div>
+    <footer>
+        <p>&copy; 2024 Dupuis.lol - All rights reserved.</p>
+    </footer>
+    <script src="cafe.js"></script>
+</body>
+</html>
