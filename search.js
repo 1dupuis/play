@@ -50,14 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const allContent = {
             'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr'],
             'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms'],
-            'Development': ['Homepage v2 (WIP)', 'Contact', 'Updates']
+            'Development': ['Old Homepage', 'Contact', 'Updates']
         };
 
         let results = '';
+        const highlightStyle = 'background-color: yellow; font-weight: bold;';
+
         for (const category in allContent) {
             allContent[category].forEach(item => {
-                if (item.toLowerCase().includes(query)) {
-                    results += `<li><a href="#" onclick="loadCategoryContent('${category}')">${item}</a></li>`;
+                const itemLower = item.toLowerCase();
+                if (itemLower.includes(query)) {
+                    const highlightedItem = item.replace(new RegExp(query, 'gi'), match => `<span style="${highlightStyle}">${match}</span>`);
+                    results += `<li><a href="#" onclick="loadCategoryContent('${category}')">${highlightedItem}</a></li>`;
                 }
             });
         }
