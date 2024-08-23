@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateSearchResults(query) {
         const allContent = {
             'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr'],
-            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms'],
+            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms', 'Café'],
             'Development': ['Old Homepage', 'Contact', 'Updates']
         };
 
@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="rewards" class="button">Rewards</a>
                         <a href="news" class="button">News</a>
                         <a href="forms" class="button">Forms</a>
+                        <a href="cafe" class="button">Café</a>
                     </div>
                 `;
                 break;
