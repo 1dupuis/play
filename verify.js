@@ -170,7 +170,7 @@ class AccessSystem {
             this.setSession(username);
             this.showMessage('Login successful! Redirecting...', 'success');
             setTimeout(() => {
-                window.location.href = '/homepage';
+                window.location.href = '/search';
             }, 1500);
         } else {
             this.showMessage('Invalid credentials. Please try again.', 'error');
@@ -186,7 +186,7 @@ class AccessSystem {
             this.setSession(username);
             this.showMessage('Account created successfully! Redirecting...', 'success');
             setTimeout(() => {
-                window.location.href = '/homepage';
+                window.location.href = '/search';
             }, 1500);
         }
     }
@@ -213,7 +213,7 @@ class AccessSystem {
 
         if (accessGranted === 'true' && username) {
             if (this.users[username]) {
-                window.location.href = '/homepage';
+                window.location.href = '/search';
             } else {
                 this.clearSession();
             }
