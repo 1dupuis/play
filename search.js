@@ -1,34 +1,155 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Example feature: Category Filter
-    const categoryButtons = document.querySelectorAll(".category-button");
-    const categories = document.querySelectorAll(".category");
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const contentSection = document.querySelector('.content');
+    const menuToggle = document.querySelector('.menu-toggle');
 
-    categoryButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            const filter = button.dataset.filter;
-            categories.forEach(category => {
-                if (filter === "all" || category.dataset.category === filter) {
-                    category.style.display = "block";
-                } else {
-                    category.style.display = "none";
-                }
-            });
-        });
+    const categories = [
+        { name: 'Games', icon: 'fa-gamepad' },
+        { name: 'Resources', icon: 'fa-book' },
+        { name: 'Development', icon: 'fa-link' }
+    ];
+
+    // Generate category buttons dynamically
+    const categoryContainer = document.createElement('div');
+    categoryContainer.className = 'categories';
+    categories.forEach(category => {
+        const categoryButton = document.createElement('div');
+        categoryButton.className = 'category';
+        categoryButton.innerHTML = `
+            <i class="fas ${category.icon}"></i>
+            <h2>${category.name}</h2>
+        `;
+        categoryButton.addEventListener('click', () => loadCategoryContent(category.name));
+        categoryContainer.appendChild(categoryButton);
     });
+    document.querySelector('main').insertBefore(categoryContainer, contentSection);
 
-    // Example feature: Smooth Scroll to Top
-    const scrollTopButton = document.getElementById("scroll-top");
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 200) {
-            scrollTopButton.style.display = "block";
-        } else {
-            scrollTopButton.style.display = "none";
+    // Search functionality
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
         }
     });
 
-    scrollTopButton.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    function performSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        if (query) {
+            const results = `
+                <h2>Search Results for "${query}"</h2>
+                <ul class="search-results">
+                    ${generateSearchResults(query)}
+                </ul>
+            `;
+            updateContent(results);
+        }
+    }
+
+    function generateSearchResults(query) {
+        const allContent = {
+            'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr'],
+            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms'],
+            'Development': ['Homepage v2 (WIP)', 'Contact', 'Updates']
+        };
+
+        let results = '';
+        for (const category in allContent) {
+            allContent[category].forEach(item => {
+                if (item.toLowerCase().includes(query)) {
+                    results += `<li><a href="#" onclick="loadCategoryContent('${category}')">${item}</a></li>`;
+                }
+            });
+        }
+        return results || '<li>No results found</li>';
+    }
+
+    function loadCategoryContent(category) {
+        let content = '';
+        switch (category) {
+            case 'Games':
+                content = `
+                    <div class="sub-container">
+                        <h2>Games</h2>
+                        <a href="snake-game" class="button">Snake Game</a>
+                        <a href="trivia" class="button">Trivia</a>
+                        <a href="motle" class="button">Motle</a>
+                        <a href="guessr" class="button">DupuisGuessr</a>
+                    </div>
+                `;
+                break;
+            case 'Resources':
+                content = `
+                    <div class="sub-container">
+                        <h2>Resources</h2>
+                        <a href="videos" class="button">Videos</a>
+                        <a href="events" class="button">Events</a>
+                        <a href="translate" class="button">Translate</a>
+                        <a href="rewards" class="button">Rewards</a>
+                        <a href="news" class="button">News</a>
+                        <a href="forms" class="button">Forms</a>
+                    </div>
+                `;
+                break;
+            case 'Development':
+                content = `
+                    <div class="sub-container">
+                        <h2>Development</h2>
+                        <a href="homepage" class="button">Old Homepage</a>
+                        <a href="contact" class="button">Contact</a>
+                    </div>
+                `;
+                break;
+        }
+        updateContent(content);
+    }
+
+    function updateContent(content) {
+        contentSection.style.opacity = 0;
+        setTimeout(() => {
+            contentSection.innerHTML = content;
+            contentSection.style.opacity = 1;
+        }, 300);
+    }
+
+    // Mobile menu toggle
+    menuToggle.addEventListener('click', () => {
+        document.body.classList.toggle('menu-open');
     });
 
-    // Add event listeners for additional features if needed
+    // Initialize with default content (e.g., Games)
+    loadCategoryContent('Games');
+
+    // Add hover effect to category icons
+    document.querySelectorAll('.category').forEach(category => {
+        category.addEventListener('mouseover', () => {
+            category.querySelector('i').classList.add('fa-spin');
+        });
+        category.addEventListener('mouseout', () => {
+            category.querySelector('i').classList.remove('fa-spin');
+        });
+    });
+
+    // Easter egg: Konami code
+    let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+    document.addEventListener('keydown', (e) => {
+        if (e.key === konamiCode[konamiIndex]) {
+            konamiIndex++;
+            if (konamiIndex === konamiCode.length) {
+                activateEasterEgg();
+                konamiIndex = 0;
+            }
+        } else {
+            konamiIndex = 0;
+        }
+    });
+
+    function activateEasterEgg() {
+        document.body.style.fontFamily = 'Comic Sans MS, cursive';
+        alert('Congratulations! You\'ve unlocked the secret Comic Sans mode!');
+        setTimeout(() => {
+            document.body.style.fontFamily = '';
+        }, 5000);
+    }
 });
