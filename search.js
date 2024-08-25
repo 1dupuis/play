@@ -100,12 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 content = `
                     <div class="sub-container">
                         <h2>Resources</h2>
-                        <a href="videos" class="button">Videos</a>
                         <a href="events" class="button">Events</a>
                         <a href="translate" class="button">Translate</a>
                         <a href="rewards" class="button">Rewards</a>
                         <a href="news" class="button">News</a>
-                        <a href="forms" class="button">Forms</a>
                         <a href="cafe" class="button">Café</a>
                         <a href="cuisine-ai" class="button">Cuisine AI</a>
                     </div>
@@ -116,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="sub-container">
                         <h2>Development</h2>
                         <a href="homepage" class="button">Old Homepage</a>
+                        <a href="videos" class="button">Videos</a>
+                        <a href="forms" class="button">Forms</a>
                         <a href="contact" class="button">Contact</a>
                     </div>
                 `;
