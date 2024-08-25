@@ -30,7 +30,27 @@ const foodOptions = [
     { name: "Gougères", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 7 } },
     { name: "Pâté en Croûte", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 8, presentation: 8, vegetarian: false, traditional: 9 } },
     { name: "Flamiche", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 6, vegetarian: true, traditional: 8 } },
-    { name: "Andouillette", attributes: { sweet: 1, spicy: 3, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } }
+    { name: "Andouillette", attributes: { sweet: 1, spicy: 3, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } },
+    { name: "Rillettes", attributes: { sweet: 1, spicy: 2, seafood: 0, rich: 8, presentation: 4, vegetarian: false, traditional: 8 } },
+    { name: "Salade Lyonnaise", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 5, presentation: 7, vegetarian: false, traditional: 7 } },
+    { name: "Quenelles", attributes: { sweet: 1, spicy: 2, seafood: 3, rich: 7, presentation: 6, vegetarian: false, traditional: 8 } },
+    { name: "Rognons à la Moutarde", attributes: { sweet: 1, spicy: 4, seafood: 0, rich: 7, presentation: 6, vegetarian: false, traditional: 9 } },
+    { name: "Poulet Basquaise", attributes: { sweet: 3, spicy: 5, seafood: 0, rich: 6, presentation: 7, vegetarian: false, traditional: 8 } },
+    { name: "Brandade de Morue", attributes: { sweet: 1, spicy: 2, seafood: 8, rich: 6, presentation: 5, vegetarian: false, traditional: 9 } },
+    { name: "Foie Gras", attributes: { sweet: 3, spicy: 1, seafood: 0, rich: 10, presentation: 9, vegetarian: false, traditional: 10 } },
+    { name: "Haricots Verts Amandine", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 4, presentation: 7, vegetarian: true, traditional: 7 } },
+    { name: "Poule au Pot", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } },
+    { name: "Salade de Chevre Chaud", attributes: { sweet: 3, spicy: 1, seafood: 0, rich: 6, presentation: 8, vegetarian: true, traditional: 7 } },
+    { name: "Boulette d’Avesnes", attributes: { sweet: 1, spicy: 7, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 8 } },
+    { name: "Tarte Flambee", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 6, presentation: 7, vegetarian: false, traditional: 8 } },
+    { name: "Cervelle de Canut", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 5, presentation: 6, vegetarian: true, traditional: 8 } },
+    { name: "Tarte à l’Oignon", attributes: { sweet: 3, spicy: 1, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 8 } },
+    { name: "Farci Poitevin", attributes: { sweet: 2, spicy: 3, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } },
+    { name: "Garbure", attributes: { sweet: 2, spicy: 3, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } },
+    { name: "Tartare de Thon", attributes: { sweet: 1, spicy: 3, seafood: 9, rich: 6, presentation: 9, vegetarian: false, traditional: 7 } },
+    { name: "Terrine de Lapin", attributes: { sweet: 1, spicy: 2, seafood: 0, rich: 7, presentation: 6, vegetarian: false, traditional: 8 } },
+    { name: "Œufs en Meurette", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 9 } },
+    { name: "Daube de Boeuf", attributes: { sweet: 1, spicy: 3, seafood: 0, rich: 8, presentation: 6, vegetarian: false, traditional: 9 } }
 ];
 
 const dessertOptions = [
@@ -63,7 +83,28 @@ const dessertOptions = [
     { name: "Crème Caramel", attributes: { sweet: 8, rich: 7, texture: ["Creamy"], presentation: 7, traditional: 8 } },
     { name: "Pithiviers", attributes: { sweet: 7, rich: 8, texture: ["Crunchy"], presentation: 8, traditional: 9 } },
     { name: "Riz au Lait", attributes: { sweet: 6, rich: 5, texture: ["Creamy"], presentation: 5, traditional: 9 } },
-    { name: "Palmier", attributes: { sweet: 7, rich: 6, texture: ["Crunchy"], presentation: 6, traditional: 8 } }
+    { name: "Palmier", attributes: { sweet: 7, rich: 6, texture: ["Crunchy"], presentation: 6, traditional: 8 } },
+    { name: "Tarte aux Poires", attributes: { sweet: 8, rich: 6, texture: ["Soft"], presentation: 8, traditional: 8 } },
+    { name: "Chocolat Liégeois", attributes: { sweet: 9, rich: 8, texture: ["Creamy"], presentation: 7, traditional: 8 } },
+    { name: "Charlotte aux Fraises", attributes: { sweet: 8, rich: 7, texture: ["Soft"], presentation: 9, traditional: 8 } },
+    { name: "Parisian Flan", attributes: { sweet: 7, rich: 6, texture: ["Creamy"], presentation: 7, traditional: 8 } },
+    { name: "Tarte Tropézienne", attributes: { sweet: 8, rich: 7, texture: ["Soft"], presentation: 8, traditional: 8 } },
+    { name: "Puits d’Amour", attributes: { sweet: 8, rich: 7, texture: ["Creamy"], presentation: 9, traditional: 9 } },
+    { name: "Merveilleux", attributes: { sweet: 9, rich: 8, texture: ["Crunchy", "Creamy"], presentation: 9, traditional: 8 } },
+    { name: "Gâteau St-Honoré", attributes: { sweet: 8, rich: 8, texture: ["Creamy", "Crunchy"], presentation: 9, traditional: 9 } },
+    { name: "Pommes au Four", attributes: { sweet: 7, rich: 5, texture: ["Soft"], presentation: 7, traditional: 8 } },
+    { name: "Pain d’Épices", attributes: { sweet: 7, rich: 5, texture: ["Soft"], presentation: 6, traditional: 9 } },
+    { name: "Pavlova", attributes: { sweet: 8, rich: 6, texture: ["Crunchy", "Soft"], presentation: 9, traditional: 7 } },
+    { name: "Café Liégeois", attributes: { sweet: 7, rich: 7, texture: ["Creamy"], presentation: 8, traditional: 8 } },
+    { name: "Fraisier", attributes: { sweet: 8, rich: 6, texture: ["Soft"], presentation: 9, traditional: 8 } },
+    { name: "Opera Cake", attributes: { sweet: 8, rich: 8, texture: ["Creamy", "Soft"], presentation: 9, traditional: 9 } },
+    { name: "Sablé Breton", attributes: { sweet: 7, rich: 6, texture: ["Crunchy"], presentation: 7, traditional: 8 } },
+    { name: "Florentines", attributes: { sweet: 8, rich: 7, texture: ["Crunchy"], presentation: 8, traditional: 8 } },
+    { name: "Moelleux au Chocolat", attributes: { sweet: 9, rich: 8, texture: ["Soft"], presentation: 8, traditional: 8 } },
+    { name: "Diplomate", attributes: { sweet: 8, rich: 7, texture: ["Creamy", "Soft"], presentation: 8, traditional: 8 } },
+    { name: "Croquembouche", attributes: { sweet: 8, rich: 7, texture: ["Crunchy", "Creamy"], presentation: 10, traditional: 9 } },
+    { name: "Dacquoise", attributes: { sweet: 7, rich: 6, texture: ["Crunchy"], presentation: 8, traditional: 8 } },
+    { name: "Tarte au Cassis", attributes: { sweet: 7, rich: 6, texture: ["Soft"], presentation: 8, traditional: 8 } }
 ];
 
 const questions = [
@@ -81,7 +122,7 @@ const questions = [
     { text: "How much do you like nut flavors?", type: "range", min: 0, max: 10, step: 1 },
     { text: "Are you open to trying unusual combinations?", type: "checkbox" },
     { text: "How do you feel about traditional versus modern desserts?", type: "range", min: 0, max: 10, step: 1, labels: ["Traditional", "Modern"] },
-    { text: "How important is the origin of ingredients to you?", type: "range", min: 0, max: 10, step: 1 }
+    { text: "How important is the origin of ingredients to you?", type: "range", min: 0, max: 10, step: 1 },
 ];
 
 let currentQuestionIndex = 0;
