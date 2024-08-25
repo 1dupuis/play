@@ -22,25 +22,30 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         categoryButton.addEventListener('click', () => loadCategoryContent(category.name));
 
-        // Add hover effect to the category icons
-        categoryButton.addEventListener('mouseover', () => {
-            categoryButton.querySelector('i').classList.add('fa-spin');
-        });
-        categoryButton.addEventListener('mouseout', () => {
-            categoryButton.querySelector('i').classList.remove('fa-spin');
-        });
+        // Ensure the icon exists before adding hover effects
+        const icon = categoryButton.querySelector('i');
+        if (icon) {
+            categoryButton.addEventListener('mouseover', () => {
+                icon.classList.add('fa-spin');
+            });
+            categoryButton.addEventListener('mouseout', () => {
+                icon.classList.remove('fa-spin');
+            });
+        }
 
         categoryContainer.appendChild(categoryButton);
     });
     document.querySelector('main').insertBefore(categoryContainer, contentSection);
 
     // Search functionality
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
+    if (searchButton && searchInput) {
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
 
     function performSearch() {
         const query = searchInput.value.toLowerCase().trim();
@@ -121,11 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateContent(content) {
-        contentSection.style.opacity = 0;
-        setTimeout(() => {
-            contentSection.innerHTML = content;
-            contentSection.style.opacity = 1;
-        }, 300);
+        if (contentSection) {
+            contentSection.style.opacity = 0;
+            setTimeout(() => {
+                contentSection.innerHTML = content;
+                contentSection.style.opacity = 1;
+            }, 300);
+        }
     }
 
     // Mobile menu toggle
