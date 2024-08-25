@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createLeaf() {
         const leaf = document.createElement('div');
         leaf.classList.add('leaf');
-        leaf.style.backgroundImage = 'url(images/leaf.png)';
+        leaf.style.backgroundImage = 'url(https://pics.clipartpng.com/Green_Leaf_PNG_Clip_Art-1969.png)';
         leaf.style.left = Math.random() * 100 + 'vw';
         leaf.style.animationDuration = Math.random() * 5 + 5 + 's';
         leaf.style.animationDelay = Math.random() * 5 + 's';
