@@ -1,4 +1,4 @@
-const blockedUrls = ['/page1', '/page2', '/admin', '/private'];
+const blockedUrls = ['/cafe'];
 const blockedPage = '/blocked-page';
 
 function isUrlBlocked(url) {
