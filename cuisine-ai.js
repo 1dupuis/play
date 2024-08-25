@@ -7,16 +7,30 @@ const foodOptions = [
     { name: "Boeuf Bourguignon", attributes: { sweet: 1, spicy: 2, seafood: 0, rich: 8, presentation: 6, vegetarian: false, traditional: 9 } },
     { name: "Quiche Lorraine", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 6, presentation: 7, vegetarian: false, traditional: 8 } },
     { name: "Cassoulet", attributes: { sweet: 1, spicy: 4, seafood: 0, rich: 9, presentation: 5, vegetarian: false, traditional: 10 } },
-    { name: "Crepes Suzette", attributes: { sweet: 9, spicy: 1, seafood: 0, rich: 5, presentation: 9, vegetarian: true, traditional: 8 } },
-    { name: "Tarte Tatin", attributes: { sweet: 10, spicy: 1, seafood: 0, rich: 7, presentation: 8, vegetarian: true, traditional: 7 } },
     { name: "Duck Confit", attributes: { sweet: 1, spicy: 3, seafood: 0, rich: 9, presentation: 7, vegetarian: false, traditional: 9 } },
     { name: "Escargot", attributes: { sweet: 1, spicy: 2, seafood: 2, rich: 6, presentation: 8, vegetarian: false, traditional: 10 } },
     { name: "Salmon en Papillote", attributes: { sweet: 3, spicy: 3, seafood: 8, rich: 5, presentation: 9, vegetarian: false, traditional: 6 } },
-    { name: "Madeleine", attributes: { sweet: 8, spicy: 1, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 8 } },
-    { name: "Macarons", attributes: { sweet: 9, spicy: 1, seafood: 0, rich: 5, presentation: 10, vegetarian: true, traditional: 7 } },
     { name: "Beef Tartare", attributes: { sweet: 1, spicy: 4, seafood: 0, rich: 7, presentation: 7, vegetarian: false, traditional: 8 } },
     { name: "Chateaubriand", attributes: { sweet: 1, spicy: 2, seafood: 0, rich: 9, presentation: 8, vegetarian: false, traditional: 9 } },
-    { name: "Clafoutis", attributes: { sweet: 8, spicy: 1, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 8 } }
+    { name: "Soupe à l'Oignon", attributes: { sweet: 4, spicy: 1, seafood: 0, rich: 5, presentation: 6, vegetarian: false, traditional: 9 } },
+    { name: "Salade Niçoise", attributes: { sweet: 2, spicy: 1, seafood: 5, rich: 4, presentation: 8, vegetarian: false, traditional: 8 } },
+    { name: "Steak Frites", attributes: { sweet: 1, spicy: 2, seafood: 0, rich: 7, presentation: 6, vegetarian: false, traditional: 7 } },
+    { name: "Pot-au-Feu", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 5, vegetarian: false, traditional: 10 } },
+    { name: "Moules Marinières", attributes: { sweet: 2, spicy: 2, seafood: 9, rich: 5, presentation: 7, vegetarian: false, traditional: 8 } },
+    { name: "Blanquette de Veau", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 7, presentation: 6, vegetarian: false, traditional: 9 } },
+    { name: "Sole Meunière", attributes: { sweet: 1, spicy: 1, seafood: 9, rich: 6, presentation: 8, vegetarian: false, traditional: 8 } },
+    { name: "Gratin Dauphinois", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 8, presentation: 7, vegetarian: true, traditional: 8 } },
+    { name: "Confit de Canard", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 9, presentation: 7, vegetarian: false, traditional: 9 } },
+    { name: "Piperade", attributes: { sweet: 4, spicy: 5, seafood: 0, rich: 4, presentation: 7, vegetarian: true, traditional: 8 } },
+    { name: "Hachis Parmentier", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 7, presentation: 6, vegetarian: false, traditional: 8 } },
+    { name: "Croque Monsieur", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 5, vegetarian: false, traditional: 7 } },
+    { name: "Tartiflette", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 8, presentation: 6, vegetarian: false, traditional: 8 } },
+    { name: "Pissaladière", attributes: { sweet: 3, spicy: 2, seafood: 2, rich: 5, presentation: 7, vegetarian: false, traditional: 8 } },
+    { name: "Jambon-Beurre", attributes: { sweet: 1, spicy: 1, seafood: 0, rich: 5, presentation: 4, vegetarian: false, traditional: 7 } },
+    { name: "Gougères", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 7, vegetarian: true, traditional: 7 } },
+    { name: "Pâté en Croûte", attributes: { sweet: 2, spicy: 2, seafood: 0, rich: 8, presentation: 8, vegetarian: false, traditional: 9 } },
+    { name: "Flamiche", attributes: { sweet: 2, spicy: 1, seafood: 0, rich: 6, presentation: 6, vegetarian: true, traditional: 8 } },
+    { name: "Andouillette", attributes: { sweet: 1, spicy: 3, seafood: 0, rich: 7, presentation: 5, vegetarian: false, traditional: 9 } }
 ];
 
 const dessertOptions = [
@@ -28,14 +42,28 @@ const dessertOptions = [
     { name: "Profiteroles", attributes: { sweet: 8, rich: 7, texture: ["Creamy"], presentation: 8, traditional: 8 } },
     { name: "Mille-Feuille", attributes: { sweet: 8, rich: 7, texture: ["Crunchy", "Creamy"], presentation: 9, traditional: 9 } },
     { name: "Choux à la Crème", attributes: { sweet: 8, rich: 7, texture: ["Creamy"], presentation: 8, traditional: 8 } },
-    { name: "Tiramisu", attributes: { sweet: 7, rich: 8, texture: ["Creamy"], presentation: 8, traditional: 6 } },
     { name: "Gâteau au Chocolat", attributes: { sweet: 9, rich: 9, texture: ["Soft"], presentation: 7, traditional: 7 } },
     { name: "Paris-Brest", attributes: { sweet: 8, rich: 8, texture: ["Creamy"], presentation: 9, traditional: 9 } },
     { name: "Gâteau Basque", attributes: { sweet: 7, rich: 6, texture: ["Soft"], presentation: 7, traditional: 10 } },
     { name: "Flognarde", attributes: { sweet: 7, rich: 5, texture: ["Soft"], presentation: 7, traditional: 9 } },
     { name: "Galette des Rois", attributes: { sweet: 8, rich: 8, texture: ["Soft"], presentation: 8, traditional: 10 } },
     { name: "Baba au Rhum", attributes: { sweet: 8, rich: 8, texture: ["Soft"], presentation: 7, traditional: 9 } },
-    { name: "Soufflé au Chocolat", attributes: { sweet: 9, rich: 9, texture: ["Soft"], presentation: 8, traditional: 8 } }
+    { name: "Soufflé au Chocolat", attributes: { sweet: 9, rich: 9, texture: ["Soft"], presentation: 8, traditional: 8 } },
+    { name: "Crêpes Suzette", attributes: { sweet: 9, rich: 6, texture: ["Soft"], presentation: 9, traditional: 8 } },
+    { name: "Îles Flottantes", attributes: { sweet: 8, rich: 5, texture: ["Creamy", "Soft"], presentation: 8, traditional: 9 } },
+    { name: "Tarte au Citron", attributes: { sweet: 7, rich: 6, texture: ["Creamy"], presentation: 8, traditional: 8 } },
+    { name: "Clafoutis", attributes: { sweet: 7, rich: 5, texture: ["Soft"], presentation: 6, traditional: 9 } },
+    { name: "Canelés", attributes: { sweet: 8, rich: 7, texture: ["Crunchy", "Soft"], presentation: 7, traditional: 9 } },
+    { name: "Pain Perdu", attributes: { sweet: 8, rich: 7, texture: ["Soft"], presentation: 6, traditional: 8 } },
+    { name: "Kouign-Amann", attributes: { sweet: 9, rich: 9, texture: ["Crunchy", "Soft"], presentation: 7, traditional: 10 } },
+    { name: "Religieuse", attributes: { sweet: 8, rich: 8, texture: ["Creamy"], presentation: 9, traditional: 8 } },
+    { name: "Far Breton", attributes: { sweet: 7, rich: 5, texture: ["Soft"], presentation: 6, traditional: 10 } },
+    { name: "Financier", attributes: { sweet: 7, rich: 7, texture: ["Soft"], presentation: 7, traditional: 8 } },
+    { name: "Tarte aux Fraises", attributes: { sweet: 8, rich: 6, texture: ["Soft"], presentation: 9, traditional: 7 } },
+    { name: "Crème Caramel", attributes: { sweet: 8, rich: 7, texture: ["Creamy"], presentation: 7, traditional: 8 } },
+    { name: "Pithiviers", attributes: { sweet: 7, rich: 8, texture: ["Crunchy"], presentation: 8, traditional: 9 } },
+    { name: "Riz au Lait", attributes: { sweet: 6, rich: 5, texture: ["Creamy"], presentation: 5, traditional: 9 } },
+    { name: "Palmier", attributes: { sweet: 7, rich: 6, texture: ["Crunchy"], presentation: 6, traditional: 8 } }
 ];
 
 const questions = [
@@ -224,83 +252,121 @@ function showResults() {
         return;
     }
 
-    resultContainer.innerHTML = "<h2>Your Personalized Recommendations</h2>";
-
-    resultContainer.innerHTML += "<h3>Food Recommendations:</h3>";
-    foodMatches.forEach((match, index) => {
-        resultContainer.innerHTML += `
-            <div>
-                <strong>${index + 1}. ${match.name}</strong>
-                <br>Match Score: ${match.score.toFixed(2)}%
-                <br>Confidence: ${match.confidence.toFixed(2)}%
-                ${generateReasoning(match, "food")}
+    resultContainer.innerHTML = `
+        <h2>Your Personalized Recommendations</h2>
+        <div class="recommendations-container">
+            <div class="recommendation-section">
+                <h3>Food Recommendations</h3>
+                ${generateRecommendationCards(foodMatches, "food")}
             </div>
-        `;
-    });
-
-    resultContainer.innerHTML += "<h3>Dessert Recommendations:</h3>";
-    dessertMatches.forEach((match, index) => {
-        resultContainer.innerHTML += `
-            <div>
-                <strong>${index + 1}. ${match.name}</strong>
-                <br>Match Score: ${match.score.toFixed(2)}%
-                <br>Confidence: ${match.confidence.toFixed(2)}%
-                ${generateReasoning(match, "dessert")}
+            <div class="recommendation-section">
+                <h3>Dessert Recommendations</h3>
+                ${generateRecommendationCards(dessertMatches, "dessert")}
             </div>
-        `;
-    });
-
-    const overallAccuracy = (foodMatches[0].score + dessertMatches[0].score) / 2;
-    const overallConfidence = (foodMatches[0].confidence + dessertMatches[0].confidence) / 2;
-    resultContainer.innerHTML += `
-        <div>
-            <h3>Overall Results:</h3>
-            <strong>Match Accuracy:</strong> ${overallAccuracy.toFixed(2)}%
-            <br><strong>Recommendation Confidence:</strong> ${overallConfidence.toFixed(2)}%
         </div>
+        ${generateOverallResults(foodMatches, dessertMatches)}
     `;
 
     resultContainer.classList.remove("hidden");
-    const questionsContainer = document.getElementById("questions-container");
-    const inputContainer = document.getElementById("input-container");
-    const nextBtn = document.getElementById("next-btn");
-    const valueDisplay = document.getElementById("value-display");
-
-    if (questionsContainer) questionsContainer.classList.add("hidden");
-    if (inputContainer) inputContainer.classList.add("hidden");
-    if (nextBtn) nextBtn.classList.add("hidden");
-    if (valueDisplay) valueDisplay.classList.add("hidden");
-
-    const restartBtn = document.getElementById("restart-btn");
-    if (restartBtn) restartBtn.classList.remove("hidden");
+    hideQuestionElements();
+    showRestartButton();
 }
 
-function generateReasoning(match, type) {
-    if (!match) return "";
+function generateRecommendationCards(matches, type) {
+    return matches.map((match, index) => `
+        <div class="recommendation-card">
+            <h4>${index + 1}. ${match.name}</h4>
+            <div class="match-details">
+                <div class="match-score">
+                    <span>Match Score:</span>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${match.score}%;"></div>
+                    </div>
+                    <span>${match.score.toFixed(2)}%</span>
+                </div>
+                <div class="confidence">
+                    <span>Confidence:</span>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${match.confidence}%;"></div>
+                    </div>
+                    <span>${match.confidence.toFixed(2)}%</span>
+                </div>
+            </div>
+            <div class="reasoning">
+                <h5>Why we recommended this:</h5>
+                <ul>
+                    ${generateReasoningList(match, type)}
+                </ul>
+            </div>
+        </div>
+    `).join('');
+}
 
-    let reasoning = `<h4>Why we recommended ${match.name} (${type}):</h4><ul>`;
+function generateReasoningList(match, type) {
     const relevantPreferences = Object.entries(userPreferences).filter(([key, value]) => 
         match.attributes.hasOwnProperty(key.toLowerCase().split(" ").pop()) || 
         (key.includes("texture") && match.attributes.texture)
     );
 
-    relevantPreferences.forEach(([key, value]) => {
+    return relevantPreferences.map(([key, value]) => {
         const attributeKey = key.toLowerCase().split(" ").pop();
         const attributeValue = match.attributes[attributeKey];
         
         if (attributeValue !== undefined) {
             if (typeof attributeValue === 'boolean') {
-                reasoning += `<li>${key}: ${value ? "Yes" : "No"}</li>`;
+                return `<li>${key}: ${value ? "Yes" : "No"}</li>`;
             } else if (Array.isArray(attributeValue)) {
-                reasoning += `<li>${key}: ${attributeValue.join(", ")}</li>`;
+                return `<li>${key}: ${attributeValue.join(", ")}</li>`;
             } else {
-                reasoning += `<li>${key}: ${attributeValue}/10</li>`;
+                return `<li>${key}: ${attributeValue}/10</li>`;
             }
         }
-    });
+        return '';
+    }).join('');
+}
 
-    reasoning += "</ul>";
-    return reasoning;
+function generateOverallResults(foodMatches, dessertMatches) {
+    const overallAccuracy = (foodMatches[0].score + dessertMatches[0].score) / 2;
+    const overallConfidence = (foodMatches[0].confidence + dessertMatches[0].confidence) / 2;
+    
+    return `
+        <div class="overall-results">
+            <h3>Overall Results</h3>
+            <div class="overall-score">
+                <span>Match Accuracy:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${overallAccuracy}%;"></div>
+                </div>
+                <span>${overallAccuracy.toFixed(2)}%</span>
+            </div>
+            <div class="overall-confidence">
+                <span>Recommendation Confidence:</span>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${overallConfidence}%;"></div>
+                </div>
+                <span>${overallConfidence.toFixed(2)}%</span>
+            </div>
+        </div>
+    `;
+}
+
+function hideQuestionElements() {
+    const elementsToHide = [
+        "questions-container",
+        "input-container",
+        "next-btn",
+        "value-display"
+    ];
+    
+    elementsToHide.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.classList.add("hidden");
+    });
+}
+
+function showRestartButton() {
+    const restartBtn = document.getElementById("restart-btn");
+    if (restartBtn) restartBtn.classList.remove("hidden");
 }
 
 function restart() {
