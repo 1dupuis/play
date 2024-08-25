@@ -121,9 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add some sample menu items
-    addMenuItem(1, 'Croissant', 9999.99, 'images/croissant.jpg', 'In Stock', 10);
-    addMenuItem(2, 'Macaron', 7000.00, 'images/macaron.jpg', 'In Stock', 5);
-    addMenuItem(3, 'Éclair', 0.01, 'images/eclair.jpg', 'Out of Stock', 0);
+    addMenuItem(1, 'Croissant', 9999.99, 'https://fakeimg.pl/500x500/afb1d1/ffffff?text=product&font=lobster', 'In Stock', 10);
+    addMenuItem(2, 'Macaron', 7000.00, 'https://fakeimg.pl/500x500/afb1d1/ffffff?text=product&font=lobster', 'In Stock', 5);
+    addMenuItem(3, 'Éclair', 0.01, 'https://fakeimg.pl/500x500/afb1d1/ffffff?text=product&font=lobster', 'Out of Stock', 0);
 
     // Falling leaves animation
     function createLeaf() {
