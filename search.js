@@ -21,6 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2>${category.name}</h2>
         `;
         categoryButton.addEventListener('click', () => loadCategoryContent(category.name));
+
+        // Add hover effect to the category icons
+        categoryButton.addEventListener('mouseover', () => {
+            categoryButton.querySelector('i').classList.add('fa-spin');
+        });
+        categoryButton.addEventListener('mouseout', () => {
+            categoryButton.querySelector('i').classList.remove('fa-spin');
+        });
+
         categoryContainer.appendChild(categoryButton);
     });
     document.querySelector('main').insertBefore(categoryContainer, contentSection);
@@ -105,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 break;
+            default:
+                content = '<h2>Content not found</h2>';
         }
         updateContent(content);
     }
@@ -118,25 +129,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Mobile menu toggle
-    menuToggle.addEventListener('click', () => {
-        document.body.classList.toggle('menu-open');
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            document.body.classList.toggle('menu-open');
+        });
+    }
 
     // Initialize with default content (e.g., Games)
     loadCategoryContent('Games');
 
-    // Add hover effect to category icons
-    document.querySelectorAll('.category').forEach(category => {
-        category.addEventListener('mouseover', () => {
-            category.querySelector('i').classList.add('fa-spin');
-        });
-        category.addEventListener('mouseout', () => {
-            category.querySelector('i').classList.remove('fa-spin');
-        });
-    });
-
     // Easter egg: Konami code
-    let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let konamiIndex = 0;
     document.addEventListener('keydown', (e) => {
         if (e.key === konamiCode[konamiIndex]) {
