@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateSearchResults(query) {
         const allContent = {
             'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr'],
-            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms', 'Café'],
-            'Development': ['Old Homepage', 'Contact', 'Cuisine AI']
+            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms', 'Café', 'Cuisine AI'],
+            'Development': ['Old Homepage', 'Contact']
         };
 
         let results = '';
@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="news" class="button">News</a>
                         <a href="forms" class="button">Forms</a>
                         <a href="cafe" class="button">Café</a>
+                        <a href="cuisine-ai" class="button">Cuisine AI</a>
                     </div>
                 `;
                 break;
@@ -116,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h2>Development</h2>
                         <a href="homepage" class="button">Old Homepage</a>
                         <a href="contact" class="button">Contact</a>
-                        <a href="cuisine-ai" class="button">Cuisine AI</a>
                     </div>
                 `;
                 break;
