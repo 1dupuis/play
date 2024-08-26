@@ -62,9 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function generateSearchResults(query) {
         const allContent = {
-            'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr'],
-            'Resources': ['Videos', 'Events', 'Translate', 'Rewards', 'News', 'Forms', 'Café', 'Cuisine AI'],
-            'Development': ['Old Homepage', 'Contact']
+            'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr', 'Ascend'],
+            'Resources': ['Events', 'Translate', 'Rewards', 'News', 'Café', 'Cuisine AI'],
+            'Development': ['Old Homepage', 'Contact', 'Videos', 'Forms']
         };
 
         let results = '';
@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="trivia" class="button">Trivia</a>
                         <a href="motle" class="button">Motle</a>
                         <a href="guessr" class="button">DupuisGuessr</a>
+                        <a href="ascend" class="button">Ascend</a>
                     </div>
                 `;
                 break;
