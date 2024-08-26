@@ -8,7 +8,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .container {
@@ -31,23 +31,43 @@ p {
     margin-bottom: 20px;
 }
 
-.download-button {
+.button {
     display: inline-block;
-    background-color: #4CAF50;
-    color: #fff;
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 5px;
     font-size: 16px;
     transition: background-color 0.3s ease;
+    margin: 10px;
+}
+
+.download-button {
+    background-color: #4CAF50;
+    color: #fff;
 }
 
 .download-button:hover {
     background-color: #45a049;
 }
 
+.webstore-button {
+    background-color: #1a73e8;
+    color: #fff;
+}
+
+.webstore-button:hover {
+    background-color: #1565c0;
+}
+
 #instructions {
     margin-bottom: 20px;
     font-size: 14px;
     color: #666;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
 }
