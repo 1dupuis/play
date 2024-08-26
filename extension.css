@@ -1,7 +1,6 @@
-/* styles.css */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
     color: #333;
     margin: 0;
     padding: 0;
@@ -12,62 +11,102 @@ body {
 }
 
 .container {
-    text-align: center;
-    padding: 20px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 600px;
-    margin: 20px;
+    width: 90%;
+    padding: 2rem;
+    margin: 2rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 h1 {
-    font-size: 24px;
-    color: #333;
+    font-size: 2.5rem;
+    color: #1a73e8;
+    margin-bottom: 0.5rem;
 }
 
-p {
-    font-size: 16px;
-    margin-bottom: 20px;
+.tagline {
+    font-size: 1.2rem;
+    color: #5f6368;
+}
+
+.features {
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #202124;
+    margin-bottom: 1rem;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+li::before {
+    content: '✓';
+    color: #34a853;
+    position: absolute;
+    left: 0;
+}
+
+.cta {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .button {
     display: inline-block;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin: 10px;
-}
-
-.download-button {
-    background-color: #4CAF50;
-    color: #fff;
-}
-
-.download-button:hover {
-    background-color: #45a049;
-}
-
-.webstore-button {
     background-color: #1a73e8;
     color: #fff;
+    padding: 0.75rem 2rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
-.webstore-button:hover {
+.button:hover {
     background-color: #1565c0;
 }
 
-#instructions {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #666;
+.compatibility {
+    font-size: 0.9rem;
+    color: #5f6368;
+    margin-top: 1rem;
 }
 
-.button-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #5f6368;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
 }
