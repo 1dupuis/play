@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const allContent = {
             'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr', 'Ascend'],
             'Resources': ['Events', 'Translate', 'Rewards', 'News', 'Café', 'Cuisine AI'],
-            'Development': ['Old Homepage', 'Contact', 'Videos', 'Forms']
+            'Development': ['Old Homepage', 'Extension', 'Contact', 'Videos', 'Forms']
         };
 
         let results = '';
@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <a href="videos" class="button">Videos</a>
                         <a href="forms" class="button">Forms</a>
                         <a href="contact" class="button">Contact</a>
+                        <a href="extension" class="button">Extension</a>
                     </div>
                 `;
                 break;
