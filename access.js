@@ -1,4 +1,4 @@
-const blockedUrls = ['/contact'];
+const blockedUrls = ['/contact','/extension'];
 const blockedPage = '/blocked-page';
 
 function isUrlBlocked(url) {
