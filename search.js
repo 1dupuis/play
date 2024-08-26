@@ -115,10 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="sub-container">
                         <h2>Development</h2>
                         <a href="homepage" class="button">Old Homepage</a>
+                        <a href="extension" class="button">Extension v0.3</a>
                         <a href="videos" class="button">Videos</a>
                         <a href="forms" class="button">Forms</a>
                         <a href="contact" class="button">Contact</a>
-                        <a href="extension" class="button">Extension</a>
                     </div>
                 `;
                 break;
