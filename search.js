@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateSearchResults(query) {
         const allContent = {
             'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr', 'Ascend'],
-            'Resources': ['Events', 'Translate', 'Rewards', 'News', 'Café', 'Cuisine AI'],
-            'Development': ['Old Homepage', 'Extension', 'Contact', 'Videos', 'Forms']
+            'Resources': ['Extension', 'Cuisine AI', 'Events', 'Café', 'Rewards', 'News', 'Translate'],
+            'Development': ['Old Homepage', 'Contact', 'Videos', 'Forms']
         };
 
         let results = '';
@@ -101,12 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 content = `
                     <div class="sub-container">
                         <h2>Resources</h2>
+                        <a href="extension" class="button">Extension v0.5</a>
+                        <a href="cuisine-ai" class="button">Cuisine AI</a>
                         <a href="events" class="button">Events</a>
-                        <a href="translate" class="button">Translate</a>
+                        <a href="cafe" class="button">Café</a>
                         <a href="rewards" class="button">Rewards</a>
                         <a href="news" class="button">News</a>
-                        <a href="cafe" class="button">Café</a>
-                        <a href="cuisine-ai" class="button">Cuisine AI</a>
+                        <a href="translate" class="button">Translate</a>
                     </div>
                 `;
                 break;
@@ -115,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="sub-container">
                         <h2>Development</h2>
                         <a href="homepage" class="button">Old Homepage</a>
-                        <a href="extension" class="button">Extension v0.4</a>
                         <a href="videos" class="button">Videos</a>
                         <a href="forms" class="button">Forms</a>
                         <a href="contact" class="button">Contact</a>
