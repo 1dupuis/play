@@ -1,138 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>French Quiz - dupuis.lol</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1, h2 {
-            color: #2c3e50;
-            text-align: center;
-        }
-        .quiz-container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .question {
-            background-color: #ecf0f1;
-            border-radius: 4px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .question:hover {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .question p {
-            margin-top: 0;
-            font-size: 18px;
-        }
-        .answer-btn {
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-        .answer-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        .answer {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #27ae60;
-            display: none;
-            font-size: 16px;
-        }
-        .error {
-            background-color: #e74c3c;
-            color: #fff;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 16px;
-        }
-        #quiz-info {
-            text-align: center;
-            margin-bottom: 20px;
-            font-style: italic;
-            color: #7f8c8d;
-        }
-    </style>
-</head>
-<body>
-    <h1>French Quiz</h1>
-    <div id="quiz-info"></div>
-    <div id="quiz-container" class="quiz-container">
-        <p>Loading quiz...</p>
+import React, { useEffect, useState } from 'react';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+const QuizDisplay = () => {
+  const [quizData, setQuizData] = useState(null);
+  const [error, setError] = useState(null);
+  const [revealedAnswers, setRevealedAnswers] = useState({});
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const quizParam = urlParams.get('quiz');
+    if (quizParam) {
+      try {
+        const parsedQuizData = JSON.parse(decodeURIComponent(quizParam));
+        setQuizData(parsedQuizData);
+      } catch (error) {
+        console.error('Error parsing quiz data:', error);
+        setError('Unable to load quiz data. Please try again.');
+      }
+    } else {
+      setError('No quiz data found. Please generate a quiz from a French Wikipedia page.');
+    }
+  }, []);
+
+  const toggleAnswer = (id) => {
+    setRevealedAnswers(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!quizData) {
+    return <div className="container mx-auto p-4">Loading quiz data...</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">{quizData.title}</h1>
+      <ul className="space-y-6">
+        {quizData.questions.map((question) => (
+          <li key={question.id} className="bg-gray-100 p-6 rounded-lg shadow-md">
+            <p className="mb-4 text-lg">{question.question}</p>
+            <button 
+              onClick={() => toggleAnswer(question.id)}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+              {revealedAnswers[question.id] ? 'Hide Answer' : 'Show Answer'}
+            </button>
+            {revealedAnswers[question.id] && (
+              <p className="mt-4 font-semibold text-green-600">Answer: {question.answer}</p>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
+  );
+};
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizContainer = document.getElementById('quiz-container');
-            const quizInfo = document.getElementById('quiz-info');
-            const urlParams = new URLSearchParams(window.location.search);
-            const quizParam = urlParams.get('quiz');
-
-            if (quizParam) {
-                try {
-                    const quizData = JSON.parse(decodeURIComponent(quizParam));
-                    displayQuiz(quizData);
-                } catch (error) {
-                    console.error('Error parsing quiz data:', error);
-                    displayError('Unable to load quiz data. Please try again.');
-                }
-            } else {
-                displayError('No quiz data found. Please generate a quiz from a French Wikipedia page.');
-            }
-
-            function displayQuiz(data) {
-                quizInfo.innerHTML = `Quiz generated from: <strong>${data.title}</strong>`;
-                quizContainer.innerHTML = `
-                    <h2>Fill in the Blanks</h2>
-                    ${data.questions.map((q, index) => `
-                        <div class="question">
-                            <p>${index + 1}. ${q.question}</p>
-                            <button class="answer-btn" onclick="toggleAnswer(${q.id})">Show Answer</button>
-                            <p class="answer" id="answer-${q.id}">Answer: ${q.answer}</p>
-                        </div>
-                    `).join('')}
-                `;
-            }
-
-            function displayError(message) {
-                quizContainer.innerHTML = `<p class="error">${message}</p>`;
-            }
-        });
-
-        function toggleAnswer(id) {
-            const answerElement = document.getElementById(`answer-${id}`);
-            const button = answerElement.previousElementSibling;
-            if (answerElement.style.display === 'none' || answerElement.style.display === '') {
-                answerElement.style.display = 'block';
-                button.textContent = 'Hide Answer';
-                button.style.backgroundColor = '#e74c3c';
-            } else {
-                answerElement.style.display = 'none';
-                button.textContent = 'Show Answer';
-                button.style.backgroundColor = '#3498db';
-            }
-        }
-    </script>
-</body>
-</html>
+export default QuizDisplay;
