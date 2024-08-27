@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>We're Sorry to See You Go - dupuis.lol Extension</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #008CBA;
+            margin-bottom: 1rem;
+        }
+        p {
+            margin-bottom: 1rem;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #008CBA;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .cta-button:hover {
+            background-color: #007B9A;
+        }
+        .feedback-form {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .feedback-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .feedback-form button {
+            background-color: #008CBA;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .feedback-form button:hover {
+            background-color: #007B9A;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>We're Sorry to See You Go</h1>
+        <p>We're sad to see you uninstall the dupuis.lol extension. Your feedback is valuable to us and can help us improve.</p>
+        <p>If you've encountered any issues or have suggestions, please let us know.</p>
+        <a href="https://dupuis.lol" class="cta-button">Visit dupuis.lol</a>
+        
+        <div class="feedback-form">
+            <h2>Share Your Feedback</h2>
+            <form id="uninstall-feedback" action="https://dupuis.lol/submit-feedback" method="POST">
+                <textarea name="feedback" rows="4" placeholder="Please tell us why you uninstalled the extension..."></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('uninstall-feedback').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Here you would typically send the feedback to your server
+            alert('Thank you for your feedback!');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
