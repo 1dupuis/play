@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Généré - dupuis.lol</title>
+    <title>French Quiz - dupuis.lol</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 800px;
@@ -14,7 +14,7 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        h1 {
+        h1, h2 {
             color: #2c3e50;
             text-align: center;
         }
@@ -22,16 +22,21 @@
             background-color: #fff;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .question {
             background-color: #ecf0f1;
             border-radius: 4px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .question p {
             margin-top: 0;
+            font-size: 18px;
         }
         .answer-btn {
             background-color: #3498db;
@@ -40,35 +45,47 @@
             padding: 10px 15px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            font-size: 16px;
         }
         .answer-btn:hover {
             background-color: #2980b9;
+            transform: translateY(-2px);
         }
         .answer {
             margin-top: 10px;
             font-weight: bold;
             color: #27ae60;
             display: none;
+            font-size: 16px;
         }
         .error {
             background-color: #e74c3c;
             color: #fff;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             text-align: center;
+            font-size: 16px;
+        }
+        #quiz-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
-    <h1>Quiz Généré</h1>
+    <h1>French Quiz</h1>
+    <div id="quiz-info"></div>
     <div id="quiz-container" class="quiz-container">
-        <p>Chargement du quiz...</p>
+        <p>Loading quiz...</p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const quizContainer = document.getElementById('quiz-container');
+            const quizInfo = document.getElementById('quiz-info');
             const urlParams = new URLSearchParams(window.location.search);
             const quizParam = urlParams.get('quiz');
 
@@ -78,20 +95,21 @@
                     displayQuiz(quizData);
                 } catch (error) {
                     console.error('Error parsing quiz data:', error);
-                    displayError('Impossible de charger les données du quiz. Veuillez réessayer.');
+                    displayError('Unable to load quiz data. Please try again.');
                 }
             } else {
-                displayError('Aucune donnée de quiz trouvée. Veuillez générer un quiz à partir d\'une page Wikipédia française.');
+                displayError('No quiz data found. Please generate a quiz from a French Wikipedia page.');
             }
 
             function displayQuiz(data) {
+                quizInfo.innerHTML = `Quiz generated from: <strong>${data.title}</strong>`;
                 quizContainer.innerHTML = `
-                    <h2>${data.title}</h2>
+                    <h2>Fill in the Blanks</h2>
                     ${data.questions.map((q, index) => `
                         <div class="question">
                             <p>${index + 1}. ${q.question}</p>
-                            <button class="answer-btn" onclick="toggleAnswer(${q.id})">Afficher la réponse</button>
-                            <p class="answer" id="answer-${q.id}">Réponse: ${q.answer}</p>
+                            <button class="answer-btn" onclick="toggleAnswer(${q.id})">Show Answer</button>
+                            <p class="answer" id="answer-${q.id}">Answer: ${q.answer}</p>
                         </div>
                     `).join('')}
                 `;
@@ -107,10 +125,12 @@
             const button = answerElement.previousElementSibling;
             if (answerElement.style.display === 'none' || answerElement.style.display === '') {
                 answerElement.style.display = 'block';
-                button.textContent = 'Cacher la réponse';
+                button.textContent = 'Hide Answer';
+                button.style.backgroundColor = '#e74c3c';
             } else {
                 answerElement.style.display = 'none';
-                button.textContent = 'Afficher la réponse';
+                button.textContent = 'Show Answer';
+                button.style.backgroundColor = '#3498db';
             }
         }
     </script>
