@@ -44,28 +44,6 @@
         .cta-button:hover {
             background-color: #007B9A;
         }
-        .feedback-form {
-            margin-top: 2rem;
-            text-align: left;
-        }
-        .feedback-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .feedback-form button {
-            background-color: #008CBA;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .feedback-form button:hover {
-            background-color: #007B9A;
-        }
     </style>
 </head>
 <body>
@@ -74,23 +52,6 @@
         <p>We're sad to see you uninstall the dupuis.lol extension. Your feedback is valuable to us and can help us improve.</p>
         <p>If you've encountered any issues or have suggestions, please let us know.</p>
         <a href="https://dupuis.lol" class="cta-button">Visit dupuis.lol</a>
-        
-        <div class="feedback-form">
-            <h2>Share Your Feedback</h2>
-            <form id="uninstall-feedback" action="https://dupuis.lol/submit-feedback" method="POST">
-                <textarea name="feedback" rows="4" placeholder="Please tell us why you uninstalled the extension..."></textarea>
-                <button type="submit">Submit Feedback</button>
-            </form>
-        </div>
     </div>
-    
-    <script>
-        document.getElementById('uninstall-feedback').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Here you would typically send the feedback to your server
-            alert('Thank you for your feedback!');
-            this.reset();
-        });
-    </script>
 </body>
 </html>
