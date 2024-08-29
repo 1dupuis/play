@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 content = `
                     <div class="sub-container">
                         <h2>Resources</h2>
-                        <a href="extension" class="button">Extension v0.5</a>
+                        <a href="extension" class="button">Extension</a>
                         <a href="cuisine-ai" class="button">Cuisine AI</a>
                         <a href="events" class="button">Events</a>
                         <a href="cafe" class="button">Café</a>
