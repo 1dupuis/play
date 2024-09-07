@@ -3,81 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shared Note - dupuis.lol</title>
-    <link rel="stylesheet" href="notes.css">
+    <title>Shared Note</title>
+    <style>
+        /* Basic Reset */
+        body, h1, p, button {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        /* Header Styling */
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        /* Main Section Styling */
+        main {
+            margin: 20px 0;
+        }
+
+        /* Note Content Styling */
+        #noteContent {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Note Status Styling */
+        #noteStatus {
+            margin-top: 10px;
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 20px;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="toolbar">
-            <button id="boldBtn"><b>B</b></button>
-            <button id="italicBtn"><i>I</i></button>
-            <button id="underlineBtn"><u>U</u></button>
-            <button id="listBtn">•</button>
-            <input type="color" id="colorPicker">
-            <select id="fontSelect">
-                <option value="Arial">Arial</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-            </select>
-            <button id="undoBtn">Undo</button>
-            <button id="redoBtn">Redo</button>
-            <button id="darkModeToggle">🌙</button>
-        </div>
-        <div id="noteContent" contenteditable="true">
-            <!-- Note content will be injected here -->
-        </div>
-        <div class="status-bar">
-            <span id="wordCount">Words: 0</span>
-            <span id="charCount">Characters: 0</span>
-            <span id="lastSaved">Last saved: Never</span>
-        </div>
-    </div>
-    <script src="notes.js"></script>
+    <header>
+        <h1>Shared Note</h1>
+    </header>
+    <main>
+        <section id="noteContentContainer">
+            <div id="noteContent" class="note-content"></div>
+        </section>
+        <section id="noteStatus">
+            <p id="wordCount">Words: 0</p>
+            <p id="charCount">Characters: 0</p>
+            <p id="lastSaved">Last saved: Never</p>
+        </section>
+    </main>
+    <footer>
+        <button id="backBtn">Back to Notes</button>
+    </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const noteContent = document.getElementById('noteContent');
-            const wordCount = document.getElementById('wordCount');
-            const charCount = document.getElementById('charCount');
-            const lastSaved = document.getElementById('lastSaved');
-            const noteId = new URLSearchParams(window.location.search).get('id');
-            
+        // Extract note ID from URL
+        function getNoteIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // Initialize note content and metadata
+        function initializeNote() {
+            const noteId = getNoteIdFromUrl();
             if (!noteId) {
-                alert('No note ID provided');
+                alert('No note ID found in URL.');
                 return;
             }
 
-            // Function to fetch note by ID and display content
-            function loadNoteContent() {
-                // Assuming notes.js includes a function to fetch note content
-                fetchNoteById(noteId).then(note => {
-                    if (note) {
-                        noteContent.innerHTML = note.content;
-                        updateWordAndCharCount();
-                        updateLastSaved(note.lastModified);
-                    } else {
-                        alert('Note not found');
-                    }
-                });
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            const note = notes.find(n => n.id === noteId);
+
+            if (!note) {
+                alert('Note not found.');
+                return;
             }
 
-            function updateWordAndCharCount() {
-                const text = noteContent.innerText;
-                const words = text.split(/\s+/).filter(word => word.length > 0).length;
-                const chars = text.length;
-                wordCount.textContent = `Words: ${words}`;
-                charCount.textContent = `Characters: ${chars}`;
-            }
+            // Display note content
+            const noteContent = document.getElementById('noteContent');
+            noteContent.innerHTML = note.content;
 
-            function updateLastSaved(date) {
-                lastSaved.textContent = `Last saved: ${new Date(date).toLocaleString()}`;
-            }
+            // Update status bar
+            const wordCount = document.getElementById('wordCount');
+            const charCount = document.getElementById('charCount');
+            const lastSaved = document.getElementById('lastSaved');
 
-            // Load note content on page load
-            loadNoteContent();
+            const contentText = noteContent.innerText || '';
+            wordCount.textContent = `Words: ${contentText.split(/\s+/).filter(Boolean).length}`;
+            charCount.textContent = `Characters: ${contentText.length}`;
+            lastSaved.textContent = `Last saved: ${new Date(note.lastModified).toLocaleString()}`;
+        }
 
-            // Add event listeners if needed
+        // Event handler for the "Back to Notes" button
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = '/notes.html';  // Adjust the URL as needed
         });
+
+        // Initialize note on page load
+        initializeNote();
     </script>
 </body>
 </html>
