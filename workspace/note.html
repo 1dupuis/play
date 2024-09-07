@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Note - dupuis.lol</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .toolbar button, .toolbar input, .toolbar select {
+            padding: 5px 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #noteContent {
+            border: 1px solid #ddd;
+            padding: 10px;
+            min-height: 300px;
+            background-color: #fff;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 12px;
+            color: #888;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode #noteContent {
+            background-color: #333;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <button id="boldBtn"><b>B</b></button>
+            <button id="italicBtn"><i>I</i></button>
+            <button id="underlineBtn"><u>U</u></button>
+            <button id="listBtn">•</button>
+            <input type="color" id="colorPicker">
+            <select id="fontSelect">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+            <button id="undoBtn">Undo</button>
+            <button id="redoBtn">Redo</button>
+            <button id="darkModeToggle">🌙</button>
+        </div>
+        <div id="noteContent" contenteditable="true">
+            <!-- Note content will be injected here -->
+        </div>
+        <div class="status-bar">
+            <span id="wordCount">Words: 0</span>
+            <span id="charCount">Characters: 0</span>
+            <span id="lastSaved">Last saved: Never</span>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const noteContent = document.getElementById('noteContent');
+            const boldBtn = document.getElementById('boldBtn');
+            const italicBtn = document.getElementById('italicBtn');
+            const underlineBtn = document.getElementById('underlineBtn');
+            const listBtn = document.getElementById('listBtn');
+            const colorPicker = document.getElementById('colorPicker');
+            const fontSelect = document.getElementById('fontSelect');
+            const undoBtn = document.getElementById('undoBtn');
+            const redoBtn = document.getElementById('redoBtn');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const wordCount = document.getElementById('wordCount');
+            const charCount = document.getElementById('charCount');
+            const lastSaved = document.getElementById('lastSaved');
+            
+            let undoStack = [];
+            let redoStack = [];
+
+            function updateWordAndCharCount() {
+                const text = noteContent.innerText;
+                const words = text.split(/\s+/).filter(word => word.length > 0).length;
+                const chars = text.length;
+                wordCount.textContent = `Words: ${words}`;
+                charCount.textContent = `Characters: ${chars}`;
+            }
+
+            function execCmd(command, value = null) {
+                document.execCommand(command, false, value);
+                noteContent.focus();
+                updateWordAndCharCount();
+            }
+
+            function saveContent() {
+                const text = noteContent.innerHTML;
+                localStorage.setItem('noteContent', text);
+                lastSaved.textContent = `Last saved: ${new Date().toLocaleString()}`;
+            }
+
+            function loadContent() {
+                const savedContent = localStorage.getItem('noteContent');
+                if (savedContent) {
+                    noteContent.innerHTML = savedContent;
+                    updateWordAndCharCount();
+                }
+            }
+
+            boldBtn.addEventListener('click', () => execCmd('bold'));
+            italicBtn.addEventListener('click', () => execCmd('italic'));
+            underlineBtn.addEventListener('click', () => execCmd('underline'));
+            listBtn.addEventListener('click', () => execCmd('insertUnorderedList'));
+            colorPicker.addEventListener('input', (e) => execCmd('foreColor', e.target.value));
+            fontSelect.addEventListener('change', (e) => execCmd('fontName', e.target.value));
+            undoBtn.addEventListener('click', () => document.execCommand('undo'));
+            redoBtn.addEventListener('click', () => document.execCommand('redo'));
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                darkModeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌞' : '🌙';
+            });
+
+            noteContent.addEventListener('input', saveContent);
+
+            loadContent();
+        });
+    </script>
+</body>
+</html>
