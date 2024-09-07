@@ -49,8 +49,6 @@ function createNoteElement(note) {
     `;
     noteElement.onclick = () => selectNote(note.id);
     noteElement.ondragstart = drag;
-    noteElement.ondrop = drop;
-    noteElement.ondragover = allowDrop;
     return noteElement;
 }
 
@@ -109,7 +107,7 @@ function shareNote() {
     if (currentNoteId === null) return;
     const note = notes.find(n => n.id === currentNoteId);
     if (note) {
-        const noteURL = `${window.location.origin}/shared-note.html?id=${note.id}`;
+        const noteURL = `${window.location.origin}/workspace/shared-note.html?id=${note.id}`;
         prompt('Share this URL:', noteURL);
     }
 }
