@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Note - dupuis.lol</title>
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+    <div class="container">
+        <div class="toolbar">
+            <button id="boldBtn"><b>B</b></button>
+            <button id="italicBtn"><i>I</i></button>
+            <button id="underlineBtn"><u>U</u></button>
+            <button id="listBtn">•</button>
+            <input type="color" id="colorPicker">
+            <select id="fontSelect">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+            <button id="undoBtn">Undo</button>
+            <button id="redoBtn">Redo</button>
+            <button id="darkModeToggle">🌙</button>
+        </div>
+        <div id="noteContent" contenteditable="true">
+            <!-- Note content will be injected here -->
+        </div>
+        <div class="status-bar">
+            <span id="wordCount">Words: 0</span>
+            <span id="charCount">Characters: 0</span>
+            <span id="lastSaved">Last saved: Never</span>
+        </div>
+    </div>
+    <script src="notes.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const noteContent = document.getElementById('noteContent');
+            const wordCount = document.getElementById('wordCount');
+            const charCount = document.getElementById('charCount');
+            const lastSaved = document.getElementById('lastSaved');
+            const noteId = new URLSearchParams(window.location.search).get('id');
+            
+            if (!noteId) {
+                alert('No note ID provided');
+                return;
+            }
+
+            // Function to fetch note by ID and display content
+            function loadNoteContent() {
+                // Assuming notes.js includes a function to fetch note content
+                fetchNoteById(noteId).then(note => {
+                    if (note) {
+                        noteContent.innerHTML = note.content;
+                        updateWordAndCharCount();
+                        updateLastSaved(note.lastModified);
+                    } else {
+                        alert('Note not found');
+                    }
+                });
+            }
+
+            function updateWordAndCharCount() {
+                const text = noteContent.innerText;
+                const words = text.split(/\s+/).filter(word => word.length > 0).length;
+                const chars = text.length;
+                wordCount.textContent = `Words: ${words}`;
+                charCount.textContent = `Characters: ${chars}`;
+            }
+
+            function updateLastSaved(date) {
+                lastSaved.textContent = `Last saved: ${new Date(date).toLocaleString()}`;
+            }
+
+            // Load note content on page load
+            loadNoteContent();
+
+            // Add event listeners if needed
+        });
+    </script>
+</body>
+</html>
