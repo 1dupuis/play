@@ -78,6 +78,30 @@ function updateStatusBar() {
     lastSaved.textContent = note ? `Last saved: ${new Date(note.lastModified).toLocaleString()}` : 'Last saved: Never';
 }
 
+// Function to fetch note by ID
+function fetchNoteById(id) {
+    return new Promise((resolve) => {
+        const note = notes.find(n => n.id === id);
+        resolve(note);
+    });
+}
+
+// Initialize shared note page
+if (document.getElementById('noteContent') && window.location.pathname.includes('/note/')) {
+    const noteId = new URLSearchParams(window.location.search).get('id');
+    if (noteId) {
+        fetchNoteById(noteId).then(note => {
+            if (note) {
+                currentNoteId = note.id;
+                noteContent.innerHTML = note.content;
+                updateStatusBar();
+            } else {
+                alert('Note not found');
+            }
+        });
+    }
+}
+
 // Event Handlers
 function addNote() {
     const id = Date.now().toString();
@@ -107,7 +131,7 @@ function shareNote() {
     if (currentNoteId === null) return;
     const note = notes.find(n => n.id === currentNoteId);
     if (note) {
-        const noteURL = `${window.location.origin}/note/${note.id}`;
+        const noteURL = `${window.location.origin}/note/?id=${note.id}`;
         prompt('Share this URL:', noteURL);
     }
 }
@@ -221,7 +245,7 @@ fullScreenBtn.addEventListener('click', toggleFullScreen);
 boldBtn.addEventListener('click', () => applyTextStyle('bold'));
 italicBtn.addEventListener('click', () => applyTextStyle('italic'));
 underlineBtn.addEventListener('click', () => applyTextStyle('underline'));
-listBtn.addEventListener('click', () => applyTextStyle('insertUnorderedList'));
+listBtn.addEventListener('click', () => applyTextStyle('insertOrderedList'));
 colorPicker.addEventListener('input', updateTextColor);
 fontSelect.addEventListener('change', updateFont);
 undoBtn.addEventListener('click', undo);
@@ -229,35 +253,10 @@ redoBtn.addEventListener('click', redo);
 exportBtn.addEventListener('click', exportNote);
 darkModeToggle.addEventListener('click', toggleDarkMode);
 
-// Initialize Dark Mode
+// Initialize dark mode
 if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
 }
 
-// Content Editable Event Handlers
-noteContent.addEventListener('input', () => {
-    undoStack.push(noteContent.innerHTML);
-    redoStack = [];
-    updateStatusBar();
-});
-
-// Drag and Drop
-function drag(event) {
-    event.dataTransfer.setData('text/plain', event.target.dataset.id);
-}
-
-function drop(event) {
-    event.preventDefault();
-    const draggedId = event.dataTransfer.getData('text/plain');
-    const targetId = event.target.dataset.id;
-    if (draggedId && targetId) {
-        // Handle reordering logic if needed
-    }
-}
-
-function allowDrop(event) {
-    event.preventDefault();
-}
-
-// Initial Rendering
+// Initialize notes list
 renderNotesList();
