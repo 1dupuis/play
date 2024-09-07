@@ -49,6 +49,8 @@ function createNoteElement(note) {
     `;
     noteElement.onclick = () => selectNote(note.id);
     noteElement.ondragstart = drag;
+    noteElement.ondrop = drop;
+    noteElement.ondragover = allowDrop;
     return noteElement;
 }
 
@@ -78,42 +80,7 @@ function updateStatusBar() {
     lastSaved.textContent = note ? `Last saved: ${new Date(note.lastModified).toLocaleString()}` : 'Last saved: Never';
 }
 
-// Function to fetch note by ID
-function fetchNoteById(id) {
-    return new Promise((resolve) => {
-        const note = notes.find(n => n.id === id);
-        resolve(note);
-    });
-}
-
-// Initialize shared note page
-if (document.getElementById('noteContent') && window.location.pathname.includes('/note/')) {
-    const noteId = new URLSearchParams(window.location.search).get('id');
-    if (noteId) {
-        fetchNoteById(noteId).then(note => {
-            if (note) {
-                currentNoteId = note.id;
-                noteContent.innerHTML = note.content;
-                updateStatusBar();
-            } else {
-                alert('Note not found');
-            }
-        });
-    }
-}
-
-// Drag event handler
-function drag(event) {
-    event.dataTransfer.setData('text/plain', event.target.dataset.id);
-}
-
-// Drop event handler
-function drop(event) {
-    event.preventDefault();
-    const noteId = event.dataTransfer.getData('text/plain');
-    // Handle the drop action here
-}
-
+// Event Handlers
 function addNote() {
     const id = Date.now().toString();
     const newNote = {
@@ -142,7 +109,7 @@ function shareNote() {
     if (currentNoteId === null) return;
     const note = notes.find(n => n.id === currentNoteId);
     if (note) {
-        const noteURL = `${window.location.origin}/note/?id=${note.id}`;
+        const noteURL = `${window.location.origin}/shared-note.html?id=${note.id}`;
         prompt('Share this URL:', noteURL);
     }
 }
@@ -253,11 +220,10 @@ addTagBtn.addEventListener('click', addTag);
 filterByTagBtn.addEventListener('click', filterByTag);
 saveVersionBtn.addEventListener('click', saveNoteVersion);
 fullScreenBtn.addEventListener('click', toggleFullScreen);
-
 boldBtn.addEventListener('click', () => applyTextStyle('bold'));
 italicBtn.addEventListener('click', () => applyTextStyle('italic'));
 underlineBtn.addEventListener('click', () => applyTextStyle('underline'));
-listBtn.addEventListener('click', () => applyTextStyle('insertOrderedList'));
+listBtn.addEventListener('click', () => applyTextStyle('insertUnorderedList'));
 colorPicker.addEventListener('input', updateTextColor);
 fontSelect.addEventListener('change', updateFont);
 undoBtn.addEventListener('click', undo);
@@ -265,10 +231,46 @@ redoBtn.addEventListener('click', redo);
 exportBtn.addEventListener('click', exportNote);
 darkModeToggle.addEventListener('click', toggleDarkMode);
 
-// Initialize dark mode
+// Initialize Dark Mode
 if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
 }
 
-// Initialize notes list
+// Content Editable Event Handlers
+noteContent.addEventListener('input', () => {
+    undoStack.push(noteContent.innerHTML);
+    redoStack = [];
+    updateStatusBar();
+});
+
+// Drag and Drop
+function drag(event) {
+    event.dataTransfer.setData('text/plain', event.target.dataset.id);
+}
+
+function drop(event) {
+    event.preventDefault();
+    const draggedId = event.dataTransfer.getData('text/plain');
+    const targetId = event.target.dataset.id;
+
+    if (draggedId && targetId && draggedId !== targetId) {
+        // Reorder notes
+        const draggedNoteIndex = notes.findIndex(note => note.id === draggedId);
+        const targetNoteIndex = notes.findIndex(note => note.id === targetId);
+
+        if (draggedNoteIndex !== -1 && targetNoteIndex !== -1) {
+            const draggedNote = notes.splice(draggedNoteIndex, 1)[0];
+            notes.splice(targetNoteIndex, 0, draggedNote);
+
+            localStorage.setItem('notes', JSON.stringify(notes));
+            renderNotesList();
+        }
+    }
+}
+
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+// Initial render
 renderNotesList();
