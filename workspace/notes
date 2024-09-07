@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dupuis.lol Workspace - Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>dupuis.lol Notes</h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search notes...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div id="notesList"></div>
+            <button id="addNoteBtn">+ New Note</button>
+            <button id="deleteNoteBtn">Delete Note</button>
+            <button id="shareNoteBtn">Share Note</button>
+            <button id="addTagBtn">Add Tag</button>
+            <button id="filterByTagBtn">Filter by Tag</button>
+            <button id="saveVersionBtn">Save Version</button>
+            <button id="fullScreenBtn">Full Screen</button>
+        </div>
+        <div class="main-content">
+            <div class="toolbar">
+                <button id="boldBtn"><i class="fas fa-bold"></i></button>
+                <button id="italicBtn"><i class="fas fa-italic"></i></button>
+                <button id="underlineBtn"><i class="fas fa-underline"></i></button>
+                <button id="listBtn"><i class="fas fa-list"></i></button>
+                <input type="color" id="colorPicker">
+                <select id="fontSelect">
+                    <option value="Arial">Arial</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                </select>
+                <button id="undoBtn"><i class="fas fa-undo"></i></button>
+                <button id="redoBtn"><i class="fas fa-redo"></i></button>
+                <button id="exportBtn"><i class="fas fa-file-export"></i></button>
+                <button id="darkModeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+            <div id="noteContent" contenteditable="true"></div>
+            <div class="status-bar">
+                <span id="wordCount">Words: 0</span>
+                <span id="charCount">Characters: 0</span>
+                <span id="lastSaved">Last saved: Never</span>
+            </div>
+        </div>
+    </div>
+    <script src="notes.js"></script>
+</body>
+</html>
