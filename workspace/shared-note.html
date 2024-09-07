@@ -5,132 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shared Note</title>
     <style>
-        /* Basic Reset */
-        body, h1, p, button {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body Styling */
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
-            padding: 20px;
             background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-
-        /* Header Styling */
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        /* Main Section Styling */
-        main {
-            margin: 20px 0;
-        }
-
-        /* Note Content Styling */
-        #noteContent {
-            background: #fff;
+        .note-container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
             border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            min-height: 200px;
             overflow-y: auto;
         }
-
-        /* Note Status Styling */
-        #noteStatus {
-            margin-top: 10px;
+        .note-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
-
-        /* Footer Styling */
-        footer {
-            text-align: center;
+        .note-content {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .note-footer {
             margin-top: 20px;
+            font-size: 14px;
+            color: #888;
         }
-
-        /* Button Styling */
-        button {
-            padding: 10px 20px;
-            border: none;
-            background: #007bff;
-            color: #fff;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background: #0056b3;
+        .note-footer .date {
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Shared Note</h1>
-    </header>
-    <main>
-        <section id="noteContentContainer">
-            <div id="noteContent" class="note-content"></div>
-        </section>
-        <section id="noteStatus">
-            <p id="wordCount">Words: 0</p>
-            <p id="charCount">Characters: 0</p>
-            <p id="lastSaved">Last saved: Never</p>
-        </section>
-    </main>
-    <footer>
-        <button id="backBtn">Back to Notes</button>
-    </footer>
+    <div class="note-container">
+        <div id="noteTitle" class="note-title"></div>
+        <div id="noteContent" class="note-content"></div>
+        <div id="noteFooter" class="note-footer">
+            <div class="date" id="lastModifiedDate"></div>
+        </div>
+    </div>
 
     <script>
-        // Extract note ID from URL
-        function getNoteIdFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
+        // Function to fetch and display note content
+        function displayNote() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const noteId = urlParams.get('id');
 
-        // Initialize note content and metadata
-        function initializeNote() {
-            const noteId = getNoteIdFromUrl();
             if (!noteId) {
-                alert('No note ID found in URL.');
+                document.querySelector('.note-container').innerHTML = '<p>No note found.</p>';
                 return;
             }
 
-            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            let notes = JSON.parse(localStorage.getItem('notes')) || [];
             const note = notes.find(n => n.id === noteId);
 
             if (!note) {
-                alert('Note not found.');
+                document.querySelector('.note-container').innerHTML = '<p>Note not found.</p>';
                 return;
             }
 
-            // Display note content
-            const noteContent = document.getElementById('noteContent');
-            noteContent.innerHTML = note.content;
-
-            // Update status bar
-            const wordCount = document.getElementById('wordCount');
-            const charCount = document.getElementById('charCount');
-            const lastSaved = document.getElementById('lastSaved');
-
-            const contentText = noteContent.innerText || '';
-            wordCount.textContent = `Words: ${contentText.split(/\s+/).filter(Boolean).length}`;
-            charCount.textContent = `Characters: ${contentText.length}`;
-            lastSaved.textContent = `Last saved: ${new Date(note.lastModified).toLocaleString()}`;
+            document.getElementById('noteTitle').textContent = note.title || 'Untitled Note';
+            document.getElementById('noteContent').innerHTML = note.content || 'No content available.';
+            document.getElementById('lastModifiedDate').textContent = `Last modified: ${new Date(note.lastModified).toLocaleString()}`;
         }
 
-        // Event handler for the "Back to Notes" button
-        document.getElementById('backBtn').addEventListener('click', () => {
-            window.location.href = '/notes.html';  // Adjust the URL as needed
-        });
-
-        // Initialize note on page load
-        initializeNote();
+        // Display note when the page loads
+        displayNote();
     </script>
 </body>
 </html>
