@@ -102,7 +102,18 @@ if (document.getElementById('noteContent') && window.location.pathname.includes(
     }
 }
 
-// Event Handlers
+// Drag event handler
+function drag(event) {
+    event.dataTransfer.setData('text/plain', event.target.dataset.id);
+}
+
+// Drop event handler
+function drop(event) {
+    event.preventDefault();
+    const noteId = event.dataTransfer.getData('text/plain');
+    // Handle the drop action here
+}
+
 function addNote() {
     const id = Date.now().toString();
     const newNote = {
@@ -242,6 +253,7 @@ addTagBtn.addEventListener('click', addTag);
 filterByTagBtn.addEventListener('click', filterByTag);
 saveVersionBtn.addEventListener('click', saveNoteVersion);
 fullScreenBtn.addEventListener('click', toggleFullScreen);
+
 boldBtn.addEventListener('click', () => applyTextStyle('bold'));
 italicBtn.addEventListener('click', () => applyTextStyle('italic'));
 underlineBtn.addEventListener('click', () => applyTextStyle('underline'));
