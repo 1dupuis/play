@@ -16,7 +16,7 @@ const config = {
             name: 'Resources', 
             icon: 'fa-book', 
             items: [
-                { name: 'Extension', url: '/extension' },
+                { name: 'Extension', url: '/extension/download' },
                 { name: 'Cuisine AI', url: '/cuisine-ai' },
                 { name: 'Events', url: '/events' },
                 { name: 'Café', url: '/cafe' },
