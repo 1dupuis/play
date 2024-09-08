@@ -82,6 +82,7 @@ class AccessSystem {
         this.addEventListeners();
         this.checkSession();
         this.initializeParticles();
+        this.initializeTypingEffect();
     }
 
     addEventListeners() {
@@ -93,6 +94,32 @@ class AccessSystem {
         }
         if (this.switchLink) {
             this.switchLink.addEventListener('click', this.toggleAuthMode.bind(this));
+        }
+        ['usernameInput', 'passwordInput', 'verificationInput'].forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('focus', () => this.handleInputFocus(input));
+                input.addEventListener('blur', () => this.handleInputBlur(input));
+                input.addEventListener('input', () => this.validateInput(input));
+            }
+        });
+    }
+
+    handleInputFocus(input) {
+        input.parentElement.classList.add('focused');
+    }
+
+    handleInputBlur(input) {
+        if (input.value === '') {
+            input.parentElement.classList.remove('focused');
+        }
+    }
+
+    validateInput(input) {
+        if (input.value.length > 0) {
+            input.parentElement.classList.add('has-value');
+        } else {
+            input.parentElement.classList.remove('has-value');
         }
     }
 
@@ -199,6 +226,17 @@ class AccessSystem {
         if (this.switchLink) this.switchLink.textContent = this.isLogin ? 'Sign Up' : 'Log In';
         if (this.authSwitch) this.authSwitch.firstChild.textContent = this.isLogin ? "Don't have an account? " : 'Already have an account? ';
         this.clearMessage();
+        this.resetForm();
+    }
+
+    resetForm() {
+        if (this.authForm) {
+            this.authForm.reset();
+            const inputs = this.authForm.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.parentElement.classList.remove('focused', 'has-value');
+            });
+        }
     }
 
     setSession(username) {
@@ -267,11 +305,11 @@ class AccessSystem {
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 80, density: { enable: true, value_area: 800 } },
-                    color: { value: "#007bff" },
+                    color: { value: "#4285F4" },
                     shape: { type: "circle" },
                     opacity: { value: 0.5, random: false },
                     size: { value: 3, random: true },
-                    line_linked: { enable: true, distance: 150, color: "#007bff", opacity: 0.4, width: 1 },
+                    line_linked: { enable: true, distance: 150, color: "#4285F4", opacity: 0.4, width: 1 },
                     move: {
                         enable: true,
                         speed: 6,
@@ -303,22 +341,8 @@ class AccessSystem {
                                 opacity: 1
                             }
                         },
-                        bubble: {
-                            distance: 400,
-                            size: 40,
-                            duration: 2,
-                            opacity: 8,
-                            speed: 3
-                        },
-                        repulse: {
-                            distance: 200,
-                            duration: 0.4
-                        },
                         push: {
                             particles_nb: 4
-                        },
-                        remove: {
-                            particles_nb: 2
                         }
                     }
                 },
@@ -328,27 +352,29 @@ class AccessSystem {
             console.warn('particlesJS is not defined. Make sure to include the particles.js library.');
         }
     }
+
+    initializeTypingEffect() {
+        const typingElement = document.getElementById('typing-text');
+        if (typingElement) {
+            const words = [
+                'fun', 'easy', 'interactive', 'effective', 'modern',
+                'engaging', 'intuitive', 'practical', 'innovative', 'efficient',
+                'exciting', 'adaptable', 'rewarding', 'immersive', 'dynamic',
+                'amusant', 'facile', 'rapide', 'créatif', 'naturel'
+            ];
+            
+            const typingEffect = new TypingEffect(typingElement, words, {
+                wait: 2000,
+                typeSpeed: 100,
+                deleteSpeed: 50,
+                loop: true
+            });
+            
+            typingEffect.start();
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const typingElement = document.getElementById('typing-text');
-    if (typingElement) {
-        const words = [
-            'fun', 'easy', 'interactive', 'effective', 'modern',
-            'engaging', 'intuitive', 'practical', 'innovative', 'efficient',
-            'exciting', 'adaptable', 'rewarding', 'immersive', 'dynamic',
-            'amusant', 'facile', 'rapide', 'créatif', 'naturel'
-        ];
-        
-        const typingEffect = new TypingEffect(typingElement, words, {
-            wait: 2000,
-            typeSpeed: 100,
-            deleteSpeed: 50,
-            loop: true
-        });
-        
-        typingEffect.start();
-    }
-
     new AccessSystem();
 });
