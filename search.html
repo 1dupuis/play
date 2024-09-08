@@ -3,46 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Learn French in Style</title>
+    <title>dupuis.lol - Learn French with Style</title>
     <link rel="stylesheet" href="search.css">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
     <script src="access.js" defer></script>
 </head>
 <body>
-    <div class="background-animation">
-        <div class="flag"></div>
-        <div class="flag"></div>
-        <div class="flag"></div>
-        <div class="flag"></div>
-        <div class="flag"></div>
-    </div>
     <header>
         <nav>
             <div class="logo">
-                <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-icon.png" alt="dupuis.lol Logo">
+                <a href="/" aria-label="Home">
+                    <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-icon.png" alt="dupuis.lol Logo">
+                </a>
             </div>
             <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search dupuis.lol...">
-                <button id="search-button"><i class="fas fa-search"></i></button>
+                <input type="text" id="search-input" placeholder="Search dupuis.lol..." aria-label="Search">
+                <button id="search-button" aria-label="Perform search"><i class="fas fa-search"></i></button>
             </div>
-            <div class="menu-toggle">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
                 <i class="fas fa-bars"></i>
-            </div>
+            </button>
+            <ul class="nav-links">
+                <li><a href="/games">Games</a></li>
+                <li><a href="/resources">Resources</a></li>
+                <li><a href="/development">Development</a></li>
+            </ul>
         </nav>
     </header>
     <main>
-        <section class="hero">
-            <h1 class="glitch" data-text="Welcome to dupuis.lol">Welcome to dupuis.lol</h1>
-            <p class="subtitle">Level up your French skills with interactive content</p>
-        </section>
-        <section class="content">
-            <!-- Content will be dynamically loaded here -->
-        </section>
+        <aside id="sidebar">
+            <!-- Sidebar content will be dynamically loaded here -->
+        </aside>
+        <div class="main-content">
+            <section id="categories">
+                <!-- Categories will be dynamically generated here -->
+            </section>
+            <section id="content">
+                <!-- Main content will be dynamically loaded here -->
+            </section>
+        </div>
     </main>
     <footer>
-        <p>24w35f - Check our <a href="https://stats.uptimerobot.com/EFEhlYMyoR" target="_blank">uptime status</a></p>
+        <p>&copy; 2024 dupuis.lol | <a href="https://stats.uptimerobot.com/EFEhlYMyoR" target="_blank" rel="noopener noreferrer">Uptime Status</a></p>
     </footer>
+    <div id="modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <button class="close" aria-label="Close modal">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
     <script src="search.js"></script>
 </body>
 </html>
