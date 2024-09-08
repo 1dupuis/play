@@ -1,28 +1,31 @@
 :root {
-    --primary-color: #007bff;
-    --primary-dark: #0056b3;
-    --primary-light: #e6f2ff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --error-color: #dc3545;
-    --background-color: #f8f9fa;
-    --text-color: #333;
+    --primary-color: #4285F4;
+    --primary-dark: #3367D6;
+    --primary-light: #E8F0FE;
+    --secondary-color: #34A853;
+    --error-color: #EA4335;
+    --background-color: #FFFFFF;
+    --text-color: #202124;
     --border-radius: 8px;
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     --transition-speed: 0.3s;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    box-sizing: border-box;
 }
 
 #particles-js {
@@ -35,55 +38,67 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 90%;
-    width: 400px;
-}
-
-.typing-container, .form-container {
-    background-color: #ffffff;
+    background-color: var(--background-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    padding: 1.5rem;
+    padding: 2rem;
     width: 100%;
-    box-sizing: border-box;
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-}
-
-.typing-container:hover, .form-container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.typing-container {
-    margin-bottom: 1.5rem;
+    max-width: 400px;
     text-align: center;
 }
 
-.typing-container h2 {
-    font-size: 1.4rem;
-    color: var(--text-color);
-    margin: 0;
-    font-weight: 400;
+header {
+    margin-bottom: 2rem;
 }
 
-#typing-text {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.form-container h1 {
-    font-size: 1.8rem;
-    color: var(--text-color);
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-}
-
-form {
+.logo-container {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.logo {
+    width: 40px;
+    height: auto;
+    margin-right: 0.5rem;
+}
+
+.site-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.subtitle-prefix {
+    margin-right: 0.25rem;
+}
+
+.subtitle-dynamic {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.form-container {
+    margin-bottom: 2rem;
+}
+
+.form-container h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
 }
 
 input[type="text"],
@@ -91,10 +106,8 @@ input[type="password"] {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
-    border: 2px solid var(--secondary-color);
+    border: 1px solid #dadce0;
     border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-    box-sizing: border-box;
     transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
@@ -102,7 +115,26 @@ input[type="text"]:focus,
 input[type="password"]:focus {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 3px var(--primary-light);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #5f6368;
+    pointer-events: none;
+    transition: all var(--transition-speed) ease;
+}
+
+input:focus ~ label,
+input:not(:placeholder-shown) ~ label {
+    top: 0;
+    font-size: 0.75rem;
+    background-color: var(--background-color);
+    padding: 0 4px;
 }
 
 button {
@@ -111,22 +143,24 @@ button {
     border: none;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
+    font-weight: 500;
     border-radius: var(--border-radius);
     cursor: pointer;
-    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
 button:hover {
     background-color: var(--primary-dark);
-    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 button:active {
-    transform: translateY(0);
+    box-shadow: none;
 }
 
 button:disabled {
-    background-color: var(--secondary-color);
+    background-color: #dadce0;
+    color: #5f6368;
     cursor: not-allowed;
 }
 
@@ -136,21 +170,18 @@ button:disabled {
     padding: 0.5rem;
     border-radius: var(--border-radius);
     display: none;
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .message.error {
     color: var(--error-color);
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
+    background-color: #FFEBEE;
+    border: 1px solid var(--error-color);
 }
 
 .message.success {
-    color: var(--success-color);
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
+    color: var(--secondary-color);
+    background-color: #E8F5E9;
+    border: 1px solid var(--secondary-color);
 }
 
 .loading {
@@ -161,7 +192,7 @@ button:disabled {
 }
 
 .spinner {
-    border: 3px solid var(--secondary-color);
+    border: 3px solid #dadce0;
     border-top: 3px solid var(--primary-color);
     border-radius: 50%;
     width: 20px;
@@ -177,30 +208,40 @@ button:disabled {
 
 #auth-switch {
     margin-top: 1rem;
-    text-align: center;
+    font-size: 0.875rem;
 }
 
 #switch-link {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 #switch-link:hover {
     text-decoration: underline;
 }
 
+footer {
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: #5f6368;
+}
+
 @media (max-width: 480px) {
     .container {
-        width: 95%;
-    }
-
-    .form-container {
         padding: 1.5rem;
     }
 
-    .form-container h1 {
-        font-size: 1.5rem;
+    .site-title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .form-container h2 {
+        font-size: 1.25rem;
     }
 
     input[type="text"],
