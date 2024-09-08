@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dupuis.lol - Learn French Interactively</title>
     <link rel="stylesheet" href="verify.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script src="verify.js" defer></script>
 </head>
 <body>
-    <div id="particles-js"></div>
+    <div class="background-animation"></div>
     <div class="container">
         <header>
             <div class="logo-container">
@@ -28,7 +27,7 @@
                 <h2>Verify Account</h2>
                 <form id="verification-form">
                     <div class="input-group">
-                        <input type="password" id="verification-input" required>
+                        <input type="password" id="verification-input" required placeholder=" ">
                         <label for="verification-input">Enter the password</label>
                     </div>
                     <button type="submit" id="verify-button">Verify</button>
@@ -38,11 +37,11 @@
                 <h2 id="auth-title">Sign Up</h2>
                 <form id="auth-form">
                     <div class="input-group">
-                        <input type="text" id="username-input" required>
+                        <input type="text" id="username-input" required placeholder=" ">
                         <label for="username-input">Username</label>
                     </div>
                     <div class="input-group">
-                        <input type="password" id="password-input" required>
+                        <input type="password" id="password-input" required placeholder=" ">
                         <label for="password-input">Password</label>
                     </div>
                     <button type="submit" id="auth-button">Sign Up</button>
