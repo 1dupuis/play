@@ -3,41 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - dupuis.lol</title>
+    <title>dupuis.lol - Learn French Interactively</title>
     <link rel="stylesheet" href="verify.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
-    <script src="access.js" defer></script>
+    <script src="verify.js" defer></script>
 </head>
 <body>
     <div id="particles-js"></div>
     <div class="container">
-        <div class="typing-container">
-            <h2>Make French.. <span id="typing-text"></span></h2>
-        </div>
-        <div id="verification-container" class="form-container">
-            <h1>Verify Account</h1>
-            <form id="verification-form">
-                <input type="password" id="verification-input" placeholder="Enter the password" required>
-                <button type="submit" id="verify-button">Verify</button>
-            </form>
-        </div>
-        <div id="auth-container" class="form-container" style="display: none;">
-            <h1 id="auth-title">Sign Up</h1>
-            <form id="auth-form">
-                <input type="text" id="username-input" placeholder="Username" required>
-                <input type="password" id="password-input" placeholder="Password" required>
-                <button type="submit" id="auth-button">Sign Up</button>
-            </form>
-            <p id="auth-switch">Already have an account? <a href="#" id="switch-link">Log In</a></p>
-        </div>
-        <p id="message" class="message"></p>
-        <div id="loading-indicator" class="loading">
-            <div class="spinner"></div>
-            <span>Processing...</span>
-        </div>
+        <header>
+            <div class="logo-container">
+                <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png" alt="dupuis.lol logo" class="logo">
+                <h1 class="site-title">dupuis.lol</h1>
+            </div>
+            <div class="subtitle">
+                <span class="subtitle-prefix">Make French</span>
+                <span id="typing-text" class="subtitle-dynamic"></span>
+            </div>
+        </header>
+        <main>
+            <div id="verification-container" class="form-container">
+                <h2>Verify Account</h2>
+                <form id="verification-form">
+                    <div class="input-group">
+                        <input type="password" id="verification-input" required>
+                        <label for="verification-input">Enter the password</label>
+                    </div>
+                    <button type="submit" id="verify-button">Verify</button>
+                </form>
+            </div>
+            <div id="auth-container" class="form-container" style="display: none;">
+                <h2 id="auth-title">Sign Up</h2>
+                <form id="auth-form">
+                    <div class="input-group">
+                        <input type="text" id="username-input" required>
+                        <label for="username-input">Username</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password-input" required>
+                        <label for="password-input">Password</label>
+                    </div>
+                    <button type="submit" id="auth-button">Sign Up</button>
+                </form>
+                <p id="auth-switch">Already have an account? <a href="#" id="switch-link">Log In</a></p>
+            </div>
+            <p id="message" class="message"></p>
+            <div id="loading-indicator" class="loading">
+                <div class="spinner"></div>
+                <span>Processing...</span>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2024 dupuis.lol. All rights reserved.</p>
+        </footer>
     </div>
-    <script src="verify.js"></script>
 </body>
 </html>
