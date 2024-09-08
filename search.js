@@ -1,173 +1,360 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
-    const contentSection = document.querySelector('.content');
-    const menuToggle = document.querySelector('.menu-toggle');
+// Configuration object for easy editing
+const config = {
+    categories: [
+        { 
+            name: 'Games', 
+            icon: 'fa-gamepad', 
+            items: [
+                { name: 'Snake Game', url: '/snake-game' },
+                { name: 'Trivia', url: '/trivia' },
+                { name: 'Motle', url: '/motle' },
+                { name: 'DupuisGuessr', url: '/guessr' },
+                { name: 'Ascend', url: '/ascend' }
+            ]
+        },
+        { 
+            name: 'Resources', 
+            icon: 'fa-book', 
+            items: [
+                { name: 'Extension', url: '/extension' },
+                { name: 'Cuisine AI', url: '/cuisine-ai' },
+                { name: 'Events', url: '/events' },
+                { name: 'Café', url: '/cafe' },
+                { name: 'Rewards', url: '/rewards' },
+                { name: 'News', url: '/news' },
+                { name: 'Translate', url: '/translate' }
+            ]
+        },
+        { 
+            name: 'Development', 
+            icon: 'fa-code', 
+            items: [
+                { name: 'Old Homepage', url: '/homepage' },
+                { name: 'Contact', url: '/contact' },
+                { name: 'Videos', url: '/videos' },
+                { name: 'Forms', url: '/forms' }
+            ]
+        }
+    ],
+    defaultCategory: 'Games',
+    searchPlaceholder: 'Search dupuis.lol...',
+    noResultsMessage: 'No results found. Try a different search term.',
+    easterEggCode: ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
+    easterEggDuration: 5000
+};
 
-    const categories = [
-        { name: 'Games', icon: 'fa-gamepad' },
-        { name: 'Resources', icon: 'fa-book' },
-        { name: 'Development', icon: 'fa-link' }
-    ];
+class DupuisApp {
+    constructor() {
+        this.searchInput = document.getElementById('search-input');
+        this.searchButton = document.getElementById('search-button');
+        this.contentSection = document.getElementById('content');
+        this.categoriesSection = document.getElementById('categories');
+        this.menuToggle = document.getElementById('menu-toggle');
+        this.navLinks = document.querySelector('.nav-links');
+        this.sidebarSection = document.getElementById('sidebar');
 
-    // Generate category buttons dynamically
-    const categoryContainer = document.createElement('div');
-    categoryContainer.className = 'categories';
-    categories.forEach(category => {
+        this.currentCategory = null;
+        this.currentItem = null;
+
+        if (this.validateDOMElements()) {
+            this.init();
+        } else {
+            console.error('Some required DOM elements are missing. Please check your HTML.');
+        }
+    }
+
+    validateDOMElements() {
+        return this.searchInput && this.searchButton && this.contentSection && 
+               this.categoriesSection && this.menuToggle && this.navLinks && this.sidebarSection;
+    }
+
+    init() {
+        this.generateCategories();
+        this.setupEventListeners();
+        this.setupRouter();
+        this.setupEasterEgg();
+        this.generateSidebar();
+    }
+
+    generateCategories() {
+        const fragment = document.createDocumentFragment();
+        config.categories.forEach(category => {
+            const categoryButton = this.createCategoryButton(category);
+            fragment.appendChild(categoryButton);
+        });
+        this.categoriesSection.appendChild(fragment);
+    }
+
+    createCategoryButton(category) {
         const categoryButton = document.createElement('div');
         categoryButton.className = 'category';
         categoryButton.innerHTML = `
             <i class="fas ${category.icon}"></i>
             <h2>${category.name}</h2>
         `;
-        categoryButton.addEventListener('click', () => loadCategoryContent(category.name));
+        categoryButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.navigateTo(`/${category.name.toLowerCase()}`);
+        });
 
-        // Ensure the icon exists before adding hover effects
         const icon = categoryButton.querySelector('i');
-        if (icon) {
-            categoryButton.addEventListener('mouseover', () => {
-                icon.classList.add('fa-spin');
-            });
-            categoryButton.addEventListener('mouseout', () => {
-                icon.classList.remove('fa-spin');
-            });
-        }
+        categoryButton.addEventListener('mouseover', () => icon.classList.add('fa-bounce'));
+        categoryButton.addEventListener('mouseout', () => icon.classList.remove('fa-bounce'));
 
-        categoryContainer.appendChild(categoryButton);
-    });
-    document.querySelector('main').insertBefore(categoryContainer, contentSection);
+        return categoryButton;
+    }
 
-    // Search functionality
-    if (searchButton && searchInput) {
-        searchButton.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => {
+    setupEventListeners() {
+        this.searchButton.addEventListener('click', () => this.performSearch());
+        this.searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                performSearch();
+                this.performSearch();
             }
         });
-    }
 
-    function performSearch() {
-        const query = searchInput.value.toLowerCase().trim();
-        if (query) {
-            const results = `
-                <h2>Search Results for "${query}"</h2>
-                <ul class="search-results">
-                    ${generateSearchResults(query)}
-                </ul>
-            `;
-            updateContent(results);
-        }
-    }
+        this.menuToggle.addEventListener('click', () => this.navLinks.classList.toggle('show'));
 
-    function generateSearchResults(query) {
-        const allContent = {
-            'Games': ['Snake Game', 'Trivia', 'Motle', 'DupuisGuessr', 'Ascend'],
-            'Resources': ['Extension', 'Cuisine AI', 'Events', 'Café', 'Rewards', 'News', 'Translate'],
-            'Development': ['Old Homepage', 'Contact', 'Videos', 'Forms']
-        };
+        window.addEventListener('resize', this.handleResize.bind(this));
 
-        let results = '';
-        const highlightStyle = 'background-color: yellow; font-weight: bold;';
+        this.searchInput.setAttribute('placeholder', config.searchPlaceholder);
 
-        for (const category in allContent) {
-            allContent[category].forEach(item => {
-                const itemLower = item.toLowerCase();
-                if (itemLower.includes(query)) {
-                    const highlightedItem = item.replace(new RegExp(query, 'gi'), match => `<span style="${highlightStyle}">${match}</span>`);
-                    results += `<li><a href="#" onclick="loadCategoryContent('${category}')">${highlightedItem}</a></li>`;
-                }
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const category = e.target.textContent.toLowerCase();
+                this.navigateTo(`/${category}`);
             });
-        }
-        return results || '<li>No results found</li>';
-    }
-
-    function loadCategoryContent(category) {
-        let content = '';
-        switch (category) {
-            case 'Games':
-                content = `
-                    <div class="sub-container">
-                        <h2>Games</h2>
-                        <a href="snake-game" class="button">Snake Game</a>
-                        <a href="trivia" class="button">Trivia</a>
-                        <a href="motle" class="button">Motle</a>
-                        <a href="guessr" class="button">DupuisGuessr</a>
-                        <a href="ascend" class="button">Ascend</a>
-                    </div>
-                `;
-                break;
-            case 'Resources':
-                content = `
-                    <div class="sub-container">
-                        <h2>Resources</h2>
-                        <a href="extension" class="button">Extension</a>
-                        <a href="cuisine-ai" class="button">Cuisine AI</a>
-                        <a href="events" class="button">Events</a>
-                        <a href="cafe" class="button">Café</a>
-                        <a href="rewards" class="button">Rewards</a>
-                        <a href="news" class="button">News</a>
-                        <a href="translate" class="button">Translate</a>
-                    </div>
-                `;
-                break;
-            case 'Development':
-                content = `
-                    <div class="sub-container">
-                        <h2>Development</h2>
-                        <a href="homepage" class="button">Old Homepage</a>
-                        <a href="videos" class="button">Videos</a>
-                        <a href="forms" class="button">Forms</a>
-                        <a href="contact" class="button">Contact</a>
-                    </div>
-                `;
-                break;
-            default:
-                content = '<h2>Content not found</h2>';
-        }
-        updateContent(content);
-    }
-
-    function updateContent(content) {
-        if (contentSection) {
-            contentSection.style.opacity = 0;
-            setTimeout(() => {
-                contentSection.innerHTML = content;
-                contentSection.style.opacity = 1;
-            }, 300);
-        }
-    }
-
-    // Mobile menu toggle
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            document.body.classList.toggle('menu-open');
         });
     }
 
-    // Initialize with default content (e.g., Games)
-    loadCategoryContent('Games');
+    handleResize() {
+        if (window.innerWidth > 768) {
+            this.navLinks.classList.remove('show');
+        }
+    }
 
-    // Easter egg: Konami code
-    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let konamiIndex = 0;
-    document.addEventListener('keydown', (e) => {
-        if (e.key === konamiCode[konamiIndex]) {
-            konamiIndex++;
-            if (konamiIndex === konamiCode.length) {
-                activateEasterEgg();
-                konamiIndex = 0;
+    setupRouter() {
+        window.addEventListener('popstate', () => this.handleRouteChange());
+        this.handleRouteChange();
+    }
+
+    handleRouteChange() {
+        const path = window.location.pathname;
+        const pathSegments = path.split('/').filter(segment => segment !== '');
+
+        if (pathSegments.length === 0) {
+            this.loadCategoryContent(config.defaultCategory);
+            return;
+        }
+
+        const category = config.categories.find(cat => cat.name.toLowerCase() === pathSegments[0]);
+        if (category) {
+            this.currentCategory = category.name;
+            if (pathSegments.length === 1) {
+                this.loadCategoryContent(category.name);
+            } else {
+                const item = this.findItemByUrl(category, `/${pathSegments.join('/')}`);
+                if (item) {
+                    this.currentItem = item.name;
+                    this.loadItemContent(category.name, item.name);
+                } else {
+                    this.loadNotFoundContent();
+                }
             }
         } else {
-            konamiIndex = 0;
+            const item = this.findItemByUrl(null, path);
+            if (item) {
+                const category = this.findCategoryByItem(item);
+                this.currentCategory = category.name;
+                this.currentItem = item.name;
+                this.loadItemContent(category.name, item.name);
+            } else {
+                this.loadNotFoundContent();
+            }
         }
-    });
+    }
 
-    function activateEasterEgg() {
+    findItemByUrl(category, url) {
+        if (category) {
+            return category.items.find(item => item.url === url);
+        }
+        return config.categories.flatMap(cat => cat.items).find(item => item.url === url);
+    }
+
+    findCategoryByItem(item) {
+        return config.categories.find(category => category.items.includes(item));
+    }
+
+    navigateTo(url, replace = false) {
+        if (replace) {
+            history.replaceState(null, '', url);
+        } else {
+            history.pushState(null, '', url);
+        }
+        this.handleRouteChange();
+    }
+
+    performSearch() {
+        const query = this.searchInput.value.toLowerCase().trim();
+        if (query) {
+            const results = this.generateSearchResults(query);
+            this.updateContent(results);
+        }
+    }
+
+    generateSearchResults(query) {
+        let results = '<h2>Search Results</h2><ul class="search-results">';
+        let found = false;
+
+        config.categories.forEach(category => {
+            category.items.forEach(item => {
+                if (item.name.toLowerCase().includes(query)) {
+                    found = true;
+                    results += `<li><a href="#" onclick="app.navigateTo('${item.url}'); return false;">${this.highlightMatch(item.name, query)} (${category.name})</a></li>`;
+                }
+            });
+        });
+
+        results += '</ul>';
+        return found ? results : `<h2>Search Results</h2><p>${config.noResultsMessage}</p>`;
+    }
+
+    highlightMatch(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    loadCategoryContent(categoryName) {
+      const category = config.categories.find(cat => cat.name === categoryName);
+      if (!category) return;
+
+      let content = `
+        <h2>${category.name}</h2>
+        <div class="sub-container">
+            ${category.items.map(item => `
+                <div class="item-card">
+                    <h3>${item.name}</h3>
+                    <a href="${item.url}" class="button visit-button">Visit Page</a>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    this.updateContent(content);
+    this.updateActiveSidebarItem(categoryName);
+  }
+
+    loadItemContent(categoryName, itemName) {
+        const category = config.categories.find(cat => cat.name === categoryName);
+        const item = category ? category.items.find(i => i.name === itemName) : null;
+
+        if (!category || !item) {
+            this.loadNotFoundContent();
+            return;
+        }
+
+        const content = `
+            <h2>${category.name}</h2>
+            <div class="sub-container">
+                ${category.items.map(i => `
+                    <a href="#" class="button ${i.name === itemName ? 'active' : ''}" 
+                       onclick="app.navigateTo('${i.url}'); return false;">${i.name}</a>
+                `).join('')}
+            </div>
+            <div class="item-content">
+                <h3>${itemName}</h3>
+                <p>Content for ${itemName} in the ${categoryName} category would be displayed here.</p>
+                <p>URL: ${item.url}</p>
+            </div>
+        `;
+        this.updateContent(content);
+        this.updateActiveSidebarItem(categoryName, itemName);
+    }
+
+    loadNotFoundContent() {
+        const content = `
+            <h2>404 - Page Not Found</h2>
+            <p>The requested page could not be found. Please check the URL or navigate using the menu.</p>
+        `;
+        this.updateContent(content);
+    }
+
+    updateContent(content) {
+        this.contentSection.style.opacity = 0;
+        setTimeout(() => {
+            this.contentSection.innerHTML = content;
+            this.contentSection.style.opacity = 1;
+        }, 300);
+    }
+
+    setupEasterEgg() {
+        let konamiIndex = 0;
+        const handleKeydown = (e) => {
+            if (e.key === config.easterEggCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === config.easterEggCode.length) {
+                    this.activateEasterEgg();
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        };
+        document.addEventListener('keydown', handleKeydown);
+    }
+
+    activateEasterEgg() {
         document.body.style.fontFamily = 'Comic Sans MS, cursive';
-        alert('Congratulations! You\'ve unlocked the secret Comic Sans mode!');
+        this.showNotification('Congratulations! You\'ve unlocked the secret Comic Sans mode!');
         setTimeout(() => {
             document.body.style.fontFamily = '';
-        }, 5000);
+        }, config.easterEggDuration);
     }
+
+    showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    generateSidebar() {
+        const sidebarContent = config.categories.map(category => `
+            <div class="sidebar-category">
+                <h3>${category.name}</h3>
+                ${category.items.map(item => `
+                    <a href="#" class="sidebar-item" data-category="${category.name}" data-item="${item.name}"
+                       onclick="app.navigateTo('${item.url}'); return false;">
+                        ${item.name}
+                    </a>
+                `).join('')}
+            </div>
+        `).join('');
+
+        this.sidebarSection.innerHTML = sidebarContent;
+    }
+
+    updateActiveSidebarItem(categoryName, itemName = null) {
+        const sidebarItems = this.sidebarSection.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.classList.remove('active');
+            item.removeAttribute('aria-current');
+        });
+
+        if (itemName) {
+            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"][data-item="${itemName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                activeItem.setAttribute('aria-current', 'page');
+            }
+        }
+    }
+}
+
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new DupuisApp();
 });
