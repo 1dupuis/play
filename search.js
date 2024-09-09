@@ -29,6 +29,8 @@ const config = {
             name: 'Development', 
             icon: 'fa-code', 
             items: [
+                { name: 'Study', url: '/workspace/study' },
+                { name: 'Notes', url: '/workspace/notes' },
                 { name: 'Old Homepage', url: '/homepage' },
                 { name: 'Contact', url: '/contact' },
                 { name: 'Videos', url: '/videos' },
