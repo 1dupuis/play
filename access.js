@@ -18,43 +18,44 @@
         },
 
         content: {
-            en: {
-                maintenance: {
-                    title: 'Digital Gardening in Progress! 🌱',
-                    message: 'Our tech wizards are sprucing things up. We\'ll be back in bloom before you know it!',
-                    icon: 'fa-solid fa-seedling'
-                },
-                blocked: {
-                    title: 'Whoops! VIP Treehouse Ahead 🌳',
-                    message: 'You\'ve stumbled upon our secret clubhouse. Only members with the magic password can enter!',
-                    icon: 'fa-solid fa-tree'
-                }
-            },
-            es: {
-                maintenance: {
-                    title: '¡Jardinería Digital en Progreso! 🌱',
-                    message: 'Nuestros magos tecnológicos están arreglando las cosas. ¡Volveremos a florecer antes de que te des cuenta!',
-                    icon: 'fa-solid fa-seedling'
-                },
-                blocked: {
-                    title: '¡Ups! Casa del Árbol VIP Adelante 🌳',
-                    message: '¡Has tropezado con nuestro club secreto. Solo los miembros con la contraseña mágica pueden entrar!',
-                    icon: 'fa-solid fa-tree'
-                }
-            },
-            fr: {
-                maintenance: {
-                    title: 'Jardinage Numérique en Cours ! 🌱',
-                    message: 'Nos magiciens tech sont en train d\'arranger les choses. Nous serons de retour en fleurs avant que vous ne le sachiez !',
-                    icon: 'fa-solid fa-seedling'
-                },
-                blocked: {
-                    title: 'Oups ! Cabane VIP Droit Devant 🌳',
-                    message: 'Vous êtes tombé sur notre club secret. Seuls les membres avec le mot de passe magique peuvent entrer !',
-                    icon: 'fa-solid fa-tree'
-                }
-            }
+    en: {
+        maintenance: {
+            title: 'Site Under Maintenance 🌱',
+            message: 'We are currently performing updates and improvements. The site will be back online shortly. Thank you for your patience.',
+            icon: 'fa-solid fa-seedling'
         },
+        blocked: {
+            title: 'Access Restricted 🌳',
+            message: 'This section is restricted to authorized users only. Please enter the correct password to proceed.',
+            icon: 'fa-solid fa-tree'
+        }
+    },
+    es: {
+        maintenance: {
+            title: 'Sitio en Mantenimiento 🌱',
+            message: 'Actualmente estamos realizando actualizaciones y mejoras. El sitio volverá a estar en línea pronto. Gracias por su paciencia.',
+            icon: 'fa-solid fa-seedling'
+        },
+        blocked: {
+            title: 'Acceso Restringido 🌳',
+            message: 'Esta sección está restringida solo para usuarios autorizados. Por favor, ingrese la contraseña correcta para continuar.',
+            icon: 'fa-solid fa-tree'
+        }
+    },
+    fr: {
+        maintenance: {
+            title: 'Site en Maintenance 🌱',
+            message: 'Nous effectuons actuellement des mises à jour et des améliorations. Le site sera de retour en ligne sous peu. Merci de votre patience.',
+            icon: 'fa-solid fa-seedling'
+        },
+        blocked: {
+            title: 'Accès Restreint 🌳',
+            message: 'Cette section est réservée aux utilisateurs autorisés. Veuillez entrer le mot de passe correct pour continuer.',
+            icon: 'fa-solid fa-tree'
+        }
+    }
+},
+
 
         funFacts: {
             en: [
