@@ -3,7 +3,7 @@
 
     const AccessControl = {
         config: {
-            maintenanceMode: true,
+            maintenanceMode: false,
             blockedUrls: ['/contact', '/admin'],
             pages: {
                 maintenance: '/maintenance.html',
@@ -119,17 +119,19 @@
                 return;
             }
 
-            const container = document.querySelector('.container') || document.createElement('div');
-            container.className = 'container';
+            // Create container if it doesn't exist
+            let container = document.querySelector('.container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'container';
+                document.body.appendChild(container);
+            }
+
             container.innerHTML = `
                 <div class="icon"><i class="${content.icon}"></i></div>
                 <h1>${content.title}</h1>
                 <p>${content.message}</p>
             `;
-
-            if (!document.body.contains(container)) {
-                document.body.appendChild(container);
-            }
 
             this.injectStyles();
 
@@ -166,5 +168,7 @@
     };
 
     // Initialize the AccessControl object
-    AccessControl.init();
+    document.addEventListener('DOMContentLoaded', () => {
+        AccessControl.init();
+    });
 })();
