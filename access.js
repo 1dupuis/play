@@ -20,36 +20,36 @@
         content: {
     en: {
         maintenance: {
-            title: 'Site Under Maintenance 🌱',
+            title: 'Site Under Maintenance',
             message: 'We are currently performing updates and improvements. The site will be back online shortly. Thank you for your patience.',
             icon: 'fa-solid fa-seedling'
         },
         blocked: {
-            title: 'Access Restricted 🌳',
+            title: 'Access Restricted',
             message: 'This section is restricted to authorized users only. Please enter the correct password to proceed.',
             icon: 'fa-solid fa-tree'
         }
     },
     es: {
         maintenance: {
-            title: 'Sitio en Mantenimiento 🌱',
+            title: 'Sitio en Mantenimiento',
             message: 'Actualmente estamos realizando actualizaciones y mejoras. El sitio volverá a estar en línea pronto. Gracias por su paciencia.',
             icon: 'fa-solid fa-seedling'
         },
         blocked: {
-            title: 'Acceso Restringido 🌳',
+            title: 'Acceso Restringido',
             message: 'Esta sección está restringida solo para usuarios autorizados. Por favor, ingrese la contraseña correcta para continuar.',
             icon: 'fa-solid fa-tree'
         }
     },
     fr: {
         maintenance: {
-            title: 'Site en Maintenance 🌱',
+            title: 'Site en Maintenance',
             message: 'Nous effectuons actuellement des mises à jour et des améliorations. Le site sera de retour en ligne sous peu. Merci de votre patience.',
             icon: 'fa-solid fa-seedling'
         },
         blocked: {
-            title: 'Accès Restreint 🌳',
+            title: 'Accès Restreint',
             message: 'Cette section est réservée aux utilisateurs autorisés. Veuillez entrer le mot de passe correct pour continuer.',
             icon: 'fa-solid fa-tree'
         }
