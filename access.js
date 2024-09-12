@@ -3,7 +3,7 @@
 
     const AccessControl = {
         config: {
-            maintenanceMode: false,
+            maintenanceMode: true,
             blockedUrls: ['/contact', '/admin'],
             pages: {
                 maintenance: '/maintenance.html',
@@ -76,7 +76,7 @@
         handleNavigation() {
             const currentPath = window.location.pathname;
             
-            if (this.config.maintenanceMode && currentPath !== this.config.pages.maintenance) {
+            if (this.config.maintenanceMode && !this.isCustomPage(currentPath)) {
                 this.redirect(this.config.pages.maintenance);
                 return;
             }
@@ -90,14 +90,21 @@
 
         interceptClicks(e) {
             const link = e.target.closest('a');
-            if (link) {
-                const href = link.getAttribute('href');
-                if (href && !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('#')) {
-                    const fullPath = new URL(href, window.location.origin).pathname;
-                    if (this.config.maintenanceMode || this.isUrlBlocked(fullPath)) {
-                        e.preventDefault();
-                        this.handleNavigation();
+            if (link && link.href) {
+                try {
+                    const url = new URL(link.href);
+                    if (url.origin === window.location.origin) {
+                        const fullPath = url.pathname;
+                        if (this.config.maintenanceMode && !this.isCustomPage(fullPath)) {
+                            e.preventDefault();
+                            this.redirect(this.config.pages.maintenance);
+                        } else if (this.isUrlBlocked(fullPath)) {
+                            e.preventDefault();
+                            this.redirect(`${this.config.pages.blocked}?from=${encodeURIComponent(fullPath)}`);
+                        }
                     }
+                } catch (error) {
+                    this.log(`Error parsing URL: ${error.message}`);
                 }
             }
         },
@@ -112,12 +119,14 @@
 
         injectContent(page) {
             const pageType = Object.keys(this.config.pages).find(key => this.config.pages[key] === page);
-            const content = this.content[this.config.language]?.[pageType] || this.content.en[pageType];
+            const content = this.getContent(pageType);
             
             if (!content) {
                 this.log(`Content not found for page type: ${pageType}`);
                 return;
             }
+
+            this.injectStyles();
 
             // Create container if it doesn't exist
             let container = document.querySelector('.container');
@@ -128,12 +137,10 @@
             }
 
             container.innerHTML = `
-                <div class="icon"><i class="${content.icon}"></i></div>
-                <h1>${content.title}</h1>
-                <p>${content.message}</p>
+                <div class="icon"><i class="${this.escapeHTML(content.icon)}"></i></div>
+                <h1>${this.escapeHTML(content.title)}</h1>
+                <p>${this.escapeHTML(content.message)}</p>
             `;
-
-            this.injectStyles();
 
             if (pageType === 'blocked') {
                 const params = new URLSearchParams(window.location.search);
@@ -141,10 +148,14 @@
                 if (fromPage) {
                     const messageElement = container.querySelector('p');
                     if (messageElement) {
-                        messageElement.textContent = `Access to "${fromPage}" is restricted. ${content.message}`;
+                        messageElement.textContent = `Access to "${this.escapeHTML(fromPage)}" is restricted. ${content.message}`;
                     }
                 }
             }
+        },
+
+        getContent(pageType) {
+            return this.content[this.config.language]?.[pageType] || this.content.en[pageType];
         },
 
         injectStyles() {
@@ -164,11 +175,29 @@
             if (this.config.debug) {
                 console.log(`[AccessControl] ${message}`);
             }
+        },
+
+        escapeHTML(str) {
+            const escapeChars = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+                '/': '&#x2F;',
+                '`': '&#x60;',
+                '=': '&#x3D;'
+            };
+            return String(str).replace(/[&<>"'`=\/]/g, function(char) {
+                return escapeChars[char];
+            });
         }
     };
 
     // Initialize the AccessControl object
-    document.addEventListener('DOMContentLoaded', () => {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => AccessControl.init());
+    } else {
         AccessControl.init();
-    });
+    }
 })();
