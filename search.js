@@ -38,6 +38,19 @@ const config = {
             ]
         }
     ],
+    announcements: [
+        {
+            message: "Maintenance Starting Soon.",
+            startTime: "00:00",
+            endTime: "24:00",
+            days: ["Friday"],
+            persistent: true
+        },
+        {
+            message: "Welcome LEPSS!",
+            showForever: true
+        },
+    ],
     defaultCategory: 'Games',
     searchPlaceholder: 'Search dupuis.lol...',
     noResultsMessage: 'No results found. Try a different search term.',
@@ -321,6 +334,151 @@ class DupuisApp {
     highlightMatch(text, query) {
         const regex = new RegExp(`(${query})`, 'gi');
         return text.replace(regex, '<mark>$1</mark>');
+    }
+    
+    setupAnnouncements() {
+        // Create announcement container
+        const announcementContainer = document.createElement('div');
+        announcementContainer.id = 'announcement-container';
+        Object.assign(announcementContainer.style, {
+            position: 'auto',
+            top: '0',
+            left: '0',
+            right: '0',
+            zIndex: '1000'
+        });
+        document.body.insertBefore(announcementContainer, document.body.firstChild);
+
+        // Create a stack to manage multiple announcements
+        this.announcementStack = [];
+
+        const checkAnnouncements = () => {
+            const now = new Date();
+            const currentDay = now.toLocaleString('en-US', { weekday: 'long' });
+            const currentTime = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+            config.announcements.forEach(announcement => {
+                if (this.isAnnouncementActive(announcement, now, currentDay, currentTime)) {
+                    if (!this.announcementStack.includes(announcement)) {
+                        this.announcementStack.push(announcement);
+                    }
+                } else {
+                    const index = this.announcementStack.indexOf(announcement);
+                    if (index > -1) {
+                        this.announcementStack.splice(index, 1);
+                    }
+                }
+            });
+
+            this.updateAnnouncementDisplay();
+        };
+
+        // Check announcements immediately and then every minute
+        checkAnnouncements();
+        setInterval(checkAnnouncements, 60000);
+    }
+
+    isAnnouncementActive(announcement, now, currentDay, currentTime) {
+        if (announcement.showForever) return true;
+
+        if (announcement.showUntil) {
+            const endDate = new Date(announcement.showUntil);
+            if (now > endDate) return false;
+        }
+
+        if (announcement.start) {
+            const startDate = new Date(announcement.start);
+            if (now < startDate) return false;
+        }
+
+        if (announcement.days && !announcement.days.includes(currentDay)) return false;
+
+        if (announcement.startTime && announcement.endTime) {
+            return currentTime >= announcement.startTime && currentTime <= announcement.endTime;
+        }
+
+        return true;
+    }
+
+    updateAnnouncementDisplay() {
+        const container = document.getElementById('announcement-container');
+        container.innerHTML = '';
+
+        this.announcementStack.forEach((announcement, index) => {
+            this.showAnnouncement(announcement, index);
+        });
+    }
+
+    showAnnouncement(announcement, index) {
+        const container = document.getElementById('announcement-container');
+        const announcementDiv = document.createElement('div');
+        announcementDiv.className = 'announcement';
+        Object.assign(announcementDiv.style, {
+            backgroundColor: this.isDarkMode ? '#1e1e1e' : '#f8d7da',
+            color: this.isDarkMode ? '#f8d7da' : '#721c24',
+            padding: '10px 20px',
+            textAlign: 'center',
+            fontSize: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            animation: 'slideDown 0.5s ease-out',
+            borderBottom: index > 0 ? '1px solid ' + (this.isDarkMode ? '#f8d7da' : '#721c24') : 'none'
+        });
+
+        const messageParagraph = document.createElement('p');
+        messageParagraph.textContent = announcement.message;
+        Object.assign(messageParagraph.style, {
+            margin: '0',
+            flexGrow: '1'
+        });
+
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '×';
+        closeButton.className = 'close-announcement';
+        Object.assign(closeButton.style, {
+            background: 'none',
+            border: 'none',
+            color: this.isDarkMode ? '#f8d7da' : '#721c24',
+            fontSize: '20px',
+            cursor: 'pointer',
+            padding: '0 10px'
+        });
+
+        closeButton.addEventListener('mouseenter', () => {
+            closeButton.style.color = this.isDarkMode ? '#ffffff' : '#a71d2a';
+        });
+
+        closeButton.addEventListener('mouseleave', () => {
+            closeButton.style.color = this.isDarkMode ? '#f8d7da' : '#721c24';
+        });
+
+        closeButton.addEventListener('click', () => this.hideAnnouncement(announcement));
+
+        announcementDiv.appendChild(messageParagraph);
+        announcementDiv.appendChild(closeButton);
+        container.appendChild(announcementDiv);
+
+        // Add keyframes for slide down animation
+        if (!document.querySelector('#slideDownKeyframes')) {
+            const keyframes = document.createElement('style');
+            keyframes.id = 'slideDownKeyframes';
+            keyframes.textContent = `
+                @keyframes slideDown {
+                    from { transform: translateY(-100%); }
+                    to { transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(keyframes);
+        }
+    }
+
+    hideAnnouncement(announcement) {
+        const index = this.announcementStack.indexOf(announcement);
+        if (index > -1) {
+            this.announcementStack.splice(index, 1);
+        }
+        this.updateAnnouncementDisplay();
     }
 
     loadCategoryContent(categoryName) {
@@ -709,6 +867,7 @@ class DupuisApp {
         this.setupLazyLoading();
         this.enhanceAccessibility();
         this.setupKeyboardNavigation();
+        this.setupAnnouncements();
     }
 }
 
