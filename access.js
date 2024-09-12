@@ -6,8 +6,8 @@
             maintenanceMode: true,
             blockedUrls: ['/contact', '/admin'],
             pages: {
-                maintenance: '/maintenance.html',
-                blocked: '/blocked-page.html'
+                maintenance: '/maintenance',
+                blocked: '/blocked-page'
             },
             defaultRedirect: '/',
             debug: false,
