@@ -3,7 +3,7 @@
 
     const AccessControl = {
         config: {
-            maintenanceMode: true,
+            maintenanceMode: false,
             blockedUrls: ['/contact', '/admin'],
             pages: {
                 maintenance: '/maintenance',
