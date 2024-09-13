@@ -9,7 +9,7 @@ const config = {
                 { name: 'Trivia', url: '/trivia' },
                 { name: 'Motle', url: '/motle' },
                 { name: 'DupuisGuessr', url: '/guessr' },
-                { name: 'Ascend', url: '/ascend' }
+                { name: 'Ascend', url: '/ascend' },
                 { name: 'Word Voyage', url: '/word-voyage' }
             ]
         },
