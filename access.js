@@ -400,7 +400,7 @@
             const countdownElement = document.querySelector('.countdown');
             if (!countdownElement) return;
 
-            const endTime = new Date().getTime() + 30 * 60 * 1000; // 30 minutes from now
+            const endTime = new Date().getTime() + 2 * 60 * 60 * 1000;
 
             const updateCountdown = () => {
                 const now = new Date().getTime();
