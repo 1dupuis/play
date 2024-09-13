@@ -40,14 +40,21 @@ const config = {
     ],
     announcements: [
         {
-            message: "Maintenance Starting Soon.",
+            message: "⚠️ Weekly Maintenance Starting Soon...",
             startTime: "00:00",
             endTime: "24:00",
-            days: ["Friday"],
+            days: ["Friday", "Saturday"],
             persistent: true
         },
         {
-            message: "Welcome LEPSS!",
+            message: "⚠️ Weekly Maintenance Has Concluded.",
+            startTime: "00:00",
+            endTime: "24:00",
+            days: ["Sunday"],
+            persistent: true
+        },
+        {
+            message: "🇫🇷 Welcome LEPSS!",
             showForever: true
         },
     ],
