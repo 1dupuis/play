@@ -54,7 +54,7 @@ const config = {
             persistent: true
         },
         {
-            message: "🇫🇷 Welcome LEPSS!",
+            message: "🟪 Welcome LEPSS!",
             showForever: true
         },
     ],
