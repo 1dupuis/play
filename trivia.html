@@ -3,36 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Trivia</title>
+    <title>Dupuis.lol - Multilingual Trivia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="trivia.css">
-    <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="access.js" defer></script>
+    <script src="trivia.js" defer></script>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="scoreBoard">
-            <span id="score">Score: 0</span>
-            <span id="highScore">High Score: 0</span>
-        </div>
-        <div id="questionContainer">
-            <div id="question"></div>
-            <div id="answers">
-                <button class="answer-btn" data-answer="1">Answer 1</button>
-                <button class="answer-btn" data-answer="2">Answer 2</button>
-                <button class="answer-btn" data-answer="3">Answer 3</button>
-                <button class="answer-btn" data-answer="4">Answer 4</button>
+    <header>
+        <h1><i class="fas fa-globe"></i> Trivia Center</h1>
+        <nav>
+            <ul>
+                <li><a href="#home" class="active"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#trivia-center"><i class="fas fa-question-circle"></i> Trivia Center</a></li>
+                <li><a href="#leaderboard"><i class="fas fa-trophy"></i> Leaderboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="active-section">
+            <h2>Welcome to Trivia Center</h2>
+            <div id="language-selector">
+                <label for="game-language">Game Language:</label>
+                <select id="game-language">
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
             </div>
-        </div>
-        <div id="feedback" class="feedback"></div>
-        <div id="timer">Time Left: <span id="time">30</span> seconds</div>
-        <div id="gameOverScreen" class="overlay hidden">
-            <h1>Game Over</h1>
-            <p id="finalScore"></p>
-            <button id="restartButton" class="button">Play Again</button>
-            <button id="homeButton" class="button">Home</button>
+            <div id="difficulty-selector">
+                <label for="game-difficulty">Difficulty:</label>
+                <select id="game-difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div id="category-selector">
+                <label for="game-category">Category:</label>
+                <select id="game-category">
+                    <option value="9">General Knowledge</option>
+                    <option value="17">Science & Nature</option>
+                    <option value="23">History</option>
+                    <!-- Add more categories as needed -->
+                </select>
+            </div>
+            <button id="start-game">Start Trivia</button>
+        </section>
+
+        <section id="trivia-center" class="hidden-section">
+            <h2>Trivia Center</h2>
+            <div id="game-info">
+                <span id="question-number"></span>
+                <span id="score">Score: <span id="current-score">0</span></span>
+            </div>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+            <div id="question-container">
+                <p id="question"></p>
+                <div id="answers"></div>
+            </div>
+            <div id="feedback"></div>
+            <div id="timer">Time: <span id="time-left"></span></div>
+            <button id="next-question" class="hidden">Next Question</button>
+        </section>
+
+        <section id="leaderboard" class="hidden-section">
+            <h2>Leaderboard</h2>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                        <th>Language</th>
+                        <th>Difficulty</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Dupuis.lol. All rights reserved.</p>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <button id="modal-close">Close</button>
+            <button id="modal-action" class="hidden">Action</button>
         </div>
     </div>
-
-    <script src="trivia.js"></script>
 </body>
 </html>
