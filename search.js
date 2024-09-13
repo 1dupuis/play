@@ -10,6 +10,7 @@ const config = {
                 { name: 'Motle', url: '/motle' },
                 { name: 'DupuisGuessr', url: '/guessr' },
                 { name: 'Ascend', url: '/ascend' }
+                { name: 'Word Voyage', url: '/word-voyage' }
             ]
         },
         { 
