@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dupuis.lol - Word Voyage</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --background-color: #f0f4f8;
+            --text-color: #333;
+            --correct-color: #2ecc71;
+            --wrong-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            margin-right: 5px;
+            font-size: 1.2em;
+        }
+
+        .progress-container {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.5s ease;
+        }
+
+        .timer-container {
+            position: relative;
+            height: 5px;
+            background-color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .timer-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.1s linear;
+        }
+
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .option:active {
+            transform: translateY(0);
+        }
+
+        .streak {
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .hint {
+            font-style: italic;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .powerup-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .powerup {
+            padding: 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--secondary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .powerup:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+                border-radius: 0;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="animate__animated animate__fadeIn">Word Voyage</h1>
+        <div class="stats-container">
+            <div class="stat"><span class="stat-icon">🏆</span> Score: <span id="score">0</span></div>
+            <div class="stat"><span class="stat-icon"></span>Lives: <span id="lives">3</span></div>
+            <div class="stat"><span class="stat-icon">🏅</span> Level: <span id="level">1</span></div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        <div class="timer-container">
+            <div class="timer-bar" id="timer"></div>
+        </div>
+        <div class="question animate__animated animate__fadeIn" id="question"></div>
+        <div class="options-container" id="options"></div>
+        <div class="streak" id="streak"></div>
+        <div class="hint" id="hint"></div>
+        <div class="powerup-container">
+            <button class="powerup" id="skipPowerup">Skip Word</button>
+            <button class="powerup" id="hintPowerup">Extra Hint</button>
+            <button class="powerup" id="timePowerup">Extra Time</button>
+        </div>
+    </div>
+
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Level Up!</h2>
+            <p>Congratulations! You've reached level <span id="newLevel"></span>!</p>
+            <p>New words have been added to the game.</p>
+            <button id="continueBtn">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+    { en: 'hello', fr: 'bonjour', hint: 'Used as a greeting' },
+    { en: 'goodbye', fr: 'au revoir', hint: 'Said when leaving' },
+    { en: 'please', fr: "s'il vous plaît", hint: 'Used for polite requests' },
+    { en: 'thank you', fr: 'merci', hint: 'Express gratitude' },
+    { en: 'yes', fr: 'oui', hint: 'Affirmative response' },
+    { en: 'no', fr: 'non', hint: 'Negative response' },
+    { en: 'good', fr: 'bon', hint: 'Opposite of bad' },
+    { en: 'bad', fr: 'mauvais', hint: 'Not good' },
+    { en: 'big', fr: 'grand', hint: 'Not small' },
+    { en: 'small', fr: 'petit', hint: 'Opposite of big' },
+    { en: 'water', fr: 'eau', hint: 'Essential for life' },
+    { en: 'food', fr: 'nourriture', hint: 'We eat it' },
+    { en: 'friend', fr: 'ami', hint: 'A close companion' },
+    { en: 'family', fr: 'famille', hint: 'Related by blood or marriage' },
+    { en: 'love', fr: 'amour', hint: 'A strong affection' },
+    { en: 'beautiful', fr: 'beau/belle', hint: 'Pleasing to the senses' },
+    { en: 'happy', fr: 'heureux/heureuse', hint: 'Feeling joy' },
+    { en: 'sad', fr: 'triste', hint: 'Feeling sorrow' },
+    { en: 'strong', fr: 'fort', hint: 'Having physical power' },
+    { en: 'weak', fr: 'faible', hint: 'Lacking strength' },
+    { en: 'fast', fr: 'rapide', hint: 'Moving quickly' },
+    { en: 'slow', fr: 'lent', hint: 'Not moving quickly' },
+    { en: 'hot', fr: 'chaud', hint: 'High temperature' },
+    { en: 'cold', fr: 'froid', hint: 'Low temperature' },
+    { en: 'new', fr: 'nouveau/nouvelle', hint: 'Recently created or obtained' },
+    { en: 'old', fr: 'vieux/vieille', hint: 'Not new or young' },
+    { en: 'young', fr: 'jeune', hint: 'In an early stage of life' },
+    { en: 'car', fr: 'voiture', hint: 'A road vehicle' },
+    { en: 'house', fr: 'maison', hint: 'A place to live' },
+    { en: 'book', fr: 'livre', hint: 'Written or printed work' },
+    { en: 'dog', fr: 'chien', hint: 'A common pet' },
+    { en: 'cat', fr: 'chat', hint: 'Feline pet' },
+    { en: 'tree', fr: 'arbre', hint: 'Tall plant with a trunk' },
+    { en: 'flower', fr: 'fleur', hint: 'Blossoming plant' },
+    { en: 'sun', fr: 'soleil', hint: 'Star at the center of our solar system' },
+    { en: 'moon', fr: 'lune', hint: "Earth's natural satellite" },
+    { en: 'star', fr: 'étoile', hint: 'Luminous celestial body' },
+    { en: 'rain', fr: 'pluie', hint: 'Water falling from clouds' },
+    { en: 'snow', fr: 'neige', hint: 'Frozen precipitation' },
+    { en: 'wind', fr: 'vent', hint: 'Moving air' },
+    { en: 'cloud', fr: 'nuage', hint: 'Visible mass of water droplets in the sky' },
+    { en: 'mountain', fr: 'montagne', hint: 'Very high hill' },
+    { en: 'river', fr: 'rivière', hint: 'Natural flowing watercourse' },
+    { en: 'sea', fr: 'mer', hint: 'Large body of saltwater' },
+    { en: 'beach', fr: 'plage', hint: 'Sandy shore by the ocean' },
+    { en: 'forest', fr: 'forêt', hint: 'Large area with many trees' },
+    { en: 'city', fr: 'ville', hint: 'Large urban area' },
+    { en: 'village', fr: 'village', hint: 'Small rural community' },
+    { en: 'school', fr: 'école', hint: 'Place for education' },
+    { en: 'hospital', fr: 'hôpital', hint: 'Medical care facility' },
+    { en: 'restaurant', fr: 'restaurant', hint: 'Place to eat out' },
+    { en: 'store', fr: 'magasin', hint: 'Place to buy goods' },
+    { en: 'money', fr: 'argent', hint: 'Medium of exchange' },
+    { en: 'work', fr: 'travail', hint: 'Job or occupation' },
+    { en: 'play', fr: 'jouer', hint: 'Engage in activity for enjoyment' },
+    { en: 'sleep', fr: 'dormir', hint: 'Rest in a state of unconsciousness' },
+    { en: 'eat', fr: 'manger', hint: 'Consume food' },
+    { en: 'drink', fr: 'boire', hint: 'Consume liquid' },
+    { en: 'walk', fr: 'marcher', hint: 'Move on foot' },
+    { en: 'run', fr: 'courir', hint: 'Move quickly on foot' },
+    { en: 'jump', fr: 'sauter', hint: 'Spring off the ground' },
+    { en: 'swim', fr: 'nager', hint: 'Move through water' },
+    { en: 'fly', fr: 'voler', hint: 'Move through air' },
+    { en: 'sing', fr: 'chanter', hint: 'Make musical sounds with voice' },
+    { en: 'dance', fr: 'danser', hint: 'Move rhythmically to music' },
+    { en: 'laugh', fr: 'rire', hint: 'Express amusement' },
+    { en: 'cry', fr: 'pleurer', hint: 'Shed tears' },
+    { en: 'smile', fr: 'sourire', hint: 'Expression of happiness' },
+    { en: 'dream', fr: 'rêver', hint: 'Series of thoughts during sleep' },
+    { en: 'think', fr: 'penser', hint: 'Use mind to consider' },
+    { en: 'speak', fr: 'parler', hint: 'Express in words' },
+    { en: 'listen', fr: 'écouter', hint: 'Pay attention to sound' },
+    { en: 'read', fr: 'lire', hint: 'Look at and comprehend written words' },
+    { en: 'write', fr: 'écrire', hint: 'Mark letters or words on a surface' },
+    { en: 'learn', fr: 'apprendre', hint: 'Gain knowledge or skill' },
+    { en: 'teach', fr: 'enseigner', hint: 'Impart knowledge' },
+    { en: 'help', fr: 'aider', hint: 'Make it easier for someone' },
+    { en: 'love', fr: 'aimer', hint: 'Feel deep affection' },
+    { en: 'hate', fr: 'détester', hint: 'Feel intense dislike' },
+    { en: 'fear', fr: 'craindre', hint: 'Be afraid of' }
+];
+
+        const advancedWords = [
+    { en: 'beautiful', fr: 'beau/belle', hint: 'Pleasing to the senses' },
+    { en: 'happy', fr: 'heureux/heureuse', hint: 'Feeling joy' },
+    { en: 'sad', fr: 'triste', hint: 'Feeling sorrow' },
+    { en: 'strong', fr: 'fort', hint: 'Having physical power' },
+    { en: 'weak', fr: 'faible', hint: 'Lacking strength' },
+    { en: 'fast', fr: 'rapide', hint: 'Moving quickly' },
+    { en: 'slow', fr: 'lent', hint: 'Not moving quickly' },
+    { en: 'hot', fr: 'chaud', hint: 'High temperature' },
+    { en: 'cold', fr: 'froid', hint: 'Low temperature' },
+    { en: 'new', fr: 'nouveau/nouvelle', hint: 'Recently created or obtained' },
+    { en: 'old', fr: 'vieux/vieille', hint: 'Having existed for a long time' },
+    { en: 'big', fr: 'grand/grande', hint: 'Of large size' },
+    { en: 'small', fr: 'petit/petite', hint: 'Of little size' },
+    { en: 'easy', fr: 'facile', hint: 'Not difficult' },
+    { en: 'difficult', fr: 'difficile', hint: 'Hard to do' },
+    { en: 'rich', fr: 'riche', hint: 'Having a lot of money' },
+    { en: 'poor', fr: 'pauvre', hint: 'Lacking financial resources' },
+    { en: 'light', fr: 'léger/légère', hint: 'Of little weight' },
+    { en: 'heavy', fr: 'lourd/lourde', hint: 'Of great weight' },
+    { en: 'clean', fr: 'propre', hint: 'Free from dirt' },
+    { en: 'dirty', fr: 'sale', hint: 'Covered with dirt' },
+    { en: 'early', fr: 'tôt', hint: 'Before the expected time' },
+    { en: 'late', fr: 'tard', hint: 'After the expected time' }
+];
+        let currentWord, options, score, lives, level, streak, timerInterval, currentWords;
+        const maxLives = 3;
+        const wordsPerLevel = 10;
+        let timeLeft = 15;
+        let powerups = {
+            skip: 3,
+            hint: 3,
+            time: 3
+        };
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function newGame() {
+            score = 0;
+            lives = maxLives;
+            level = 1;
+            streak = 0;
+            currentWords = [...words];
+            powerups = { skip: 1, hint: 2, time: 1 };
+            updateUI();
+            newRound();
+        }
+
+        function newRound() {
+            clearInterval(timerInterval);
+            timeLeft = 15;
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 100);
+
+            const wordIndex = Math.floor(Math.random() * currentWords.length);
+            currentWord = currentWords[wordIndex];
+            const wrongOptions = shuffleArray(currentWords.filter(w => w !== currentWord)).slice(0, 3);
+            options = shuffleArray([...wrongOptions, currentWord]);
+
+            document.getElementById('question').textContent = `What's the French word for "${currentWord.en}"?`;
+            document.getElementById('question').classList.remove('animate__fadeIn');
+            void document.getElementById('question').offsetWidth;
+            document.getElementById('question').classList.add('animate__fadeIn');
+
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.fr;
+                button.className = 'option animate__animated animate__fadeIn';
+                button.onclick = () => handleGuess(option);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('hint').textContent = `Hint: ${currentWord.hint}`;
+            updatePowerupButtons();
+        }
+
+        function handleGuess(guess) {
+            clearInterval(timerInterval);
+            const optionButtons = document.querySelectorAll('.option');
+            optionButtons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === currentWord.fr) {
+                    button.style.backgroundColor = 'var(--correct-color)';
+                } else if (button.textContent === guess.fr && guess !== currentWord) {
+                    button.style.backgroundColor = 'var(--wrong-color)';
+                }
+            });
+
+            if (guess === currentWord) {
+                score += 10 + (level * 2) + (streak * 2);
+                streak++;
+                if (score >= level * wordsPerLevel * 10) {
+                    levelUp();
+                }
+            } else {
+                lives--;
+                streak = 0;
+                document.querySelector('.game-container').classList.add('shake');
+                setTimeout(() => {
+                    document.querySelector('.game-container').classList.remove('shake');
+                }, 500);
+                if (lives === 0) {
+                    endGame();
+                    return;
+                }
+            }
+            updateUI();
+            setTimeout(newRound, 1500);
+        }
+
+        function updateTimer() {
+            timeLeft -= 0.1;
+            document.getElementById('timer').style.width = `${(timeLeft / 15) * 100}%`;
+            if (timeLeft <= 0) {
+                handleGuess({ fr: '' });
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = '❤️'.repeat(lives) + '🖤'.repeat(maxLives - lives);
+            document.getElementById('level').textContent = level;
+            document.getElementById('progress').style.width = `${(score % (wordsPerLevel * 10)) / (wordsPerLevel * 10) * 100}%`;
+            document.getElementById('streak').textContent = streak > 0 ? `Streak: ${streak} 🔥` : '';
+            updatePowerupButtons();
+        }
+
+        function updatePowerupButtons() {
+            document.getElementById('skipPowerup').textContent = `Skip Word (${powerups.skip})`;
+            document.getElementById('skipPowerup').disabled = powerups.skip === 0;
+            document.getElementById('hintPowerup').textContent = `Extra Hint (${powerups.hint})`;
+            document.getElementById('hintPowerup').disabled = powerups.hint === 0;
+            document.getElementById('timePowerup').textContent = `Extra Time (${powerups.time})`;
+            document.getElementById('timePowerup').disabled = powerups.time === 0;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2>Game Over!</h2>
+                    <p>Your final score: ${score}</p>
+                    <p>Level reached: ${level}</p>
+                    <button onclick="newGame(); this.closest('.modal').remove();">Play Again</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+        }
+
+        function levelUp() {
+            level++;
+            const modal = document.getElementById('levelUpModal');
+            document.getElementById('newLevel').textContent = level;
+            modal.style.display = 'block';
+
+            if (level % 2 === 0 && level <= 6) {
+                const newWords = advancedWords.slice((level / 2 - 1) * 5, (level / 2) * 5);
+                currentWords = [...currentWords, ...newWords];
+            }
+
+            // Replenish powerups
+            powerups.skip = Math.min(powerups.skip + 1, 3);
+            powerups.hint = Math.min(powerups.hint + 1, 3);
+            powerups.time = Math.min(powerups.time + 1, 3);
+        }
+
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('levelUpModal').style.display = 'none';
+        }
+
+        document.getElementById('continueBtn').onclick = function() {
+            document.getElementById('levelUpModal').style.display = 'none';
+            newRound();
+        }
+
+        document.getElementById('skipPowerup').onclick = function() {
+            if (powerups.skip > 0) {
+                powerups.skip--;
+                newRound();
+            }
+        }
+
+        document.getElementById('hintPowerup').onclick = function() {
+            if (powerups.hint > 0) {
+                powerups.hint--;
+                const extraHint = document.createElement('p');
+                extraHint.textContent = `Extra hint: The word starts with "${currentWord.fr[0]}"`;
+                document.getElementById('hint').appendChild(extraHint);
+                updatePowerupButtons();
+            }
+        }
+
+        document.getElementById('timePowerup').onclick = function() {
+            if (powerups.time > 0) {
+                powerups.time--;
+                timeLeft = Math.min(timeLeft + 5, 15);
+                updatePowerupButtons();
+            }
+        }
+
+        // Local storage for high score
+        function saveHighScore() {
+            const highScore = localStorage.getItem('wordVoyageHighScore') || 0;
+            if (score > highScore) {
+                localStorage.setItem('wordVoyageHighScore', score);
+            }
+        }
+
+        function displayHighScore() {
+            const highScore = localStorage.getItem('wordVoyageHighScore') || 0;
+            const highScoreElement = document.createElement('div');
+            highScoreElement.textContent = `High Score: ${highScore}`;
+            highScoreElement.style.textAlign = 'center';
+            highScoreElement.style.marginTop = '10px';
+            document.querySelector('.game-container').appendChild(highScoreElement);
+        }
+
+        // Add keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if (['1', '2', '3', '4'].includes(key)) {
+                const index = parseInt(key) - 1;
+                if (index < options.length) {
+                    handleGuess(options[index]);
+                }
+            }
+        });
+
+        // Initialize the game
+        newGame();
+        displayHighScore();
+    </script>
+</body>
+</html>
