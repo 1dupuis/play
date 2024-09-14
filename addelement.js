@@ -29,7 +29,8 @@ class ButtonManager {
                 transform: 'scale(1.05)',
                 boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)'
             },
-            defaultIconClass: 'fa-home' // Font Awesome home icon class
+            defaultIconClass: 'fa-home', // Font Awesome home icon class
+            fontAwesomeUrl: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css'
         };
 
         this.init();
@@ -38,7 +39,32 @@ class ButtonManager {
     // Initialize the manager
     init() {
         document.addEventListener('DOMContentLoaded', () => {
-            this.checkAndCreateButton();
+            this.loadFontAwesome().then(() => {
+                this.checkAndCreateButton();
+            });
+        });
+    }
+
+    // Load Font Awesome if not already present
+    loadFontAwesome() {
+        return new Promise((resolve) => {
+            if (document.querySelector('link[href*="font-awesome"]')) {
+                // Font Awesome is already loaded
+                resolve();
+                return;
+            }
+
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = this.config.fontAwesomeUrl;
+            link.onload = () => {
+                resolve();
+            };
+            link.onerror = (error) => {
+                console.error('Failed to load Font Awesome:', error);
+                resolve(); // Proceed even if Font Awesome fails to load
+            };
+            document.head.appendChild(link);
         });
     }
 
