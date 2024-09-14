@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dupuis.lol - Stromae Puzzle Game</title>
+    <link rel="stylesheet" href="stromae.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1>Stromae Puzzle Game</h1>
+        </header>
+        <nav id="difficulty-selector" aria-label="Difficulty selection">
+            <button data-difficulty="easy" aria-pressed="true">Easy</button>
+            <button data-difficulty="medium" aria-pressed="false">Medium</button>
+            <button data-difficulty="hard" aria-pressed="false">Hard</button>
+        </nav>
+        <main>
+            <section id="game-area">
+                <div id="puzzle-area" aria-live="polite"></div>
+                <div id="word-bank" aria-label="Word bank"></div>
+            </section>
+            <section id="game-controls">
+                <button id="check-answer">Check Answer</button>
+                <button id="new-puzzle" hidden>New Puzzle</button>
+                <button id="hint" hidden>Get Hint</button>
+            </section>
+            <section id="game-info">
+                <div id="score-display">Score: <span id="score">0</span></div>
+                <div id="time-display">Time: <span id="time">00:00</span></div>
+                <div id="progress-container">
+                    <div id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <div id="progress"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <aside id="achievements" aria-label="Achievements">
+            <h2>Achievements</h2>
+            <ul id="achievement-list"></ul>
+        </aside>
+    </div>
+    <div id="modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <button id="modal-close">Close</button>
+        </div>
+    </div>
+    <script src="stromae.js"></script>
+</body>
+</html>
