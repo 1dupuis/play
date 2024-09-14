@@ -9,25 +9,26 @@ class ButtonManager {
                 position: 'fixed',
                 top: '10px',
                 left: '10px',
-                padding: '10px 20px',
+                padding: '12px 24px',
                 backgroundColor: '#007bff',
                 color: '#fff',
                 border: 'none',
-                borderRadius: '5px',
-                fontSize: '16px',
+                borderRadius: '8px',
+                fontSize: '18px',
                 cursor: 'pointer',
                 zIndex: 1000,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                gap: '10px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
                 fontFamily: '"Arial", sans-serif',
                 overflow: 'hidden'
             },
             defaultButtonHoverStyles: {
-                transform: 'scale(1.05)',
-                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)'
+                transform: 'scale(1.1)',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.4)',
+                backgroundColor: '#0056b3'
             },
             defaultIconClass: 'fa-home', // Font Awesome home icon class
             fontAwesomeUrl: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css'
@@ -47,9 +48,8 @@ class ButtonManager {
 
     // Load Font Awesome if not already present
     loadFontAwesome() {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             if (document.querySelector('link[href*="font-awesome"]')) {
-                // Font Awesome is already loaded
                 resolve();
                 return;
             }
@@ -57,14 +57,12 @@ class ButtonManager {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
             link.href = this.config.fontAwesomeUrl;
-            link.onload = () => {
-                resolve();
-            };
-            link.onerror = (error) => {
-                console.error('Failed to load Font Awesome:', error);
-                resolve(); // Proceed even if Font Awesome fails to load
-            };
+            link.onload = () => resolve();
+            link.onerror = (error) => reject(new Error('Failed to load Font Awesome: ' + error.message));
             document.head.appendChild(link);
+        }).catch(error => {
+            console.error(error);
+            // Proceed without Font Awesome if loading fails
         });
     }
 
@@ -100,14 +98,14 @@ class ButtonManager {
 
     // Function to apply hover styles
     applyHoverStyles(button, hoverStyles) {
-        button.style.transform = hoverStyles.transform;
-        button.style.boxShadow = hoverStyles.boxShadow;
+        Object.assign(button.style, hoverStyles);
     }
 
     // Function to remove hover styles
     removeHoverStyles(button) {
         button.style.transform = '';
         button.style.boxShadow = '';
+        button.style.backgroundColor = '';
     }
 
     // Function to check if any link matches the desired patterns
