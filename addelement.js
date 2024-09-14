@@ -3,7 +3,7 @@ class ButtonManager {
         this.config = {
             defaultButtonId: 'homeButton',
             defaultButtonText: 'Home',
-            defaultButtonLink: 'search.html',
+            defaultButtonLink: 'search',
             defaultButtonPatterns: [/\/search/, /\/search\.html/],
             defaultButtonStyles: {
                 position: 'fixed',
