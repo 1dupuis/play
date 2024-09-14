@@ -618,15 +618,22 @@ class DupuisApp {
     }
 
     loadThemePreference() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            this.isDarkMode = savedTheme === 'dark';
-            document.body.classList.toggle('dark-theme', this.isDarkMode);
-        } else {
-            this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.body.classList.toggle('dark-theme', this.isDarkMode);
-        }
-        this.updateThemeToggleButton();
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        this.isDarkMode = savedTheme === 'dark';
+    } else {
+        // Default to light theme regardless of system preference
+        this.isDarkMode = false;
+        
+        // Save the default light theme preference
+        localStorage.setItem('theme', 'light');
+    }
+
+    // Apply the theme
+    document.body.classList.toggle('dark-theme', this.isDarkMode);
+    
+    // Update the theme toggle button
+    this.updateThemeToggleButton();
     }
 
     updateThemeToggleButton() {
