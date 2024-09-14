@@ -14,16 +14,19 @@ class ButtonManager {
                 color: '#fff',
                 border: 'none',
                 borderRadius: '8px',
-                fontSize: '18px',
+                fontSize: '16px',
                 cursor: 'pointer',
                 zIndex: 1000,
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 gap: '10px',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
                 fontFamily: '"Arial", sans-serif',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                maxWidth: 'calc(100% - 20px)',
+                boxSizing: 'border-box'
             },
             defaultButtonHoverStyles: {
                 transform: 'scale(1.1)',
@@ -42,6 +45,8 @@ class ButtonManager {
         document.addEventListener('DOMContentLoaded', () => {
             this.loadFontAwesome().then(() => {
                 this.checkAndCreateButton();
+            }).catch(error => {
+                console.error('Initialization error:', error);
             });
         });
     }
@@ -60,9 +65,6 @@ class ButtonManager {
             link.onload = () => resolve();
             link.onerror = (error) => reject(new Error('Failed to load Font Awesome: ' + error.message));
             document.head.appendChild(link);
-        }).catch(error => {
-            console.error(error);
-            // Proceed without Font Awesome if loading fails
         });
     }
 
