@@ -33,34 +33,7 @@ class AIDarkModeManager {
         };
 
         this.lightTheme = {
-          '--light-backgroundColor': '#ffffff',
-          '--light-containerBackgroundColor': '#f0f0f0',
-          '--light-textColor': '#333333',
-          '--light-linkColor': '#1a73e8',
-          '--light-borderColor': '#d1d1d1',
-          '--light-buttonBackgroundColor': '#1a73e8',
-          '--light-buttonTextColor': '#ffffff',
-          '--light-progressBarColor': '#1a73e8',
-          '--light-accentColor': '#d93025',
-          '--light-headerBackgroundColor': '#f8f8f8',
-          '--light-footerBackgroundColor': '#e5e5e5',
-          '--light-inputBackgroundColor': '#ffffff',
-          '--light-inputTextColor': '#333333',
-          '--light-placeholderTextColor': '#888888',
-          '--light-hoverColor': '#eaeaea',
-          '--light-shadowColor': 'rgba(0, 0, 0, 0.1)',
-          '--light-cardBackgroundColor': '#f0f0f0',
-          '--light-cardBorderColor': '#e0e0e0',
-          '--light-tooltipBackgroundColor': '#f7f7f7',
-          '--light-tooltipTextColor': '#333333',
-          '--light-toggleSwitchColor': '#1a73e8',
-          '--light-gameContainerBackgroundColor': '#f9f9f9',
-          '--light-gameContainerBorderColor': '#e0e0e0',
-          '--light-gameContainerTextColor': '#333333',
-          '--light-gameButtonBackgroundColor': '#1a73e8',
-          '--light-gameButtonTextColor': '#ffffff',
-          '--light-gameHeaderBackgroundColor': '#f1f1f1',
-          '--light-gameFooterBackgroundColor': '#e9e9e9'
+          
         };
 
 
@@ -170,7 +143,7 @@ class AIDarkModeManager {
     }
 
     updateCSSVariables() {
-        const theme = this.isDarkMode ? this.darkTheme : this.lightTheme;
+        const theme = this.isDarkMode ? this.darkTheme;
         const cssVariables = Object.entries(theme)
             .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
             .join('\n');
