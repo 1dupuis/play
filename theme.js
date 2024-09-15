@@ -1,51 +1,65 @@
-// theme.js
 class AIDarkModeManager {
     constructor() {
         this.darkTheme = {
-            '--dark-backgroundColor': '#121212',
-            '--dark-containerBackgroundColor': '#1e1e1e',
-            '--dark-textColor': '#e0e0e0',
-            '--dark-linkColor': '#bb86fc',
-            '--dark-borderColor': '#3a3a3a',
-            '--dark-buttonBackgroundColor': '#3700B3',
-            '--dark-buttonTextColor': '#ffffff',
-            '--dark-progressBarColor': '#03DAC6',
-            '--dark-accentColor': '#CF6679',
-            '--dark-headerBackgroundColor': '#2d2d2d',
-            '--dark-footerBackgroundColor': '#2b2b2b',
-            '--dark-inputBackgroundColor': '#2d2d2d',
-            '--dark-inputTextColor': '#e0e0e0',
-            '--dark-placeholderTextColor': '#757575',
-            '--dark-hoverColor': '#333333',
-            '--dark-shadowColor': 'rgba(0, 0, 0, 0.5)',
-            '--dark-cardBackgroundColor': '#1e1e1e',
-            '--dark-cardBorderColor': '#444444',
-            '--dark-tooltipBackgroundColor': '#333333',
-            '--dark-tooltipTextColor': '#ffffff',
-            '--dark-toggleSwitchColor': '#03DAC6'
+          '--dark-backgroundColor': '#121212',
+          '--dark-containerBackgroundColor': '#1e1e1e',
+          '--dark-textColor': '#e0e0e0',
+          '--dark-linkColor': '#bb86fc',
+          '--dark-borderColor': '#3a3a3a',
+          '--dark-buttonBackgroundColor': '#3700B3',
+          '--dark-buttonTextColor': '#ffffff',
+          '--dark-progressBarColor': '#03DAC6',
+          '--dark-accentColor': '#CF6679',
+          '--dark-headerBackgroundColor': '#2d2d2d',
+          '--dark-footerBackgroundColor': '#2b2b2b',
+          '--dark-inputBackgroundColor': '#2d2d2d',
+          '--dark-inputTextColor': '#e0e0e0',
+          '--dark-placeholderTextColor': '#757575',
+          '--dark-hoverColor': '#333333',
+          '--dark-shadowColor': 'rgba(0, 0, 0, 0.5)',
+          '--dark-cardBackgroundColor': '#1e1e1e',
+          '--dark-cardBorderColor': '#444444',
+          '--dark-tooltipBackgroundColor': '#333333',
+          '--dark-tooltipTextColor': '#ffffff',
+          '--dark-toggleSwitchColor': '#03DAC6',
+          '--dark-gameContainerBackgroundColor': '#2e2e2e',
+          '--dark-gameContainerBorderColor': '#4a4a4a',
+          '--dark-gameContainerTextColor': '#e0e0e0',
+          '--dark-gameButtonBackgroundColor': '#6200ea',
+          '--dark-gameButtonTextColor': '#ffffff',
+          '--dark-gameHeaderBackgroundColor': '#3d3d3d',
+          '--dark-gameFooterBackgroundColor': '#3b3b3b'
         };
+
         this.lightTheme = {
-            '--light-backgroundColor': '#ffffff',
-            '--light-containerBackgroundColor': '#f0f0f0',
-            '--light-textColor': '#333333',
-            '--light-linkColor': '#1a73e8',
-            '--light-borderColor': '#d1d1d1',
-            '--light-buttonBackgroundColor': '#1a73e8',
-            '--light-buttonTextColor': '#ffffff',
-            '--light-progressBarColor': '#1a73e8',
-            '--light-accentColor': '#d93025',
-            '--light-headerBackgroundColor': '#f8f8f8',
-            '--light-footerBackgroundColor': '#e5e5e5',
-            '--light-inputBackgroundColor': '#ffffff',
-            '--light-inputTextColor': '#333333',
-            '--light-placeholderTextColor': '#888888',
-            '--light-hoverColor': '#eaeaea',
-            '--light-shadowColor': 'rgba(0, 0, 0, 0.1)',
-            '--light-cardBackgroundColor': '#f0f0f0',
-            '--light-cardBorderColor': '#e0e0e0',
-            '--light-tooltipBackgroundColor': '#f7f7f7',
-            '--light-tooltipTextColor': '#333333',
-            '--light-toggleSwitchColor': '#1a73e8'
+          '--light-backgroundColor': '#ffffff',
+          '--light-containerBackgroundColor': '#f0f0f0',
+          '--light-textColor': '#333333',
+          '--light-linkColor': '#1a73e8',
+          '--light-borderColor': '#d1d1d1',
+          '--light-buttonBackgroundColor': '#1a73e8',
+          '--light-buttonTextColor': '#ffffff',
+          '--light-progressBarColor': '#1a73e8',
+          '--light-accentColor': '#d93025',
+          '--light-headerBackgroundColor': '#f8f8f8',
+          '--light-footerBackgroundColor': '#e5e5e5',
+          '--light-inputBackgroundColor': '#ffffff',
+          '--light-inputTextColor': '#333333',
+          '--light-placeholderTextColor': '#888888',
+          '--light-hoverColor': '#eaeaea',
+          '--light-shadowColor': 'rgba(0, 0, 0, 0.1)',
+          '--light-cardBackgroundColor': '#f0f0f0',
+          '--light-cardBorderColor': '#e0e0e0',
+          '--light-tooltipBackgroundColor': '#f7f7f7',
+          '--light-tooltipTextColor': '#333333',
+          '--light-toggleSwitchColor': '#1a73e8',
+          '--light-gameContainerBackgroundColor': '#f9f9f9',
+          '--light-gameContainerBorderColor': '#e0e0e0',
+          '--light-gameContainerTextColor': '#333333',
+          '--light-gameButtonBackgroundColor': '#1a73e8',
+          '--light-gameButtonTextColor': '#ffffff',
+          '--light-gameHeaderBackgroundColor': '#f1f1f1',
+          '--light-gameFooterBackgroundColor': '#e9e9e9'
         };
 
         this.transitionDuration = 300; // ms
@@ -77,6 +91,7 @@ class AIDarkModeManager {
     }
 
     setupToggle() {
+      if (this.getLocalStorage('theme') === 'dark') {
         const toggle = document.createElement('button');
         toggle.id = 'ai-dark-mode-toggle';
         toggle.textContent = 'AI Theme';
@@ -95,15 +110,15 @@ class AIDarkModeManager {
             transition: background-color 0.3s ease;
         `;
         document.body.appendChild(toggle);
+      }
     }
 
     loadPreferences() {
-        const savedPreferences = this.getCookie('aiThemePreferences');
+        const savedPreferences = this.getLocalStorage('aiThemePreferences');
         if (savedPreferences) {
             this.userPreferences = JSON.parse(savedPreferences);
         }
-        this.isDarkMode = this.getCookie('aiTheme') === 'dark' ||
-            (!this.getCookie('aiTheme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        this.isDarkMode = this.getLocalStorage('theme') === 'dark';
     }
 
     setupEventListeners() {
@@ -140,7 +155,7 @@ class AIDarkModeManager {
 
     toggleTheme() {
         this.isDarkMode = !this.isDarkMode;
-        this.setCookie('aiTheme', this.isDarkMode ? 'dark' : 'light', 365);
+        this.setLocalStorage('aiTheme', this.isDarkMode ? 'dark' : 'light');
         this.applyTheme();
         this.logUserAction('manual_toggle');
     }
@@ -223,7 +238,7 @@ class AIDarkModeManager {
     }
 
     handleSystemPreferenceChange(e) {
-        if (!this.getCookie('aiTheme')) {
+        if (!this.getLocalStorage('aiTheme')) {
             this.isDarkMode = e.matches;
             this.applyTheme();
             this.logUserAction('system_preference_change');
@@ -255,109 +270,95 @@ class AIDarkModeManager {
     }
 
     updateScrollDepth() {
-        const scrollDepth = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-        this.mlModel.updateFeature('scrollDepth', scrollDepth);
+        const scrollDepth = window.scrollY || document.documentElement.scrollTop;
+        this.setLocalStorage('scrollDepth', scrollDepth);
     }
 
     updateMouseActivity() {
-        this.mlModel.updateFeature('mouseActivity', Date.now());
+        const mouseMovement = new Date().getTime();
+        this.setLocalStorage('mouseActivity', mouseMovement);
     }
 
     updateNetworkType() {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection) {
-            this.mlModel.updateFeature('networkType', connection.type);
-        }
+        const networkType = navigator.onLine ? 'online' : 'offline';
+        this.setLocalStorage('networkType', networkType);
     }
 
     updateBatteryStatus() {
-        if ('getBattery' in navigator) {
+        if (navigator.getBattery) {
             navigator.getBattery().then(battery => {
-                this.mlModel.updateFeature('batteryLevel', battery.level * 100);
+                this.setLocalStorage('batteryLevel', battery.level);
             });
         }
     }
 
     updateTimeOnPage() {
-        if (!this.pageLoadTime) {
-            this.pageLoadTime = Date.now();
-        }
-        const timeOnPage = (Date.now() - this.pageLoadTime) / 1000 / 60; // in minutes
-        this.mlModel.updateFeature('timeOnPage', timeOnPage);
-    }
-
-    setupLightSensor() {
-        if ('AmbientLightSensor' in window) {
-            const sensor = new AmbientLightSensor();
-            sensor.addEventListener('reading', () => {
-                this.mlModel.updateFeature('deviceLight', sensor.illuminance);
-                this.checkLightLevels(sensor.illuminance);
-            });
-            sensor.start();
-        }
-    }
-
-    checkLightLevels(illuminance) {
-        if (this.userPreferences.autoDarkMode) {
-            const shouldBeDark = illuminance < 10; // 10 lux as a threshold for dark environments
-            if (shouldBeDark !== this.isDarkMode) {
-                this.isDarkMode = shouldBeDark;
-                this.applyTheme();
-                this.logUserAction('light_sensor_change');
-            }
-        }
+        const timeOnPage = (this.getLocalStorage('timeOnPage') || 0) + 1;
+        this.setLocalStorage('timeOnPage', timeOnPage);
     }
 
     checkEyeStrain() {
-        const now = new Date();
-        const currentTime = now.getHours() * 60 + now.getMinutes();
-        const timeOnPage = this.mlModel.getFeatureValue('timeOnPage');
-
-        if (timeOnPage > 30 && currentTime > this.timeStringToMinutes('22:00')) {
-            this.isDarkMode = true;
-            this.applyTheme();
-            this.logUserAction('eye_strain_prevention');
-            this.showNotification('Eye strain prevention activated. Taking a break is recommended.');
+        // Notify the user to take a break every 20 minutes (standard eye-strain prevention rule)
+        const timeOnPage = this.getLocalStorage('timeOnPage') || 0;
+        if (timeOnPage >= 20) {
+            alert('It\'s time to take a break to prevent eye strain.');
         }
     }
 
     predictTheme() {
-        if (this.userPreferences.autoDarkMode) {
-            const prediction = this.mlModel.predict();
-            
-            if (prediction !== this.isDarkMode) {
-                this.isDarkMode = prediction;
-                this.applyTheme();
-                this.logUserAction('ml_prediction');
+        const userContext = {
+            scrollDepth: this.getLocalStorage('scrollDepth'),
+            mouseActivity: this.getLocalStorage('mouseActivity'),
+            batteryLevel: this.getLocalStorage('batteryLevel'),
+            timeOnPage: this.getLocalStorage('timeOnPage'),
+            networkType: this.getLocalStorage('networkType')
+        };
+        const predictedDarkMode = this.mlModel.predictDarkMode(userContext);
+
+        if (predictedDarkMode !== this.isDarkMode) {
+            this.isDarkMode = predictedDarkMode;
+            this.applyTheme();
+            this.logUserAction('ml_prediction');
+        }
+    }
+
+    setupLightSensor() {
+        if ('AmbientLightSensor' in window) {
+            try {
+                const sensor = new AmbientLightSensor();
+                sensor.addEventListener('reading', () => {
+                    if (sensor.illuminance < 50 && !this.isDarkMode) {
+                        this.isDarkMode = true;
+                        this.applyTheme();
+                    } else if (sensor.illuminance >= 50 && this.isDarkMode) {
+                        this.isDarkMode = false;
+                        this.applyTheme();
+                    }
+                    this.setLocalStorage('ambientLight', sensor.illuminance);
+                });
+                sensor.start();
+            } catch (e) {
+                console.error('Ambient Light Sensor not supported:', e);
             }
         }
     }
 
     logUserAction(action) {
-        this.mlModel.train(this.isDarkMode ? 1 : 0);
-        
-        // Log action for future analysis
-        const actions = JSON.parse(this.getCookie('aiThemeActions') || '[]');
-        actions.push({ action, timestamp: Date.now(), isDarkMode: this.isDarkMode });
-        this.setCookie('aiThemeActions', JSON.stringify(actions), 365);
+        console.log(`User performed action: ${action}`);
     }
 
-    showNotification(message) {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('AI Theme', { body: message });
-        } else if ('Notification' in window && Notification.permission !== 'denied') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    new Notification('AI Theme', { body: message });
-                }
-            });
-        }
+    getLocalStorage(key) {
+        return localStorage.getItem(key);
+    }
+
+    setLocalStorage(key, value) {
+        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
     }
 
     throttle(func, limit) {
         let lastFunc;
         let lastRan;
-        return function() {
+        return function () {
             const context = this;
             const args = arguments;
             if (!lastRan) {
@@ -365,87 +366,29 @@ class AIDarkModeManager {
                 lastRan = Date.now();
             } else {
                 clearTimeout(lastFunc);
-                lastFunc = setTimeout(function() {
-                    if ((Date.now() - lastRan) >= limit) {
+                lastFunc = setTimeout(function () {
+                    if (Date.now() - lastRan >= limit) {
                         func.apply(context, args);
                         lastRan = Date.now();
                     }
                 }, limit - (Date.now() - lastRan));
             }
-        }
-    }
-
-    setCookie(name, value, days) {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString();
-        document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-    }
-
-    getCookie(name) {
-        return document.cookie.split('; ').reduce((r, v) => {
-            const parts = v.split('=');
-            return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-        }, '');
+        };
     }
 }
 
+// Sample DarkModePredictor class
 class DarkModePredictor {
-    constructor() {
-        this.features = [
-            'time', 'deviceLight', 'batteryLevel', 'networkType',
-            'scrollDepth', 'timeOnPage', 'mouseActivity'
-        ];
-        this.weights = new Array(this.features.length).fill(0);
-        this.bias = 0;
-        this.learningRate = 0.01;
-        this.loadModel();
-    }
+    predictDarkMode(userContext) {
+        // Simple prediction logic, could be replaced with more complex ML model
+        const { scrollDepth, mouseActivity, batteryLevel, timeOnPage, networkType } = userContext;
 
-    updateFeature(feature, value) {
-        if (this.features.includes(feature)) {
-            localStorage.setItem(`aiTheme_${feature}`, value.toString());
+        if (scrollDepth > 200 || timeOnPage > 15 || networkType === 'offline' || batteryLevel < 0.2) {
+            return true; // Predict dark mode
         }
-    }
-
-    getFeatureValue(feature) {
-        const value = localStorage.getItem(`aiTheme_${feature}`);
-        return value ? parseFloat(value) : 0;
-    }
-
-    predict() {
-        const features = this.features.map(feature => this.getFeatureValue(feature));
-        const logit = features.reduce((sum, feature, index) => sum + feature * this.weights[index], 0) + this.bias;
-        return 1 / (1 + Math.exp(-logit)) > 0.5;
-    }
-
-    train(label) {
-        const features = this.features.map(feature => this.getFeatureValue(feature));
-        const prediction = this.predict();
-        const error = label - prediction;
-
-        this.weights = this.weights.map((weight, index) => 
-            weight + this.learningRate * error * features[index]
-        );
-        this.bias += this.learningRate * error;
-
-        this.saveModel();
-    }
-
-    loadModel() {
-        const savedModel = localStorage.getItem('aiThemeModel');
-        if (savedModel) {
-            const { weights, bias } = JSON.parse(savedModel);
-            this.weights = weights;
-            this.bias = bias;
-        }
-    }
-
-    saveModel() {
-        localStorage.setItem('aiThemeModel', JSON.stringify({
-            weights: this.weights,
-            bias: this.bias
-        }));
+        return false; // Predict light mode
     }
 }
 
-// Initialize AIDarkModeManager
+// Initialize the manager
 const aiDarkModeManager = new AIDarkModeManager();
