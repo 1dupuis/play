@@ -16,7 +16,7 @@
             cookieName: 'access_control_lang',
             cookieExpireDays: 30,
             loginCookieName: 'isLogin',
-            redirectUrl: '/index.html',
+            redirectUrl: '/',
             redirectDelay: 500,
             autoLogoutTime: 30 * 60 * 1000 // 30 minutes
         },
