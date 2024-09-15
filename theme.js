@@ -252,10 +252,14 @@ class AIDarkModeManager {
     }
 
     applyTheme() {
+        if (this.theme === 'dark') {
         requestAnimationFrame(() => {
             this.updateCSSVariables();
             this.updateGlobalStyles();
         });
+        } else {
+            return
+        }
     }
     
     updateCSSVariables() {
