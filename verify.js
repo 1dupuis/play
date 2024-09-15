@@ -76,13 +76,15 @@ class AccessSystem {
         this.authSwitch = document.getElementById('auth-switch');
         this.switchLink = document.getElementById('switch-link');
 
-        this.isLogin = false;
+        this.cookieExpiration = 48 * 60 * 60 * 1000; // 48 hours in milliseconds
+        this.isLogin = this.getCookie('isLogin') === 'true';
         this.users = this.loadUsers();
 
         this.addEventListeners();
         this.checkSession();
         this.initializeParticles();
         this.initializeTypingEffect();
+        this.updateAuthUIState();
     }
 
     addEventListeners() {
@@ -106,35 +108,46 @@ class AccessSystem {
     }
 
     handleInputFocus(input) {
-        input.parentElement.classList.add('focused');
+        if (input && input.parentElement) {
+            input.parentElement.classList.add('focused');
+        }
     }
 
     handleInputBlur(input) {
-        if (input.value === '') {
-            input.parentElement.classList.remove('focused');
+        if (input && input.parentElement) {
+            if (input.value === '') {
+                input.parentElement.classList.remove('focused');
+            }
         }
     }
 
     validateInput(input) {
-        if (input.value.length > 0) {
-            input.parentElement.classList.add('has-value');
-        } else {
-            input.parentElement.classList.remove('has-value');
+        if (input && input.parentElement) {
+            if (input.value.length > 0) {
+                input.parentElement.classList.add('has-value');
+            } else {
+                input.parentElement.classList.remove('has-value');
+            }
         }
     }
 
     loadUsers() {
-        try {
-            return JSON.parse(localStorage.getItem('users')) || {};
-        } catch (error) {
-            console.error('Error loading users:', error);
-            return {};
+        const usersCookie = this.getCookie('users');
+        if (usersCookie) {
+            try {
+                return JSON.parse(atob(usersCookie));
+            } catch (error) {
+                console.error('Error loading users:', error);
+                return {};
+            }
         }
+        return {};
     }
 
     saveUsers() {
         try {
-            localStorage.setItem('users', JSON.stringify(this.users));
+            const usersString = btoa(JSON.stringify(this.users));
+            this.setCookie('users', usersString, this.cookieExpiration);
         } catch (error) {
             console.error('Error saving users:', error);
         }
@@ -195,6 +208,7 @@ class AccessSystem {
     handleLogin(username, password) {
         if (this.users[username] && this.users[username].password === password) {
             this.setSession(username);
+            this.setCookie('isLogin', 'true', this.cookieExpiration);
             this.showMessage('Login successful! Redirecting...', 'success');
             setTimeout(() => {
                 window.location.href = '/search';
@@ -211,6 +225,7 @@ class AccessSystem {
             this.users[username] = { password: password };
             this.saveUsers();
             this.setSession(username);
+            this.setCookie('isLogin', 'true', this.cookieExpiration);
             this.showMessage('Account created successfully! Redirecting...', 'success');
             setTimeout(() => {
                 window.location.href = '/search';
@@ -221,12 +236,16 @@ class AccessSystem {
     toggleAuthMode(event) {
         event.preventDefault();
         this.isLogin = !this.isLogin;
+        this.updateAuthUIState();
+        this.clearMessage();
+        this.resetForm();
+    }
+
+    updateAuthUIState() {
         if (this.authTitle) this.authTitle.textContent = this.isLogin ? 'Log In' : 'Sign Up';
         if (this.authButton) this.authButton.textContent = this.isLogin ? 'Log In' : 'Sign Up';
         if (this.switchLink) this.switchLink.textContent = this.isLogin ? 'Sign Up' : 'Log In';
         if (this.authSwitch) this.authSwitch.firstChild.textContent = this.isLogin ? "Don't have an account? " : 'Already have an account? ';
-        this.clearMessage();
-        this.resetForm();
     }
 
     resetForm() {
@@ -240,16 +259,16 @@ class AccessSystem {
     }
 
     setSession(username) {
-        const expirationTime = new Date(new Date().getTime() + 48 * 60 * 60 * 1000);
-        document.cookie = `accessGranted=true;expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
-        document.cookie = `username=${username};expires=${expirationTime.toUTCString()};path=/;SameSite=Strict;Secure`;
+        this.setCookie('accessGranted', 'true', this.cookieExpiration);
+        this.setCookie('username', username, this.cookieExpiration);
     }
 
     checkSession() {
         const accessGranted = this.getCookie('accessGranted');
         const username = this.getCookie('username');
+        const isLogin = this.getCookie('isLogin');
 
-        if (accessGranted === 'true' && username) {
+        if (accessGranted === 'true' && username && isLogin === 'true') {
             if (this.users[username]) {
                 window.location.href = '/search';
             } else {
@@ -259,15 +278,24 @@ class AccessSystem {
     }
 
     clearSession() {
-        document.cookie = 'accessGranted=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure';
-        document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure';
+        this.setCookie('accessGranted', '', -1);
+        this.setCookie('username', '', -1);
+        this.setCookie('isLogin', '', -1);
+        this.setCookie('users', '', -1);
+    }
+
+    setCookie(name, value, expirationMs) {
+        const d = new Date();
+        d.setTime(d.getTime() + expirationMs);
+        const expires = `expires=${d.toUTCString()}`;
+        document.cookie = `${name}=${encodeURIComponent(value)};${expires};path=/;SameSite=Strict;Secure`;
     }
 
     getCookie(name) {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
             const [cookieName, cookieValue] = cookie.split('=').map(c => c.trim());
-            if (cookieName === name) return cookieValue;
+            if (cookieName === name) return decodeURIComponent(cookieValue);
         }
         return null;
     }
@@ -290,14 +318,26 @@ class AccessSystem {
 
     showLoading() {
         if (this.loadingIndicator) this.loadingIndicator.style.display = 'flex';
-        if (this.verificationForm) this.verificationForm.querySelector('button').disabled = true;
-        if (this.authForm) this.authForm.querySelector('button').disabled = true;
+        if (this.verificationForm) {
+            const button = this.verificationForm.querySelector('button');
+            if (button) button.disabled = true;
+        }
+        if (this.authForm) {
+            const button = this.authForm.querySelector('button');
+            if (button) button.disabled = true;
+        }
     }
 
     hideLoading() {
         if (this.loadingIndicator) this.loadingIndicator.style.display = 'none';
-        if (this.verificationForm) this.verificationForm.querySelector('button').disabled = false;
-        if (this.authForm) this.authForm.querySelector('button').disabled = false;
+        if (this.verificationForm) {
+            const button = this.verificationForm.querySelector('button');
+            if (button) button.disabled = false;
+        }
+        if (this.authForm) {
+            const button = this.authForm.querySelector('button');
+            if (button) button.disabled = false;
+        }
     }
 
     initializeParticles() {
