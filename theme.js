@@ -1,53 +1,60 @@
-// theme.js
+// AIDarkModeManager.js
 class AIDarkModeManager {
     constructor() {
         this.darkTheme = {
-          '--dark-backgroundColor': '#121212',
-          '--dark-containerBackgroundColor': '#1e1e1e',
-          '--dark-textColor': '#e0e0e0',
-          '--dark-linkColor': '#bb86fc',
-          '--dark-borderColor': '#3a3a3a',
-          '--dark-buttonBackgroundColor': '#3700B3',
-          '--dark-buttonTextColor': '#ffffff',
-          '--dark-progressBarColor': '#03DAC6',
-          '--dark-accentColor': '#CF6679',
-          '--dark-headerBackgroundColor': '#2d2d2d',
-          '--dark-footerBackgroundColor': '#2b2b2b',
-          '--dark-inputBackgroundColor': '#2d2d2d',
-          '--dark-inputTextColor': '#e0e0e0',
-          '--dark-placeholderTextColor': '#757575',
-          '--dark-hoverColor': '#333333',
-          '--dark-shadowColor': 'rgba(0, 0, 0, 0.5)',
-          '--dark-cardBackgroundColor': '#1e1e1e',
-          '--dark-cardBorderColor': '#444444',
-          '--dark-tooltipBackgroundColor': '#333333',
-          '--dark-tooltipTextColor': '#ffffff',
-          '--dark-toggleSwitchColor': '#03DAC6',
-          '--dark-gameContainerBackgroundColor': '#2e2e2e',
-          '--dark-gameContainerBorderColor': '#4a4a4a',
-          '--dark-gameContainerTextColor': '#e0e0e0',
-          '--dark-gameButtonBackgroundColor': '#6200ea',
-          '--dark-gameButtonTextColor': '#ffffff',
-          '--dark-gameHeaderBackgroundColor': '#3d3d3d',
-          '--dark-gameFooterBackgroundColor': '#3b3b3b'
+            '--backgroundColor': '#121212',
+            '--containerBackgroundColor': '#1e1e1e',
+            '--textColor': '#e0e0e0',
+            '--linkColor': '#bb86fc',
+            '--borderColor': '#3a3a3a',
+            '--buttonBackgroundColor': '#3700B3',
+            '--buttonTextColor': '#ffffff',
+            '--progressBarColor': '#03DAC6',
+            '--accentColor': '#CF6679',
+            '--headerBackgroundColor': '#2d2d2d',
+            '--footerBackgroundColor': '#2b2b2b',
+            '--inputBackgroundColor': '#2d2d2d',
+            '--inputTextColor': '#e0e0e0',
+            '--placeholderTextColor': '#757575',
+            '--hoverColor': '#333333',
+            '--shadowColor': 'rgba(0, 0, 0, 0.5)',
+            '--cardBackgroundColor': '#1e1e1e',
+            '--cardBorderColor': '#444444',
+            '--tooltipBackgroundColor': '#333333',
+            '--tooltipTextColor': '#ffffff',
+            '--toggleSwitchColor': '#03DAC6',
+            '--codeBackgroundColor': '#2b2b2b',
+            '--codeTextColor': '#f8f8f2',
+            '--tableHeaderBackgroundColor': '#2d2d2d',
+            '--tableRowEvenBackgroundColor': '#262626',
+            '--tableRowOddBackgroundColor': '#1e1e1e',
+            '--scrollbarThumbColor': '#555555',
+            '--scrollbarTrackColor': '#2d2d2d',
+            '--gameContainerBackgroundColor': '#1a1a1a',
+            '--gameBorderColor': '#4a4a4a',
+            '--gameTextColor': '#f0f0f0',
+            '--modalBackgroundColor': 'rgba(0, 0, 0, 0.8)',
+            '--modalContentBackgroundColor': '#2a2a2a',
+            '--sidebarBackgroundColor': '#1c1c1c',
+            '--sidebarTextColor': '#d0d0d0',
+            '--chartBackgroundColor': '#242424',
+            '--chartLineColor': '#bb86fc',
+            '--chartGridColor': '#3a3a3a'
         };
-
-        this.lightTheme = {
-          
-        };
-
 
         this.transitionDuration = 300; // ms
-        this.isDarkMode = false;
+        this.theme = 'light';
         this.userPreferences = {
             scheduledDarkMode: false,
             darkModeStartTime: '20:00',
             darkModeEndTime: '06:00',
-            autoDarkMode: true,
-            lightSensor: false,
-            eyeStrainPrevention: false
+            autoDarkMode: false,
+            lightSensor: true,
+            eyeStrainPrevention: true,
+            contrastMode: false,
+            backgroundLearning: true
         };
-        this.mlModel = new DarkModePredictor();
+        this.mlModel = new EnhancedDarkModePredictor();
         this.init();
     }
 
@@ -58,6 +65,7 @@ class AIDarkModeManager {
         this.setupEventListeners();
         this.startBackgroundTasks();
         this.setupToggle();
+        this.initBackgroundLearning();
     }
 
     createStyleElement() {
@@ -69,7 +77,7 @@ class AIDarkModeManager {
       if (localStorage.getItem('theme') === 'dark') {
         const toggle = document.createElement('button');
         toggle.id = 'ai-dark-mode-toggle';
-        toggle.textContent = 'AI Theme';
+        toggle.textContent = 'AI Dark Mode';
         toggle.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -89,11 +97,18 @@ class AIDarkModeManager {
     }
 
     loadPreferences() {
-        const savedPreferences = this.getCookie('aiThemePreferences');
+        const savedPreferences = localStorage.getItem('aiDarkModePreferences');
         if (savedPreferences) {
             this.userPreferences = JSON.parse(savedPreferences);
+        } else {
+            this.savePreferences();
         }
-        this.isDarkMode = localStorage.getItem('theme') === 'dark'
+        this.theme = localStorage.getItem('theme') || 'light';
+    }
+
+    savePreferences() {
+        localStorage.setItem('aiDarkModePreferences', JSON.stringify(this.userPreferences));
+        localStorage.setItem('theme', this.theme);
     }
 
     setupEventListeners() {
@@ -105,8 +120,9 @@ class AIDarkModeManager {
         document.addEventListener('DOMContentLoaded', this.applyTheme.bind(this));
         window.addEventListener('scroll', this.throttle(this.updateScrollDepth.bind(this), 200));
         document.addEventListener('mousemove', this.throttle(this.updateMouseActivity.bind(this), 1000));
-        window.addEventListener('online', this.updateNetworkType.bind(this));
-        window.addEventListener('offline', this.updateNetworkType.bind(this));
+        window.addEventListener('online', this.updateNetworkStatus.bind(this));
+        window.addEventListener('offline', this.updateNetworkStatus.bind(this));
+        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
     }
 
     startBackgroundTasks() {
@@ -114,6 +130,7 @@ class AIDarkModeManager {
         this.scheduleTask(this.updateBatteryStatus.bind(this), 300000);
         this.scheduleTask(this.updateTimeOnPage.bind(this), 60000);
         this.scheduleTask(this.predictTheme.bind(this), 300000);
+        this.scheduleTask(this.gatherUserBehaviorData.bind(this), 600000);
         
         if (this.userPreferences.lightSensor) {
             this.setupLightSensor();
@@ -129,8 +146,8 @@ class AIDarkModeManager {
     }
 
     toggleTheme() {
-        this.isDarkMode = !this.isDarkMode;
-        localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light', 365);
+        this.theme = this.theme === 'light' ? 'dark' : 'light';
+        this.savePreferences();
         this.applyTheme();
         this.logUserAction('manual_toggle');
     }
@@ -143,30 +160,24 @@ class AIDarkModeManager {
     }
 
     updateCSSVariables() {
-    if (!this.isDarkMode) {
-        // If it's light mode, stop the script.
-        return;
+        const cssVariables = Object.entries(this.darkTheme)
+            .map(([key, value]) => `${key}: ${this.theme === 'dark' ? value : 'initial'};`)
+            .join('\n');
+
+        this.styleElement.textContent = `
+            :root {
+                ${cssVariables}
+            }
+
+            body, body * {
+                transition: background-color ${this.transitionDuration}ms, 
+                            color ${this.transitionDuration}ms, 
+                            border-color ${this.transitionDuration}ms;
+            }
+
+            ${this.generateThemeStyles()}
+        `;
     }
-    
-    const theme = this.darkTheme;
-    const cssVariables = Object.entries(theme)
-        .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
-        .join('\n');
-
-    this.styleElement.textContent = `
-        :root {
-            ${cssVariables}
-        }
-
-        body, body * {
-            transition: background-color ${this.transitionDuration}ms, 
-                        color ${this.transitionDuration}ms, 
-                        border-color ${this.transitionDuration}ms;
-        }
-
-        ${this.generateThemeStyles()}
-    `;
-}
 
     generateThemeStyles() {
         return `
@@ -189,40 +200,98 @@ class AIDarkModeManager {
             }
             
             input, textarea, select {
-                background-color: var(--containerBackgroundColor);
-                color: var(--textColor);
+                background-color: var(--inputBackgroundColor);
+                color: var(--inputTextColor);
                 border: 1px solid var(--borderColor);
+            }
+            
+            ::placeholder {
+                color: var(--placeholderTextColor);
             }
             
             .progress-bar, progress {
                 background-color: var(--progressBarColor);
-                height: 8px;
-                border-radius: 4px;
             }
             
+            .card {
+                background-color: var(--cardBackgroundColor);
+                border: 1px solid var(--cardBorderColor);
+            }
+            
+            code, pre {
+                background-color: var(--codeBackgroundColor);
+                color: var(--codeTextColor);
+            }
+            
+            table {
+                border-collapse: collapse;
+            }
+            
+            th {
+                background-color: var(--tableHeaderBackgroundColor);
+            }
+            
+            tr:nth-child(even) {
+                background-color: var(--tableRowEvenBackgroundColor);
+            }
+            
+            tr:nth-child(odd) {
+                background-color: var(--tableRowOddBackgroundColor);
+            }
+            
+            ::-webkit-scrollbar {
+                width: 12px;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--scrollbarThumbColor);
+            }
+            
+            ::-webkit-scrollbar-track {
+                background-color: var(--scrollbarTrackColor);
+            }
+
             .game-container {
-                background-color: var(--containerBackgroundColor);
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                border: 1px solid var(--borderColor);
+                background-color: var(--gameContainerBackgroundColor);
+                border: 1px solid var(--gameBorderColor);
+                color: var(--gameTextColor);
             }
-            
-            .heart {
-                color: var(--accentColor);
+
+            .modal {
+                background-color: var(--modalBackgroundColor);
             }
-            
-            .game-text {
-                color: var(--textColor);
+
+            .modal-content {
+                background-color: var(--modalContentBackgroundColor);
+            }
+
+            .sidebar {
+                background-color: var(--sidebarBackgroundColor);
+                color: var(--sidebarTextColor);
+            }
+
+            .chart {
+                background-color: var(--chartBackgroundColor);
+            }
+
+            .chart-line {
+                stroke: var(--chartLineColor);
+            }
+
+            .chart-grid {
+                stroke: var(--chartGridColor);
             }
         `;
     }
 
     updateGlobalStyles() {
-        document.body.classList.toggle('ai-dark-mode', this.isDarkMode);
+        document.body.classList.toggle('ai-dark-mode', this.theme === 'dark');
     }
 
     handleSystemPreferenceChange(e) {
-        if (!this.getCookie('aiTheme')) {
-            this.isDarkMode = e.matches;
+        if (this.userPreferences.autoDarkMode) {
+            this.theme = e.matches ? 'dark' : 'light';
+            this.savePreferences();
             this.applyTheme();
             this.logUserAction('system_preference_change');
         }
@@ -235,12 +304,15 @@ class AIDarkModeManager {
             const startTime = this.timeStringToMinutes(this.userPreferences.darkModeStartTime);
             const endTime = this.timeStringToMinutes(this.userPreferences.darkModeEndTime);
 
-            const newDarkMode = startTime < endTime
+            const shouldBeDark = startTime < endTime
                 ? (currentTime >= startTime && currentTime < endTime)
                 : (currentTime >= startTime || currentTime < endTime);
 
-            if (newDarkMode !== this.isDarkMode) {
-                this.isDarkMode = newDarkMode;
+            const newTheme = shouldBeDark ? 'dark' : 'light';
+
+            if (newTheme !== this.theme) {
+                this.theme = newTheme;
+                this.savePreferences();
                 this.applyTheme();
                 this.logUserAction('scheduled_change');
             }
@@ -261,17 +333,15 @@ class AIDarkModeManager {
         this.mlModel.updateFeature('mouseActivity', Date.now());
     }
 
-    updateNetworkType() {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection) {
-            this.mlModel.updateFeature('networkType', connection.type);
-        }
+    updateNetworkStatus() {
+        this.mlModel.updateFeature('isOnline', navigator.onLine);
     }
 
     updateBatteryStatus() {
         if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
                 this.mlModel.updateFeature('batteryLevel', battery.level * 100);
+                this.mlModel.updateFeature('isCharging', battery.charging);
             });
         }
     }
@@ -298,8 +368,10 @@ class AIDarkModeManager {
     checkLightLevels(illuminance) {
         if (this.userPreferences.autoDarkMode) {
             const shouldBeDark = illuminance < 10; // 10 lux as a threshold for dark environments
-            if (shouldBeDark !== this.isDarkMode) {
-                this.isDarkMode = shouldBeDark;
+            const newTheme = shouldBeDark ? 'dark' : 'light';
+            if (newTheme !== this.theme) {
+                this.theme = newTheme;
+                this.savePreferences();
                 this.applyTheme();
                 this.logUserAction('light_sensor_change');
             }
@@ -312,7 +384,8 @@ class AIDarkModeManager {
         const timeOnPage = this.mlModel.getFeatureValue('timeOnPage');
 
         if (timeOnPage > 30 && currentTime > this.timeStringToMinutes('22:00')) {
-            this.isDarkMode = true;
+            this.theme = 'dark';
+            this.savePreferences();
             this.applyTheme();
             this.logUserAction('eye_strain_prevention');
             this.showNotification('Eye strain prevention activated. Taking a break is recommended.');
@@ -322,9 +395,11 @@ class AIDarkModeManager {
     predictTheme() {
         if (this.userPreferences.autoDarkMode) {
             const prediction = this.mlModel.predict();
+            const newTheme = prediction ? 'dark' : 'light';
             
-            if (prediction !== this.isDarkMode) {
-                this.isDarkMode = prediction;
+            if (newTheme !== this.theme) {
+                this.theme = newTheme;
+                this.savePreferences();
                 this.applyTheme();
                 this.logUserAction('ml_prediction');
             }
@@ -332,21 +407,26 @@ class AIDarkModeManager {
     }
 
     logUserAction(action) {
-        this.mlModel.train(this.isDarkMode ? 1 : 0);
+        this.mlModel.train(this.theme === 'dark' ? 1 : 0);
         
-        // Log action for future analysis
-        const actions = JSON.parse(this.getCookie('aiThemeActions') || '[]');
-        actions.push({ action, timestamp: Date.now(), isDarkMode: this.isDarkMode });
-        this.setCookie('aiThemeActions', JSON.stringify(actions), 365);
+        const actions = JSON.parse(localStorage.getItem('aiDarkModeActions') || '[]');
+        actions.push({ action, timestamp: Date.now(), theme: this.theme });
+        localStorage.setItem('aiDarkModeActions', JSON.stringify(actions));
+
+        // Limit stored actions to last 100
+        if (actions.length > 100) {
+            actions.splice(0, actions.length - 100);
+            localStorage.setItem('aiDarkModeActions', JSON.stringify(actions));
+        }
     }
 
     showNotification(message) {
         if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('AI Theme', { body: message });
+            new Notification('AI Dark Mode', { body: message });
         } else if ('Notification' in window && Notification.permission !== 'denied') {
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                    new Notification('AI Theme', { body: message });
+                    new Notification('AI Dark Mode', { body: message });
                 }
             });
         }
@@ -373,24 +453,60 @@ class AIDarkModeManager {
         }
     }
 
-    setCookie(name, value, days) {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString();
-        document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+    handleVisibilityChange() {
+        if (document.hidden) {
+            this.mlModel.updateFeature('tabActive', false);
+        } else {
+            this.mlModel.updateFeature('tabActive', true);
+            this.updateTimeOnPage();
+        }
     }
 
-    getCookie(name) {
-        return document.cookie.split('; ').reduce((r, v) => {
-            const parts = v.split('=');
-            return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-        }, '');
+    initBackgroundLearning() {
+        if (this.userPreferences.backgroundLearning) {
+            this.backgroundLearningWorker = new Worker('backgroundLearning.js');
+            this.backgroundLearningWorker.onmessage = (event) => {
+                if (event.data.type === 'modelUpdate') {
+                    this.mlModel.updateModel(event.data.model);
+                }
+            };
+        }
+    }
+
+    gatherUserBehaviorData() {
+        const behaviorData = {
+            theme: this.theme,
+            timeOnPage: this.mlModel.getFeatureValue('timeOnPage'),
+            scrollDepth: this.mlModel.getFeatureValue('scrollDepth'),
+            mouseActivity: this.mlModel.getFeatureValue('mouseActivity'),
+            tabActive: this.mlModel.getFeatureValue('tabActive'),
+            timestamp: Date.now()
+        };
+
+        let behaviorHistory = JSON.parse(localStorage.getItem('aiDarkModeBehaviorHistory') || '[]');
+        behaviorHistory.push(behaviorData);
+
+        // Keep only the last 100 entries to prevent localStorage from growing too large
+        if (behaviorHistory.length > 100) {
+            behaviorHistory = behaviorHistory.slice(-100);
+        }
+
+        localStorage.setItem('aiDarkModeBehaviorHistory', JSON.stringify(behaviorHistory));
+
+        if (this.userPreferences.backgroundLearning) {
+            this.backgroundLearningWorker.postMessage({
+                type: 'newData',
+                data: behaviorData
+            });
+        }
     }
 }
 
-class DarkModePredictor {
+class EnhancedDarkModePredictor {
     constructor() {
         this.features = [
-            'time', 'deviceLight', 'batteryLevel', 'networkType',
-            'scrollDepth', 'timeOnPage', 'mouseActivity'
+            'time', 'deviceLight', 'batteryLevel', 'isCharging', 'isOnline',
+            'scrollDepth', 'timeOnPage', 'mouseActivity', 'dayOfWeek', 'tabActive'
         ];
         this.weights = new Array(this.features.length).fill(0);
         this.bias = 0;
@@ -400,13 +516,20 @@ class DarkModePredictor {
 
     updateFeature(feature, value) {
         if (this.features.includes(feature)) {
-            localStorage.setItem(`aiTheme_${feature}`, value.toString());
+            localStorage.setItem(`aiDarkMode_${feature}`, value.toString());
         }
     }
 
     getFeatureValue(feature) {
-        const value = localStorage.getItem(`aiTheme_${feature}`);
-        return value ? parseFloat(value) : 0;
+        if (feature === 'time') {
+            const now = new Date();
+            return (now.getHours() * 60 + now.getMinutes()) / 1440; // Normalize to [0, 1]
+        } else if (feature === 'dayOfWeek') {
+            return new Date().getDay() / 7; // Normalize to [0, 1]
+        } else {
+            const value = localStorage.getItem(`aiDarkMode_${feature}`);
+            return value ? parseFloat(value) : 0;
+        }
     }
 
     predict() {
@@ -426,10 +549,11 @@ class DarkModePredictor {
         this.bias += this.learningRate * error;
 
         this.saveModel();
+        console.log('Saved Model Attributes.')
     }
 
     loadModel() {
-        const savedModel = localStorage.getItem('aiThemeModel');
+        const savedModel = localStorage.getItem('aiDarkModeModel');
         if (savedModel) {
             const { weights, bias } = JSON.parse(savedModel);
             this.weights = weights;
@@ -438,10 +562,16 @@ class DarkModePredictor {
     }
 
     saveModel() {
-        localStorage.setItem('aiThemeModel', JSON.stringify({
+        localStorage.setItem('aiDarkModeModel', JSON.stringify({
             weights: this.weights,
             bias: this.bias
         }));
+    }
+
+    updateModel(newModel) {
+        this.weights = newModel.weights;
+        this.bias = newModel.bias;
+        this.saveModel();
     }
 }
 
