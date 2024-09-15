@@ -254,40 +254,43 @@ class DupuisApp {
     }
 
     handleRouteChange() {
-        const path = window.location.pathname;
-        const pathSegments = path.split('/').filter(segment => segment !== '');
+    const path = window.location.pathname;
+    const pathSegments = path.split('/').filter(segment => segment !== '');
 
-        if (pathSegments.length === 0) {
-            this.loadCategoryContent(config.defaultCategory);
-            return;
-        }
+    if (pathSegments.length === 0) {
+        // If no path is specified, load the default category (Games)
+        this.loadCategoryContent('Games');
+        return;
+    }
 
-        const category = config.categories.find(cat => cat.name.toLowerCase() === pathSegments[0]);
-        if (category) {
-            this.currentCategory = category.name;
-            if (pathSegments.length === 1) {
-                this.loadCategoryContent(category.name);
-            } else {
-                const item = this.findItemByUrl(category, `/${pathSegments.join('/')}`);
-                if (item) {
-                    this.currentItem = item.name;
-                    this.loadItemContent(category.name, item);
-                } else {
-                    this.loadNotFoundContent();
-                }
-            }
+    const category = config.categories.find(cat => cat.name.toLowerCase() === pathSegments[0]);
+    if (category) {
+        this.currentCategory = category.name;
+        if (pathSegments.length === 1) {
+            this.loadCategoryContent(category.name);
         } else {
-            const item = this.findItemByUrl(null, path);
+            const item = this.findItemByUrl(category, `/${pathSegments.join('/')}`);
             if (item) {
-                const category = this.findCategoryByItem(item);
-                this.currentCategory = category.name;
                 this.currentItem = item.name;
                 this.loadItemContent(category.name, item);
             } else {
-                this.loadNotFoundContent();
+                // If the item is not found, load the category content instead of 404
+                this.loadCategoryContent(category.name);
             }
         }
+    } else {
+        const item = this.findItemByUrl(null, path);
+        if (item) {
+            const category = this.findCategoryByItem(item);
+            this.currentCategory = category.name;
+            this.currentItem = item.name;
+            this.loadItemContent(category.name, item);
+        } else {
+            // If no matching category or item is found, load the default category (Games)
+            this.loadCategoryContent('Games');
+        }
     }
+}
 
     findItemByUrl(category, url) {
         if (category) {
