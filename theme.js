@@ -143,22 +143,30 @@ class AIDarkModeManager {
     }
 
     updateCSSVariables() {
-        const theme = this.isDarkMode ? this.darkTheme
-        const cssVariables = Object.entries(theme)
-            .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
-            .join('\n');
-        this.styleElement.textContent = `
-            :root {
-                ${cssVariables}
-            }
-            
-            body, body * {
-                transition: background-color ${this.transitionDuration}ms, color ${this.transitionDuration}ms, border-color ${this.transitionDuration}ms;
-            }
-            
-            ${this.generateThemeStyles()}
-        `;
+    if (!this.isDarkMode) {
+        // If it's light mode, stop the script.
+        return;
     }
+    
+    const theme = this.darkTheme;
+    const cssVariables = Object.entries(theme)
+        .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
+        .join('\n');
+
+    this.styleElement.textContent = `
+        :root {
+            ${cssVariables}
+        }
+
+        body, body * {
+            transition: background-color ${this.transitionDuration}ms, 
+                        color ${this.transitionDuration}ms, 
+                        border-color ${this.transitionDuration}ms;
+        }
+
+        ${this.generateThemeStyles()}
+    `;
+}
 
     generateThemeStyles() {
         return `
