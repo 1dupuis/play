@@ -12,87 +12,108 @@
             defaultRedirect: '/',
             debug: false,
             language: 'en',
-            allowedLanguages: ['en', 'es', 'fr'], // Add supported languages here
+            allowedLanguages: ['en', 'es', 'fr'],
             cookieName: 'access_control_lang',
-            cookieExpireDays: 30
+            cookieExpireDays: 30,
+            loginCookieName: 'isLogin',
+            redirectUrl: '/index.html',
+            redirectDelay: 500,
+            autoLogoutTime: 30 * 60 * 1000 // 30 minutes
         },
 
         content: {
-    en: {
-        maintenance: {
-            title: 'Site Under Maintenance',
-            message: 'We are currently performing updates and improvements. The site will be back online shortly. Thank you for your patience.',
-            icon: 'fa-solid fa-seedling'
+            en: {
+                maintenance: {
+                    title: 'Site Under Maintenance',
+                    message: 'We are currently performing updates and improvements. The site will be back online shortly. Thank you for your patience.',
+                    icon: 'fa-solid fa-seedling'
+                },
+                blocked: {
+                    title: 'Access Restricted',
+                    message: 'This section is restricted to authorized users only. Please enter the correct password to proceed.',
+                    icon: 'fa-solid fa-tree'
+                },
+                logout: {
+                    title: 'Session Expired',
+                    message: 'You have been logged out due to inactivity.',
+                    loginButton: 'Log In',
+                    icon: 'fa-solid fa-door-open'
+                }
+            },
+            es: {
+                maintenance: {
+                    title: 'Sitio en Mantenimiento',
+                    message: 'Actualmente estamos realizando actualizaciones y mejoras. El sitio volverá a estar en línea pronto. Gracias por su paciencia.',
+                    icon: 'fa-solid fa-seedling'
+                },
+                blocked: {
+                    title: 'Acceso Restringido',
+                    message: 'Esta sección está restringida solo para usuarios autorizados. Por favor, ingrese la contraseña correcta para continuar.',
+                    icon: 'fa-solid fa-tree'
+                },
+                logout: {
+                    title: 'Sesión Expirada',
+                    message: 'Se ha cerrado su sesión debido a inactividad.',
+                    loginButton: 'Iniciar Sesión',
+                    icon: 'fa-solid fa-door-open'
+                }
+            },
+            fr: {
+                maintenance: {
+                    title: 'Site en Maintenance',
+                    message: 'Nous effectuons actuellement des mises à jour et des améliorations. Le site sera de retour en ligne sous peu. Merci de votre patience.',
+                    icon: 'fa-solid fa-seedling'
+                },
+                blocked: {
+                    title: 'Accès Restreint',
+                    message: 'Cette section est réservée aux utilisateurs autorisés. Veuillez entrer le mot de passe correct pour continuer.',
+                    icon: 'fa-solid fa-tree'
+                },
+                logout: {
+                    title: 'Session Expirée',
+                    message: 'Vous avez été déconnecté en raison d\'inactivité.',
+                    loginButton: 'Se Connecter',
+                    icon: 'fa-solid fa-door-open'
+                }
+            }
         },
-        blocked: {
-            title: 'Access Restricted',
-            message: 'This section is restricted to authorized users only. Please enter the correct password to proceed.',
-            icon: 'fa-solid fa-tree'
-        }
-    },
-    es: {
-        maintenance: {
-            title: 'Sitio en Mantenimiento',
-            message: 'Actualmente estamos realizando actualizaciones y mejoras. El sitio volverá a estar en línea pronto. Gracias por su paciencia.',
-            icon: 'fa-solid fa-seedling'
-        },
-        blocked: {
-            title: 'Acceso Restringido',
-            message: 'Esta sección está restringida solo para usuarios autorizados. Por favor, ingrese la contraseña correcta para continuar.',
-            icon: 'fa-solid fa-tree'
-        }
-    },
-    fr: {
-        maintenance: {
-            title: 'Site en Maintenance',
-            message: 'Nous effectuons actuellement des mises à jour et des améliorations. Le site sera de retour en ligne sous peu. Merci de votre patience.',
-            icon: 'fa-solid fa-seedling'
-        },
-        blocked: {
-            title: 'Accès Restreint',
-            message: 'Cette section est réservée aux utilisateurs autorisés. Veuillez entrer le mot de passe correct pour continuer.',
-            icon: 'fa-solid fa-tree'
-        }
-    }
-},
-
 
         funFacts: {
             en: [
-                'The first computer bug was an actual real-life moth found in a computer relay in 1947!',
-                'The world\'s largest treehouse is over seven stories tall and uses 6 trees as its foundation!',
-                'The term "bugs" in computer science originated from actual insects causing problems in early computers.',
-                'The first website ever created is still online! You can visit it at info.cern.ch.',
-                'The most expensive domain name ever sold was Cars.com for $872 million.',
-                'There are more possible iterations of a game of chess than there are atoms in the known universe.',
-                'The first computer mouse was made of wood!',
-                'The QWERTY keyboard layout was designed to slow typists down to prevent jamming on mechanical typewriters.',
-                'The first webcam was created at Cambridge University to monitor a coffee pot!',
-                'The original name for Windows was Interface Manager.'
+                "The first computer bug was an actual bug - a moth trapped in a Harvard Mark II computer in 1947.",
+                "The average computer user blinks 7 times a minute, less than half the normal rate of 20.",
+                "More than 80% of the emails sent daily are spam.",
+                "The first 1GB hard disk drive was announced in 1980 and weighed about 550 pounds.",
+                "The original name for Windows was Interface Manager.",
+                "The first computer mouse was made of wood.",
+                "The first domain name ever registered was Symbolics.com on March 15, 1985.",
+                "About 70% of virus writers are said to work under contract for organized crime syndicates.",
+                "The QWERTY keyboard was designed to slow typing speed.",
+                "The first computer programmer was Ada Lovelace, a woman."
             ],
             es: [
-                '¡El primer "bug" informático fue una polilla real encontrada en un relé de computadora en 1947!',
-                '¡La casa del árbol más grande del mundo tiene más de siete pisos de altura y usa 6 árboles como base!',
-                'El término "bugs" en informática se originó de insectos reales que causaban problemas en las primeras computadoras.',
-                '¡El primer sitio web creado aún está en línea! Puedes visitarlo en info.cern.ch.',
-                'El nombre de dominio más caro jamás vendido fue Cars.com por $872 millones.',
-                '¡Hay más posibles iteraciones en un juego de ajedrez que átomos en el universo conocido!',
-                '¡El primer ratón de computadora estaba hecho de madera!',
-                'El diseño del teclado QWERTY se creó para ralentizar a los mecanógrafos y evitar atascos en las máquinas de escribir mecánicas.',
-                '¡La primera webcam fue creada en la Universidad de Cambridge para monitorear una cafetera!',
-                'El nombre original de Windows era Interface Manager.'
+                "El primer 'bug' informático fue un insecto real: una polilla atrapada en una computadora Harvard Mark II en 1947.",
+                "El usuario promedio de computadora parpadea 7 veces por minuto, menos de la mitad de la tasa normal de 20.",
+                "Más del 80% de los correos electrónicos enviados diariamente son spam.",
+                "El primer disco duro de 1GB se anunció en 1980 y pesaba alrededor de 250 kg.",
+                "El nombre original de Windows era Interface Manager.",
+                "El primer ratón de computadora estaba hecho de madera.",
+                "El primer nombre de dominio registrado fue Symbolics.com el 15 de marzo de 1985.",
+                "Se dice que alrededor del 70% de los creadores de virus trabajan bajo contrato para sindicatos del crimen organizado.",
+                "El teclado QWERTY fue diseñado para reducir la velocidad de escritura.",
+                "La primera programadora de computadoras fue Ada Lovelace, una mujer."
             ],
             fr: [
-                'Le premier "bug" informatique était un vrai papillon de nuit trouvé dans un relais d\'ordinateur en 1947 !',
-                'La plus grande cabane dans les arbres du monde fait plus de sept étages de haut et utilise 6 arbres comme fondation !',
-                'Le terme "bugs" en informatique provient d\'insectes réels qui causaient des problèmes dans les premiers ordinateurs.',
-                'Le premier site web jamais créé est toujours en ligne ! Vous pouvez le visiter à info.cern.ch.',
-                'Le nom de domaine le plus cher jamais vendu était Cars.com pour 872 millions de dollars.',
-                'Il y a plus d\'itérations possibles dans une partie d\'échecs que d\'atomes dans l\'univers connu !',
-                'La première souris d\'ordinateur était faite en bois !',
-                'La disposition du clavier AZERTY a été conçue pour ralentir les dactylographes afin d\'éviter les blocages sur les machines à écrire mécaniques.',
-                'La première webcam a été créée à l\'Université de Cambridge pour surveiller une cafetière !',
-                'Le nom original de Windows était Interface Manager.'
+                "Le premier 'bug' informatique était un vrai insecte - un papillon de nuit piégé dans un ordinateur Harvard Mark II en 1947.",
+                "L'utilisateur moyen d'ordinateur cligne des yeux 7 fois par minute, moins de la moitié du taux normal de 20.",
+                "Plus de 80% des e-mails envoyés quotidiennement sont des spams.",
+                "Le premier disque dur de 1 Go a été annoncé en 1980 et pesait environ 250 kg.",
+                "Le nom original de Windows était Interface Manager.",
+                "La première souris d'ordinateur était en bois.",
+                "Le premier nom de domaine jamais enregistré était Symbolics.com le 15 mars 1985.",
+                "Environ 70% des créateurs de virus travailleraient sous contrat pour des syndicats du crime organisé.",
+                "Le clavier AZERTY a été conçu pour ralentir la vitesse de frappe.",
+                "La première programmeuse informatique était Ada Lovelace, une femme."
             ]
         },
 
@@ -173,6 +194,8 @@
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                border: none;
+                cursor: pointer;
             }
             .btn:hover {
                 background-color: #45a049;
@@ -231,14 +254,110 @@
                 white-space: nowrap;
                 border: 0;
             }
+            .logout-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .logout-modal {
+                background-color: white;
+                padding: 2rem;
+                border-radius: 10px;
+                text-align: center;
+                max-width: 90%;
+                width: 400px;
+            }
+            .logout-modal .icon {
+                color: #e74c3c;
+            }
+            .logout-modal h2 {
+                margin-bottom: 1rem;
+            }
+            .logout-modal p {
+                margin-bottom: 2rem;
+            }
         `,
 
         init() {
+            if (!this.isLoggedIn()) {
+                this.redirectAfterDelay();
+                return;
+            }
+
             this.handleNavigation();
             window.addEventListener('popstate', () => this.handleNavigation());
             document.addEventListener('click', (e) => this.interceptClicks(e));
             this.setLanguage(this.getLanguageFromCookie() || this.getBrowserLanguage() || this.config.language);
+            this.setupAutoLogout();
+            this.injectStyles();
             this.log('Access Control initialized');
+        },
+
+        isLoggedIn() {
+            return this.getCookie(this.config.loginCookieName) === 'true';
+        },
+
+        redirectAfterDelay() {
+            setTimeout(() => {
+                window.location.href = this.config.redirectUrl;
+            }, this.config.redirectDelay);
+        },
+
+        setupAutoLogout() {
+            let logoutTimer;
+            const resetLogoutTimer = () => {
+                clearTimeout(logoutTimer);
+                logoutTimer = setTimeout(() => {
+                    this.logout(true);
+                }, this.config.autoLogoutTime);
+            };
+
+            ['mousedown', 'keydown', 'scroll', 'touchstart'].forEach(eventType => {
+                document.addEventListener(eventType, resetLogoutTimer, { passive: true });
+            });
+
+            resetLogoutTimer();
+        },
+
+        logout(showModal = false) {
+            this.setCookie(this.config.loginCookieName, 'false', 0);
+            if (showModal) {
+                this.showLogoutModal();
+            } else {
+                this.redirectAfterDelay();
+            }
+        },
+
+        showLogoutModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'logout-overlay';
+            
+            const modal = document.createElement('div');
+            modal.className = 'logout-modal';
+            
+            const content = this.getContent('logout');
+            
+            modal.innerHTML = `
+                <div class="icon"><i class="${content.icon}" aria-hidden="true"></i></div>
+                <h2>${this.escapeHTML(content.title)}</h2>
+                <p>${this.escapeHTML(content.message)}</p>
+                <button class="btn login-btn">${this.escapeHTML(content.loginButton)}</button>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            const loginBtn = modal.querySelector('.login-btn');
+            loginBtn.addEventListener('click', () => {
+                window.location.href = this.config.redirectUrl;
+            });
         },
 
         handleNavigation() {
@@ -282,25 +401,12 @@
         },
 
         injectContent(page) {
+            const container = document.querySelector('.container') || document.createElement('div');
+            container.className = 'container';
+
             const pageType = Object.keys(this.config.pages).find(key => this.config.pages[key] === page);
             const content = this.getContent(pageType);
-            
-            if (!content) {
-                this.log(`Content not found for page type: ${pageType}`);
-                return;
-            }
-
-            this.injectStyles();
-
-            // Create container if it doesn't exist
-            let container = document.querySelector('.container');
-            if (!container) {
-                container = document.createElement('div');
-                container.className = 'container';
-                document.body.appendChild(container);
-            }
-
-            const emoji = pageType === 'maintenance' ? '🌱' : '🌳';
+            const emoji = this.getRandomEmoji();
             const funFact = this.getRandomFunFact();
 
             container.innerHTML = `
@@ -315,6 +421,7 @@
                     <h1>${this.escapeHTML(content.title)} <span class="emoji" aria-hidden="true">${emoji}</span></h1>
                     <p>${this.escapeHTML(content.message)}</p>
                     <a href="${this.config.defaultRedirect}" class="btn">${this.translate('Return to Homepage')}</a>
+                    <button class="btn logout-btn">${this.translate('Logout')}</button>
                     <p class="fun-fact" tabindex="0" role="button" aria-label="Click to see a new fun fact">🤓 ${this.translate('Fun Fact')}: ${this.escapeHTML(funFact)}</p>
                     ${pageType === 'maintenance' ? '<p class="countdown" aria-live="polite"></p>' : ''}
                 </div>
@@ -331,6 +438,10 @@
                 }
             }
 
+            if (!document.body.contains(container)) {
+                document.body.appendChild(container);
+            }
+
             this.addInteractivity();
 
             if (pageType === 'maintenance') {
@@ -344,6 +455,7 @@
             const btn = document.querySelector('.btn');
             const funFactElement = document.querySelector('.fun-fact');
             const languageSelect = document.getElementById('language-select');
+            const logoutBtn = document.querySelector('.logout-btn');
 
             if (icon) {
                 icon.addEventListener('mouseover', () => {
@@ -394,13 +506,17 @@
                     this.handleNavigation();
                 });
             }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => this.logout(false));
+            }
         },
 
         startCountdown() {
             const countdownElement = document.querySelector('.countdown');
             if (!countdownElement) return;
 
-            const endTime = new Date().getTime() + 2 * 60 * 60 * 1000;
+            const endTime = new Date().getTime() + 2 * 60 * 60 * 1000; // 2 hours from now
 
             const updateCountdown = () => {
                 const now = new Date().getTime();
@@ -412,10 +528,11 @@
                     return;
                 }
 
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                countdownElement.textContent = `${this.translate('Estimated time remaining')}: ${minutes}m ${seconds}s`;
+                countdownElement.textContent = `${this.translate('Estimated time remaining')}: ${hours}h ${minutes}m ${seconds}s`;
 
                 setTimeout(updateCountdown, 1000);
             };
@@ -430,6 +547,11 @@
         getRandomFunFact() {
             const facts = this.funFacts[this.config.language] || this.funFacts.en;
             return facts[Math.floor(Math.random() * facts.length)];
+        },
+
+        getRandomEmoji() {
+            const emojis = ['🚧', '🔒', '🛠️', '🔐', '🚨', '⚠️'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
         },
 
         injectStyles() {
@@ -477,16 +599,7 @@
         },
 
         getLanguageFromCookie() {
-            const name = this.config.cookieName + "=";
-            const decodedCookie = decodeURIComponent(document.cookie);
-            const cookieArray = decodedCookie.split(';');
-            for (let i = 0; i < cookieArray.length; i++) {
-                let cookie = cookieArray[i].trim();
-                if (cookie.indexOf(name) === 0) {
-                    return cookie.substring(name.length, cookie.length);
-                }
-            }
-            return null;
+            return this.getCookie(this.config.cookieName);
         },
 
         getBrowserLanguage() {
@@ -498,7 +611,18 @@
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + date.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            document.cookie = `${name}=${value};${expires};path=/;SameSite=Strict`;
+        },
+
+        getCookie(name) {
+            const cookieArray = document.cookie.split(';');
+            for (let i = 0; i < cookieArray.length; i++) {
+                let cookie = cookieArray[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    return cookie.substring(name.length + 1);
+                }
+            }
+            return null;
         },
 
         translate(key) {
@@ -510,7 +634,8 @@
                     'Oops!': 'Oops!',
                     'is a VIP area.': 'is a VIP area.',
                     'Estimated time remaining': 'Estimated time remaining',
-                    'Maintenance complete! Refreshing...': 'Maintenance complete! Refreshing...'
+                    'Maintenance complete! Refreshing...': 'Maintenance complete! Refreshing...',
+                    'Logout': 'Logout'
                 },
                 es: {
                     'Return to Homepage': 'Volver a la Página Principal',
@@ -519,7 +644,8 @@
                     'Oops!': '¡Ups!',
                     'is a VIP area.': 'es un área VIP.',
                     'Estimated time remaining': 'Tiempo estimado restante',
-                    'Maintenance complete! Refreshing...': '¡Mantenimiento completo! Actualizando...'
+                    'Maintenance complete! Refreshing...': '¡Mantenimiento completo! Actualizando...',
+                    'Logout': 'Cerrar sesión'
                 },
                 fr: {
                     'Return to Homepage': 'Retour à la Page d\'Accueil',
@@ -528,7 +654,8 @@
                     'Oops!': 'Oups !',
                     'is a VIP area.': 'est une zone VIP.',
                     'Estimated time remaining': 'Temps estimé restant',
-                    'Maintenance complete! Refreshing...': 'Maintenance terminée ! Actualisation...'
+                    'Maintenance complete! Refreshing...': 'Maintenance terminée ! Actualisation...',
+                    'Logout': 'Déconnexion'
                 }
             };
             return translations[this.config.language]?.[key] || translations.en[key] || key;
