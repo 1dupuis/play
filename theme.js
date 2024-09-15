@@ -1,3 +1,4 @@
+// theme.js
 class AIDarkModeManager {
     constructor() {
         this.darkTheme = {
@@ -62,6 +63,7 @@ class AIDarkModeManager {
           '--light-gameFooterBackgroundColor': '#e9e9e9'
         };
 
+
         this.transitionDuration = 300; // ms
         this.isDarkMode = false;
         this.userPreferences = {
@@ -91,7 +93,7 @@ class AIDarkModeManager {
     }
 
     setupToggle() {
-      if (this.getLocalStorage('theme') === 'dark') {
+      if (localStorage.getItem('theme') === 'dark') {
         const toggle = document.createElement('button');
         toggle.id = 'ai-dark-mode-toggle';
         toggle.textContent = 'AI Theme';
@@ -114,11 +116,11 @@ class AIDarkModeManager {
     }
 
     loadPreferences() {
-        const savedPreferences = this.getLocalStorage('aiThemePreferences');
+        const savedPreferences = this.getCookie('aiThemePreferences');
         if (savedPreferences) {
             this.userPreferences = JSON.parse(savedPreferences);
         }
-        this.isDarkMode = this.getLocalStorage('theme') === 'dark';
+        this.isDarkMode = localStorage.getItem('theme') === 'dark'
     }
 
     setupEventListeners() {
@@ -155,7 +157,7 @@ class AIDarkModeManager {
 
     toggleTheme() {
         this.isDarkMode = !this.isDarkMode;
-        this.setLocalStorage('aiTheme', this.isDarkMode ? 'dark' : 'light');
+        localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light', 365);
         this.applyTheme();
         this.logUserAction('manual_toggle');
     }
@@ -238,7 +240,7 @@ class AIDarkModeManager {
     }
 
     handleSystemPreferenceChange(e) {
-        if (!this.getLocalStorage('aiTheme')) {
+        if (!this.getCookie('aiTheme')) {
             this.isDarkMode = e.matches;
             this.applyTheme();
             this.logUserAction('system_preference_change');
@@ -270,95 +272,109 @@ class AIDarkModeManager {
     }
 
     updateScrollDepth() {
-        const scrollDepth = window.scrollY || document.documentElement.scrollTop;
-        this.setLocalStorage('scrollDepth', scrollDepth);
+        const scrollDepth = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        this.mlModel.updateFeature('scrollDepth', scrollDepth);
     }
 
     updateMouseActivity() {
-        const mouseMovement = new Date().getTime();
-        this.setLocalStorage('mouseActivity', mouseMovement);
+        this.mlModel.updateFeature('mouseActivity', Date.now());
     }
 
     updateNetworkType() {
-        const networkType = navigator.onLine ? 'online' : 'offline';
-        this.setLocalStorage('networkType', networkType);
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            this.mlModel.updateFeature('networkType', connection.type);
+        }
     }
 
     updateBatteryStatus() {
-        if (navigator.getBattery) {
+        if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
-                this.setLocalStorage('batteryLevel', battery.level);
+                this.mlModel.updateFeature('batteryLevel', battery.level * 100);
             });
         }
     }
 
     updateTimeOnPage() {
-        const timeOnPage = (this.getLocalStorage('timeOnPage') || 0) + 1;
-        this.setLocalStorage('timeOnPage', timeOnPage);
-    }
-
-    checkEyeStrain() {
-        // Notify the user to take a break every 20 minutes (standard eye-strain prevention rule)
-        const timeOnPage = this.getLocalStorage('timeOnPage') || 0;
-        if (timeOnPage >= 20) {
-            alert('It\'s time to take a break to prevent eye strain.');
+        if (!this.pageLoadTime) {
+            this.pageLoadTime = Date.now();
         }
-    }
-
-    predictTheme() {
-        const userContext = {
-            scrollDepth: this.getLocalStorage('scrollDepth'),
-            mouseActivity: this.getLocalStorage('mouseActivity'),
-            batteryLevel: this.getLocalStorage('batteryLevel'),
-            timeOnPage: this.getLocalStorage('timeOnPage'),
-            networkType: this.getLocalStorage('networkType')
-        };
-        const predictedDarkMode = this.mlModel.predictDarkMode(userContext);
-
-        if (predictedDarkMode !== this.isDarkMode) {
-            this.isDarkMode = predictedDarkMode;
-            this.applyTheme();
-            this.logUserAction('ml_prediction');
-        }
+        const timeOnPage = (Date.now() - this.pageLoadTime) / 1000 / 60; // in minutes
+        this.mlModel.updateFeature('timeOnPage', timeOnPage);
     }
 
     setupLightSensor() {
         if ('AmbientLightSensor' in window) {
-            try {
-                const sensor = new AmbientLightSensor();
-                sensor.addEventListener('reading', () => {
-                    if (sensor.illuminance < 50 && !this.isDarkMode) {
-                        this.isDarkMode = true;
-                        this.applyTheme();
-                    } else if (sensor.illuminance >= 50 && this.isDarkMode) {
-                        this.isDarkMode = false;
-                        this.applyTheme();
-                    }
-                    this.setLocalStorage('ambientLight', sensor.illuminance);
-                });
-                sensor.start();
-            } catch (e) {
-                console.error('Ambient Light Sensor not supported:', e);
+            const sensor = new AmbientLightSensor();
+            sensor.addEventListener('reading', () => {
+                this.mlModel.updateFeature('deviceLight', sensor.illuminance);
+                this.checkLightLevels(sensor.illuminance);
+            });
+            sensor.start();
+        }
+    }
+
+    checkLightLevels(illuminance) {
+        if (this.userPreferences.autoDarkMode) {
+            const shouldBeDark = illuminance < 10; // 10 lux as a threshold for dark environments
+            if (shouldBeDark !== this.isDarkMode) {
+                this.isDarkMode = shouldBeDark;
+                this.applyTheme();
+                this.logUserAction('light_sensor_change');
+            }
+        }
+    }
+
+    checkEyeStrain() {
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const timeOnPage = this.mlModel.getFeatureValue('timeOnPage');
+
+        if (timeOnPage > 30 && currentTime > this.timeStringToMinutes('22:00')) {
+            this.isDarkMode = true;
+            this.applyTheme();
+            this.logUserAction('eye_strain_prevention');
+            this.showNotification('Eye strain prevention activated. Taking a break is recommended.');
+        }
+    }
+
+    predictTheme() {
+        if (this.userPreferences.autoDarkMode) {
+            const prediction = this.mlModel.predict();
+            
+            if (prediction !== this.isDarkMode) {
+                this.isDarkMode = prediction;
+                this.applyTheme();
+                this.logUserAction('ml_prediction');
             }
         }
     }
 
     logUserAction(action) {
-        console.log(`User performed action: ${action}`);
+        this.mlModel.train(this.isDarkMode ? 1 : 0);
+        
+        // Log action for future analysis
+        const actions = JSON.parse(this.getCookie('aiThemeActions') || '[]');
+        actions.push({ action, timestamp: Date.now(), isDarkMode: this.isDarkMode });
+        this.setCookie('aiThemeActions', JSON.stringify(actions), 365);
     }
 
-    getLocalStorage(key) {
-        return localStorage.getItem(key);
-    }
-
-    setLocalStorage(key, value) {
-        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+    showNotification(message) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('AI Theme', { body: message });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('AI Theme', { body: message });
+                }
+            });
+        }
     }
 
     throttle(func, limit) {
         let lastFunc;
         let lastRan;
-        return function () {
+        return function() {
             const context = this;
             const args = arguments;
             if (!lastRan) {
@@ -366,29 +382,87 @@ class AIDarkModeManager {
                 lastRan = Date.now();
             } else {
                 clearTimeout(lastFunc);
-                lastFunc = setTimeout(function () {
-                    if (Date.now() - lastRan >= limit) {
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
                         func.apply(context, args);
                         lastRan = Date.now();
                     }
                 }, limit - (Date.now() - lastRan));
             }
-        };
-    }
-}
-
-// Sample DarkModePredictor class
-class DarkModePredictor {
-    predictDarkMode(userContext) {
-        // Simple prediction logic, could be replaced with more complex ML model
-        const { scrollDepth, mouseActivity, batteryLevel, timeOnPage, networkType } = userContext;
-
-        if (scrollDepth > 200 || timeOnPage > 15 || networkType === 'offline' || batteryLevel < 0.2) {
-            return true; // Predict dark mode
         }
-        return false; // Predict light mode
+    }
+
+    setCookie(name, value, days) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+    }
+
+    getCookie(name) {
+        return document.cookie.split('; ').reduce((r, v) => {
+            const parts = v.split('=');
+            return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+        }, '');
     }
 }
 
-// Initialize the manager
+class DarkModePredictor {
+    constructor() {
+        this.features = [
+            'time', 'deviceLight', 'batteryLevel', 'networkType',
+            'scrollDepth', 'timeOnPage', 'mouseActivity'
+        ];
+        this.weights = new Array(this.features.length).fill(0);
+        this.bias = 0;
+        this.learningRate = 0.01;
+        this.loadModel();
+    }
+
+    updateFeature(feature, value) {
+        if (this.features.includes(feature)) {
+            localStorage.setItem(`aiTheme_${feature}`, value.toString());
+        }
+    }
+
+    getFeatureValue(feature) {
+        const value = localStorage.getItem(`aiTheme_${feature}`);
+        return value ? parseFloat(value) : 0;
+    }
+
+    predict() {
+        const features = this.features.map(feature => this.getFeatureValue(feature));
+        const logit = features.reduce((sum, feature, index) => sum + feature * this.weights[index], 0) + this.bias;
+        return 1 / (1 + Math.exp(-logit)) > 0.5;
+    }
+
+    train(label) {
+        const features = this.features.map(feature => this.getFeatureValue(feature));
+        const prediction = this.predict();
+        const error = label - prediction;
+
+        this.weights = this.weights.map((weight, index) => 
+            weight + this.learningRate * error * features[index]
+        );
+        this.bias += this.learningRate * error;
+
+        this.saveModel();
+    }
+
+    loadModel() {
+        const savedModel = localStorage.getItem('aiThemeModel');
+        if (savedModel) {
+            const { weights, bias } = JSON.parse(savedModel);
+            this.weights = weights;
+            this.bias = bias;
+        }
+    }
+
+    saveModel() {
+        localStorage.setItem('aiThemeModel', JSON.stringify({
+            weights: this.weights,
+            bias: this.bias
+        }));
+    }
+}
+
+// Initialize AIDarkModeManager
 const aiDarkModeManager = new AIDarkModeManager();
