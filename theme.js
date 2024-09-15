@@ -10,7 +10,19 @@ class AIDarkModeManager {
             '--dark-buttonBackgroundColor': '#3700B3',
             '--dark-buttonTextColor': '#ffffff',
             '--dark-progressBarColor': '#03DAC6',
-            '--dark-accentColor': '#CF6679'
+            '--dark-accentColor': '#CF6679',
+            '--dark-headerBackgroundColor': '#2d2d2d',
+            '--dark-footerBackgroundColor': '#2b2b2b',
+            '--dark-inputBackgroundColor': '#2d2d2d',
+            '--dark-inputTextColor': '#e0e0e0',
+            '--dark-placeholderTextColor': '#757575',
+            '--dark-hoverColor': '#333333',
+            '--dark-shadowColor': 'rgba(0, 0, 0, 0.5)',
+            '--dark-cardBackgroundColor': '#1e1e1e',
+            '--dark-cardBorderColor': '#444444',
+            '--dark-tooltipBackgroundColor': '#333333',
+            '--dark-tooltipTextColor': '#ffffff',
+            '--dark-toggleSwitchColor': '#03DAC6'
         };
         this.lightTheme = {
             '--light-backgroundColor': '#ffffff',
@@ -21,8 +33,21 @@ class AIDarkModeManager {
             '--light-buttonBackgroundColor': '#1a73e8',
             '--light-buttonTextColor': '#ffffff',
             '--light-progressBarColor': '#1a73e8',
-            '--light-accentColor': '#d93025'
+            '--light-accentColor': '#d93025',
+            '--light-headerBackgroundColor': '#f8f8f8',
+            '--light-footerBackgroundColor': '#e5e5e5',
+            '--light-inputBackgroundColor': '#ffffff',
+            '--light-inputTextColor': '#333333',
+            '--light-placeholderTextColor': '#888888',
+            '--light-hoverColor': '#eaeaea',
+            '--light-shadowColor': 'rgba(0, 0, 0, 0.1)',
+            '--light-cardBackgroundColor': '#f0f0f0',
+            '--light-cardBorderColor': '#e0e0e0',
+            '--light-tooltipBackgroundColor': '#f7f7f7',
+            '--light-tooltipTextColor': '#333333',
+            '--light-toggleSwitchColor': '#1a73e8'
         };
+
         this.transitionDuration = 300; // ms
         this.isDarkMode = false;
         this.userPreferences = {
