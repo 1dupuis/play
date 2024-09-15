@@ -143,7 +143,7 @@ class AIDarkModeManager {
     }
 
     updateCSSVariables() {
-        const theme = this.isDarkMode ? this.darkTheme;
+        const theme = this.isDarkMode ? this.darkTheme
         const cssVariables = Object.entries(theme)
             .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
             .join('\n');
