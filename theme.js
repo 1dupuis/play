@@ -1,324 +1,426 @@
-class ThemeManager {
+// theme.js
+class AIDarkModeManager {
     constructor() {
-        this.darkModeBase = {
-            backgroundColor: '#121212',
-            containerBackgroundColor: '#1e1e1e',
-            textColor: '#e0e0e0',
-            linkColor: '#bb86fc',
-            borderColor: '#3a3a3a',
-            minContrastRatio: 4.5,
+        this.darkTheme = {
+            '--dark-backgroundColor': '#121212',
+            '--dark-containerBackgroundColor': '#1e1e1e',
+            '--dark-textColor': '#e0e0e0',
+            '--dark-linkColor': '#bb86fc',
+            '--dark-borderColor': '#3a3a3a',
+            '--dark-buttonBackgroundColor': '#3700B3',
+            '--dark-buttonTextColor': '#ffffff',
+            '--dark-progressBarColor': '#03DAC6',
+            '--dark-accentColor': '#CF6679'
         };
+        this.lightTheme = {
+            '--light-backgroundColor': '#ffffff',
+            '--light-containerBackgroundColor': '#f0f0f0',
+            '--light-textColor': '#333333',
+            '--light-linkColor': '#1a73e8',
+            '--light-borderColor': '#d1d1d1',
+            '--light-buttonBackgroundColor': '#1a73e8',
+            '--light-buttonTextColor': '#ffffff',
+            '--light-progressBarColor': '#1a73e8',
+            '--light-accentColor': '#d93025'
+        };
+        this.transitionDuration = 300; // ms
+        this.isDarkMode = false;
+        this.userPreferences = {
+            scheduledDarkMode: false,
+            darkModeStartTime: '20:00',
+            darkModeEndTime: '06:00',
+            autoDarkMode: true,
+            lightSensor: false,
+            eyeStrainPrevention: false
+        };
+        this.mlModel = new DarkModePredictor();
         this.init();
     }
 
     init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('theme') === 'dark') {
-                if (this.shouldAskForExperimentalDarkMode()) {
-                    this.showExperimentalPrompt();
-                } else {
-                    this.applyTheme();
-                }
-                this.showHoverButton();
-            } else {
-                this.applyLightTheme(); // Optionally handle light theme
-            }
-        });
+        this.createStyleElement();
+        this.loadPreferences();
+        this.applyTheme();
+        this.setupEventListeners();
+        this.startBackgroundTasks();
+        this.setupToggle();
     }
 
-    showExperimentalPrompt() {
-        // Create prompt container
-        const promptDiv = document.createElement('div');
-        promptDiv.id = 'experimentPrompt';
-        promptDiv.style.display = 'block';
-        promptDiv.style.position = 'fixed';
-        promptDiv.style.bottom = '20px';
-        promptDiv.style.left = '20px';
-        promptDiv.style.backgroundColor = '#333';
-        promptDiv.style.color = '#fff';
-        promptDiv.style.padding = '20px';
-        promptDiv.style.borderRadius = '12px';
-        promptDiv.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5)';
-        promptDiv.style.zIndex = '1000';
-        promptDiv.style.maxWidth = '300px';
-        promptDiv.style.textAlign = 'center';
-        promptDiv.innerHTML = `
-            <p>Would you like to try the experimental dark mode?</p>
-            <button class="yes-button" style="margin: 5px; padding: 10px 20px; border: none; border-radius: 8px; background-color: #4caf50; color: white; cursor: pointer;">Yes</button>
-            <button class="no-button" style="margin: 5px; padding: 10px 20px; border: none; border-radius: 8px; background-color: #f44336; color: white; cursor: pointer;">No</button>
+    createStyleElement() {
+        this.styleElement = document.createElement('style');
+        document.head.appendChild(this.styleElement);
+    }
+
+    setupToggle() {
+        const toggle = document.createElement('button');
+        toggle.id = 'ai-dark-mode-toggle';
+        toggle.textContent = 'AI Theme';
+        toggle.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background-color: var(--buttonBackgroundColor);
+            color: var(--buttonTextColor);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
         `;
-
-        // Append to body
-        document.body.appendChild(promptDiv);
-
-        // Add button event listeners
-        document.querySelector('#experimentPrompt .yes-button').addEventListener('click', () => this.handleUserResponse(true));
-        document.querySelector('#experimentPrompt .no-button').addEventListener('click', () => this.handleUserResponse(false));
+        document.body.appendChild(toggle);
     }
 
-    handleUserResponse(accepted) {
-        const currentTime = Date.now();
-        localStorage.setItem('experimentalDarkModeResponse', accepted ? 'yes' : 'no');
-        localStorage.setItem('experimentalDarkModeTimestamp', currentTime);
-        const promptDiv = document.getElementById('experimentPrompt');
-        if (promptDiv) promptDiv.remove();
+    loadPreferences() {
+        const savedPreferences = this.getCookie('aiThemePreferences');
+        if (savedPreferences) {
+            this.userPreferences = JSON.parse(savedPreferences);
+        }
+        this.isDarkMode = this.getCookie('aiTheme') === 'dark' ||
+            (!this.getCookie('aiTheme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
 
-        if (accepted) {
-            this.applyTheme();
-        } else {
-            this.resetToOriginalStyles(); // Reset to original styles
+    setupEventListeners() {
+        const toggle = document.getElementById('ai-dark-mode-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', this.toggleTheme.bind(this));
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addListener(this.handleSystemPreferenceChange.bind(this));
+        document.addEventListener('DOMContentLoaded', this.applyTheme.bind(this));
+        window.addEventListener('scroll', this.throttle(this.updateScrollDepth.bind(this), 200));
+        document.addEventListener('mousemove', this.throttle(this.updateMouseActivity.bind(this), 1000));
+        window.addEventListener('online', this.updateNetworkType.bind(this));
+        window.addEventListener('offline', this.updateNetworkType.bind(this));
+    }
+
+    startBackgroundTasks() {
+        this.scheduleTask(this.checkScheduledTheme.bind(this), 60000);
+        this.scheduleTask(this.updateBatteryStatus.bind(this), 300000);
+        this.scheduleTask(this.updateTimeOnPage.bind(this), 60000);
+        this.scheduleTask(this.predictTheme.bind(this), 300000);
+        
+        if (this.userPreferences.lightSensor) {
+            this.setupLightSensor();
+        }
+        
+        if (this.userPreferences.eyeStrainPrevention) {
+            this.scheduleTask(this.checkEyeStrain.bind(this), 600000);
         }
     }
 
-    shouldAskForExperimentalDarkMode() {
-        const response = localStorage.getItem('experimentalDarkModeResponse');
-        const timestamp = localStorage.getItem('experimentalDarkModeTimestamp');
-        const currentTime = Date.now();
+    scheduleTask(task, interval) {
+        setInterval(task, interval);
+    }
 
-        if (response === 'yes' || response === 'no') {
-            if (timestamp) {
-                return (currentTime - parseInt(timestamp, 10)) > 2 * 24 * 60 * 60 * 1000;
-            }
-            return true; // Ask if no timestamp is available
-        }
-        return true; // Ask if no response is available
+    toggleTheme() {
+        this.isDarkMode = !this.isDarkMode;
+        this.setCookie('aiTheme', this.isDarkMode ? 'dark' : 'light', 365);
+        this.applyTheme();
+        this.logUserAction('manual_toggle');
     }
 
     applyTheme() {
-        this.convertLightToDark();
-    }
-
-    applyLightTheme() {
-        //this.resetToOriginalStyles();
-    }
-
-    resetToOriginalStyles() {
-        // Reset to original light mode styles
-        document.body.style.transition = '';
-        document.body.style.backgroundColor = '';
-        document.body.style.color = '';
-        this.convertElementStyles('*', 'backgroundColor', 'color', 'borderColor');
-        document.querySelectorAll('*').forEach(element => {
-            element.style.backgroundColor = '';
-            element.style.color = '';
-            element.style.borderColor = '';
+        requestAnimationFrame(() => {
+            this.updateCSSVariables();
+            this.updateGlobalStyles();
         });
-        localStorage.setItem('theme', 'light');
-        window.location.reload(); // Refresh the page to apply changes
     }
 
-    convertLightToDark() {
-        this.applyBaseStyles();
-        this.convertElementStyles('*', 'backgroundColor', 'color', 'borderColor');
-        this.convertInlineStyles();
-        this.adjustShadows();
-        this.convertBackgroundImages();
-        this.handlePseudoElements();
-        this.handleSVGs();
+    updateCSSVariables() {
+        const theme = this.isDarkMode ? this.darkTheme : this.lightTheme;
+        const cssVariables = Object.entries(theme)
+            .map(([key, value]) => `${key.replace('dark-', '').replace('light-', '')}: ${value};`)
+            .join('\n');
+        this.styleElement.textContent = `
+            :root {
+                ${cssVariables}
+            }
+            
+            body, body * {
+                transition: background-color ${this.transitionDuration}ms, color ${this.transitionDuration}ms, border-color ${this.transitionDuration}ms;
+            }
+            
+            ${this.generateThemeStyles()}
+        `;
     }
 
-    applyBaseStyles() {
-        document.body.style.transition = 'background-color 0.5s ease, color 0.5s ease';
-        document.body.style.backgroundColor = this.darkModeBase.backgroundColor;
-        document.body.style.color = this.darkModeBase.textColor;
+    generateThemeStyles() {
+        return `
+            body {
+                background-color: var(--backgroundColor);
+                color: var(--textColor);
+            }
+            
+            a {
+                color: var(--linkColor);
+            }
+            
+            button, .button {
+                background-color: var(--buttonBackgroundColor);
+                color: var(--buttonTextColor);
+                border: none;
+                border-radius: 4px;
+                padding: 8px 16px;
+                cursor: pointer;
+            }
+            
+            input, textarea, select {
+                background-color: var(--containerBackgroundColor);
+                color: var(--textColor);
+                border: 1px solid var(--borderColor);
+            }
+            
+            .progress-bar, progress {
+                background-color: var(--progressBarColor);
+                height: 8px;
+                border-radius: 4px;
+            }
+            
+            .game-container {
+                background-color: var(--containerBackgroundColor);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: 1px solid var(--borderColor);
+            }
+            
+            .heart {
+                color: var(--accentColor);
+            }
+            
+            .game-text {
+                color: var(--textColor);
+            }
+        `;
     }
 
-    convertElementStyles(selector, ...styles) {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            styles.forEach(style => {
-                const currentStyle = window.getComputedStyle(element)[style];
-                if (currentStyle) {
-                    const adjustedStyle = this.adjustColorForDarkMode(currentStyle, style);
-                    element.style[style] = adjustedStyle;
+    updateGlobalStyles() {
+        document.body.classList.toggle('ai-dark-mode', this.isDarkMode);
+    }
 
-                    if (style === 'backgroundColor' && element.tagName !== 'BODY') {
-                        element.style.backgroundColor = this.darkModeBase.containerBackgroundColor;
-                    }
+    handleSystemPreferenceChange(e) {
+        if (!this.getCookie('aiTheme')) {
+            this.isDarkMode = e.matches;
+            this.applyTheme();
+            this.logUserAction('system_preference_change');
+        }
+    }
 
-                    if (style === 'color') {
-                        const contrastTextColor = this.ensureContrast(adjustedStyle, this.darkModeBase.containerBackgroundColor);
-                        element.style.color = contrastTextColor;
-                    }
+    checkScheduledTheme() {
+        if (this.userPreferences.scheduledDarkMode) {
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const startTime = this.timeStringToMinutes(this.userPreferences.darkModeStartTime);
+            const endTime = this.timeStringToMinutes(this.userPreferences.darkModeEndTime);
 
-                    if (style === 'borderColor') {
-                        element.style.borderColor = this.darkModeBase.borderColor;
-                    }
+            const newDarkMode = startTime < endTime
+                ? (currentTime >= startTime && currentTime < endTime)
+                : (currentTime >= startTime || currentTime < endTime);
+
+            if (newDarkMode !== this.isDarkMode) {
+                this.isDarkMode = newDarkMode;
+                this.applyTheme();
+                this.logUserAction('scheduled_change');
+            }
+        }
+    }
+
+    timeStringToMinutes(timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    updateScrollDepth() {
+        const scrollDepth = (window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        this.mlModel.updateFeature('scrollDepth', scrollDepth);
+    }
+
+    updateMouseActivity() {
+        this.mlModel.updateFeature('mouseActivity', Date.now());
+    }
+
+    updateNetworkType() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            this.mlModel.updateFeature('networkType', connection.type);
+        }
+    }
+
+    updateBatteryStatus() {
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                this.mlModel.updateFeature('batteryLevel', battery.level * 100);
+            });
+        }
+    }
+
+    updateTimeOnPage() {
+        if (!this.pageLoadTime) {
+            this.pageLoadTime = Date.now();
+        }
+        const timeOnPage = (Date.now() - this.pageLoadTime) / 1000 / 60; // in minutes
+        this.mlModel.updateFeature('timeOnPage', timeOnPage);
+    }
+
+    setupLightSensor() {
+        if ('AmbientLightSensor' in window) {
+            const sensor = new AmbientLightSensor();
+            sensor.addEventListener('reading', () => {
+                this.mlModel.updateFeature('deviceLight', sensor.illuminance);
+                this.checkLightLevels(sensor.illuminance);
+            });
+            sensor.start();
+        }
+    }
+
+    checkLightLevels(illuminance) {
+        if (this.userPreferences.autoDarkMode) {
+            const shouldBeDark = illuminance < 10; // 10 lux as a threshold for dark environments
+            if (shouldBeDark !== this.isDarkMode) {
+                this.isDarkMode = shouldBeDark;
+                this.applyTheme();
+                this.logUserAction('light_sensor_change');
+            }
+        }
+    }
+
+    checkEyeStrain() {
+        const now = new Date();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const timeOnPage = this.mlModel.getFeatureValue('timeOnPage');
+
+        if (timeOnPage > 30 && currentTime > this.timeStringToMinutes('22:00')) {
+            this.isDarkMode = true;
+            this.applyTheme();
+            this.logUserAction('eye_strain_prevention');
+            this.showNotification('Eye strain prevention activated. Taking a break is recommended.');
+        }
+    }
+
+    predictTheme() {
+        if (this.userPreferences.autoDarkMode) {
+            const prediction = this.mlModel.predict();
+            
+            if (prediction !== this.isDarkMode) {
+                this.isDarkMode = prediction;
+                this.applyTheme();
+                this.logUserAction('ml_prediction');
+            }
+        }
+    }
+
+    logUserAction(action) {
+        this.mlModel.train(this.isDarkMode ? 1 : 0);
+        
+        // Log action for future analysis
+        const actions = JSON.parse(this.getCookie('aiThemeActions') || '[]');
+        actions.push({ action, timestamp: Date.now(), isDarkMode: this.isDarkMode });
+        this.setCookie('aiThemeActions', JSON.stringify(actions), 365);
+    }
+
+    showNotification(message) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('AI Theme', { body: message });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('AI Theme', { body: message });
                 }
             });
-        });
+        }
     }
 
-    convertInlineStyles() {
-        const elements = document.querySelectorAll('*[style]');
-        elements.forEach(element => {
-            const inlineStyles = element.getAttribute('style');
-            const stylesToAdjust = ['color', 'backgroundColor', 'borderColor'];
-            stylesToAdjust.forEach(style => {
-                const regex = new RegExp(`${style}\\s*:\\s*([^;]+);?`, 'i');
-                const match = inlineStyles.match(regex);
-                if (match) {
-                    const adjustedColor = this.adjustColorForDarkMode(match[1], style);
-                    element.style[style] = adjustedColor;
-                }
-            });
-        });
-    }
-
-    adjustShadows() {
-        const elements = document.querySelectorAll('*');
-        elements.forEach(element => {
-            const boxShadow = window.getComputedStyle(element)['boxShadow'];
-            const textShadow = window.getComputedStyle(element)['textShadow'];
-
-            if (boxShadow) {
-                element.style.boxShadow = this.modifyShadowForDarkMode(boxShadow);
+    throttle(func, limit) {
+        let lastFunc;
+        let lastRan;
+        return function() {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function() {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(context, args);
+                        lastRan = Date.now();
+                    }
+                }, limit - (Date.now() - lastRan));
             }
-
-            if (textShadow) {
-                element.style.textShadow = this.modifyShadowForDarkMode(textShadow);
-            }
-        });
-    }
-
-    modifyShadowForDarkMode(shadow) {
-        const shadowParts = shadow.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*(\d*\.?\d*)?\)/);
-        if (shadowParts) {
-            let [_, r, g, b, a = 1] = shadowParts.map(Number);
-            [r, g, b] = this.darkenRGB(r, g, b, 0.8);
-            return `rgba(${r}, ${g}, ${b}, ${a})`;
-        }
-        return shadow;
-    }
-
-    darkenRGB(r, g, b, factor) {
-        return [
-            Math.max(0, Math.floor(r * factor)),
-            Math.max(0, Math.floor(g * factor)),
-            Math.max(0, Math.floor(b * factor))
-        ];
-    }
-
-    convertBackgroundImages() {
-        const images = document.querySelectorAll('img, div[style*="background-image"]');
-        images.forEach(image => {
-            image.style.filter = 'brightness(0.7)';
-        });
-    }
-
-    handlePseudoElements() {
-        const styleSheet = document.styleSheets[0];
-        styleSheet.insertRule(`
-            *::before, *::after {
-                background-color: ${this.darkModeBase.containerBackgroundColor} !important;
-                color: ${this.darkModeBase.textColor} !important;
-            }
-        `, styleSheet.cssRules.length);
-    }
-
-    handleSVGs() {
-        const svgElements = document.querySelectorAll('svg');
-        svgElements.forEach(svg => {
-            svg.style.fill = this.ensureContrast(svg.style.fill || this.darkModeBase.textColor, this.darkModeBase.backgroundColor);
-            svg.style.stroke = this.ensureContrast(svg.style.stroke || this.darkModeBase.textColor, this.darkModeBase.backgroundColor);
-        });
-    }
-
-    adjustColorForDarkMode(color, style) {
-        if (style === 'color') {
-            return this.ensureContrast(color, this.darkModeBase.containerBackgroundColor);
-        } else if (style === 'backgroundColor') {
-            return this.darkenColor(color);
-        } else {
-            return this.convertColor(color);
         }
     }
 
-    ensureContrast(foregroundColor, backgroundColor) {
-        const contrastRatio = this.calculateContrast(foregroundColor, backgroundColor);
-        if (contrastRatio < this.darkModeBase.minContrastRatio) {
-            return this.brightenColor(foregroundColor, (this.darkModeBase.minContrastRatio - contrastRatio) * 50);
-        }
-        return foregroundColor;
+    setCookie(name, value, days) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
     }
 
-    calculateContrast(fgColor, bgColor) {
-        const fgLuminance = this.calculateLuminance(fgColor);
-        const bgLuminance = this.calculateLuminance(bgColor);
-        return (Math.max(fgLuminance, bgLuminance) + 0.05) / (Math.min(fgLuminance, bgLuminance) + 0.05);
-    }
-
-    calculateLuminance(color) {
-        const rgb = this.colorToRGB(color);
-        const [r, g, b] = rgb.map(x => {
-            x = x / 255;
-            return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
-        });
-        return r * 0.2126 + g * 0.7152 + b * 0.0722;
-    }
-
-    colorToRGB(color) {
-        if (color.startsWith('#')) {
-            let r = parseInt(color.slice(1, 3), 16);
-            let g = parseInt(color.slice(3, 5), 16);
-            let b = parseInt(color.slice(5, 7), 16);
-            return [r, g, b];
-        } else {
-            let [r, g, b] = color.match(/\d+/g).map(Number);
-            return [r, g, b];
-        }
-    }
-
-    darkenColor(color) {
-        const rgb = this.colorToRGB(color);
-        const factor = 0.2; // Adjust this factor to control darkness
-        const darkened = rgb.map(x => Math.max(x - factor * 255, 0));
-        return `rgb(${darkened.join(',')})`;
-    }
-
-    brightenColor(color, amount) {
-        const rgb = this.colorToRGB(color);
-        const brightened = rgb.map(x => Math.min(x + amount, 255));
-        return `rgb(${brightened.join(',')})`;
-    }
-
-    convertColor(color) {
-        // Placeholder for more advanced color conversion
-        return color;
-    }
-
-    showHoverButton() {
-        const hoverButton = document.createElement('div');
-        hoverButton.id = 'hoverButton';
-        hoverButton.style.position = 'fixed';
-        hoverButton.style.bottom = '20px';
-        hoverButton.style.right = '20px';
-        hoverButton.style.backgroundColor = '#333';
-        hoverButton.style.color = '#fff';
-        hoverButton.style.padding = '10px 20px';
-        hoverButton.style.borderRadius = '12px';
-        hoverButton.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.5)';
-        hoverButton.style.cursor = 'pointer';
-        hoverButton.innerHTML = 'Change Experimental Dark Mode Setting';
-        hoverButton.style.zIndex = '1000';
-
-        hoverButton.addEventListener('mouseover', () => {
-            hoverButton.style.backgroundColor = '#555';
-        });
-
-        hoverButton.addEventListener('mouseout', () => {
-            hoverButton.style.backgroundColor = '#333';
-        });
-
-        hoverButton.addEventListener('click', () => {
-            const currentChoice = localStorage.getItem('experimentalDarkModeResponse');
-            const newChoice = currentChoice === 'yes' ? 'no' : 'yes';
-            this.handleUserResponse(newChoice === 'yes');
-        });
-
-        document.body.appendChild(hoverButton);
+    getCookie(name) {
+        return document.cookie.split('; ').reduce((r, v) => {
+            const parts = v.split('=');
+            return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+        }, '');
     }
 }
 
-// Initialize ThemeManager
-const themeManager = new ThemeManager();
+class DarkModePredictor {
+    constructor() {
+        this.features = [
+            'time', 'deviceLight', 'batteryLevel', 'networkType',
+            'scrollDepth', 'timeOnPage', 'mouseActivity'
+        ];
+        this.weights = new Array(this.features.length).fill(0);
+        this.bias = 0;
+        this.learningRate = 0.01;
+        this.loadModel();
+    }
+
+    updateFeature(feature, value) {
+        if (this.features.includes(feature)) {
+            localStorage.setItem(`aiTheme_${feature}`, value.toString());
+        }
+    }
+
+    getFeatureValue(feature) {
+        const value = localStorage.getItem(`aiTheme_${feature}`);
+        return value ? parseFloat(value) : 0;
+    }
+
+    predict() {
+        const features = this.features.map(feature => this.getFeatureValue(feature));
+        const logit = features.reduce((sum, feature, index) => sum + feature * this.weights[index], 0) + this.bias;
+        return 1 / (1 + Math.exp(-logit)) > 0.5;
+    }
+
+    train(label) {
+        const features = this.features.map(feature => this.getFeatureValue(feature));
+        const prediction = this.predict();
+        const error = label - prediction;
+
+        this.weights = this.weights.map((weight, index) => 
+            weight + this.learningRate * error * features[index]
+        );
+        this.bias += this.learningRate * error;
+
+        this.saveModel();
+    }
+
+    loadModel() {
+        const savedModel = localStorage.getItem('aiThemeModel');
+        if (savedModel) {
+            const { weights, bias } = JSON.parse(savedModel);
+            this.weights = weights;
+            this.bias = bias;
+        }
+    }
+
+    saveModel() {
+        localStorage.setItem('aiThemeModel', JSON.stringify({
+            weights: this.weights,
+            bias: this.bias
+        }));
+    }
+}
+
+// Initialize AIDarkModeManager
+const aiDarkModeManager = new AIDarkModeManager();
