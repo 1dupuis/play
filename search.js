@@ -28,7 +28,14 @@ const config = {
             ]
         },
         { 
-            name: 'Development', 
+            name: 'Classroom', 
+            icon: 'fa-school', 
+            items: [
+                { name: 'FBL', url: 'https://fbl.dupuis.lol/signup' },
+            ]
+        },
+        { 
+            name: 'Indev', 
             icon: 'fa-code', 
             items: [
                 { name: 'Study', url: '/workspace/study' },
