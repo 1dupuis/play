@@ -31,7 +31,7 @@ const config = {
             name: 'Classroom', 
             icon: 'fa-school', 
             items: [
-                { name: 'FBL (French Book Library)', url: 'https://fbl.dupuis.lol/signup' },
+                { name: 'FBL (French Book Library)', url: 'https://fbl.dupuis.lol/account/signup' },
             ]
         },
         { 
