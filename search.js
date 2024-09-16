@@ -42,7 +42,7 @@ const config = {
     ],
     announcements: [
         {
-            message: "⚠️ Scheduled Weekly Maintenance Starting Soon.",
+            message: "⚠️ Scheduled Weekly Maintenance in Progress.",
             startTime: "00:00",
             endTime: "24:00",
             days: ["Friday", "Saturday", "Sunday"],
