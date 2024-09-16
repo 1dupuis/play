@@ -42,17 +42,17 @@ const config = {
     ],
     announcements: [
         {
-            message: "⚠️ Weekly Maintenance Starting Soon...",
+            message: "⚠️ Scheduled Weekly Maintenance Starting Soon.",
             startTime: "00:00",
             endTime: "24:00",
-            days: ["Friday", "Saturday"],
+            days: ["Friday", "Saturday", "Sunday"],
             persistent: true
         },
         {
-            message: "⚠️ Weekly Maintenance Has Concluded.",
+            message: "⚠️ Scheduled Weekly Maintenance Has Concluded.",
             startTime: "00:00",
             endTime: "24:00",
-            days: ["Sunday"],
+            days: ["Monday"],
             persistent: true
         },
         {
@@ -64,7 +64,7 @@ const config = {
     searchPlaceholder: 'Search dupuis.lol...',
     noResultsMessage: 'No results found. Try a different search term.',
     easterEggCode: ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
-    easterEggDuration: 5000
+    easterEggDuration: 10000
 };
 
 class DupuisApp {
