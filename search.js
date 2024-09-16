@@ -187,8 +187,8 @@ class DupuisApp {
             <h2>${category.name}</h2>
         `;
         categoryButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.navigateTo(`/${category.name.toLowerCase()}`);
+            //e.preventDefault();
+            //this.navigateTo(`/${category.name.toLowerCase()}`);
         });
 
         const icon = categoryButton.querySelector('i');
