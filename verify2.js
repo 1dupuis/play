@@ -201,22 +201,27 @@ class EnhancedAccessSystem {
     }
 
     async handleGoogleSignIn() {
-        try {
-            const result = await signInWithPopup(this.auth, this.googleProvider);
-            const user = result.user;
-            await set(ref(this.db, 'users/' + user.uid), {
-                email: user.email,
-                createdAt: new Date().toISOString()
-            });
-            this.showMessage('Google Sign-in successful! Redirecting...', 'success');
-            setTimeout(() => {
-                window.location.href = '/search';
-            }, 1500);
-        } catch (error) {
-            this.showMessage('Google Sign-in failed. Please try again.', 'error');
-            console.error(error);
+    try {
+        const result = await signInWithPopup(this.auth, this.googleProvider);
+        const user = result.user;
+        await set(ref(this.db, 'users/' + user.uid), {
+            email: user.email,
+            createdAt: new Date().toISOString()
+        });
+        this.showMessage('Google Sign-in successful! Redirecting...', 'success');
+        setTimeout(() => {
+            window.location.href = '/search';
+        }, 1500);
+    } catch (error) {
+        console.error('Google Sign-In Error:', error);
+        if (error.code === 'auth/operation-not-allowed') {
+            this.showMessage('Google Sign-In is not enabled. Please contact the administrator.', 'error');
+            console.error('Google Sign-In is not enabled in Firebase console.');
+        } else {
+            this.showMessage('Google Sign-in failed. Please try again or use another method.', 'error');
         }
     }
+}
 
     async handleForgotPassword() {
         const email = prompt("Please enter your email address:");
