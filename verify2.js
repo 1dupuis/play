@@ -92,6 +92,8 @@ class EnhancedAccessSystem {
         this.initializeParticles();
         this.initializeTypingEffect();
         this.updateAuthUIState();
+
+        this.checkPersistentLogin();
     }
 
     initializeFirebase() {
@@ -168,7 +170,10 @@ class EnhancedAccessSystem {
 
     async handleLogin(email, password) {
         try {
-            await signInWithEmailAndPassword(this.auth, email, password);
+            const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+            const user = userCredential.user;
+            const token = await user.getIdToken();
+            this.setPersistentLogin(token);
             this.showMessage('Login successful! Redirecting...', 'success');
             setTimeout(() => {
                 window.location.href = '/search';
@@ -178,6 +183,40 @@ class EnhancedAccessSystem {
             console.error(error);
         } finally {
             this.hideLoading();
+        }
+    }
+
+    setPersistentLogin(token) {
+        const now = new Date();
+        const expirationDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+        const loginData = {
+            token: token,
+            expiration: expirationDate.toISOString()
+        };
+        localStorage.setItem('persistentLogin', JSON.stringify(loginData));
+    }
+
+    checkPersistentLogin() {
+        const persistentLogin = localStorage.getItem('persistentLogin');
+        if (persistentLogin) {
+            const loginData = JSON.parse(persistentLogin);
+            const now = new Date();
+            const expirationDate = new Date(loginData.expiration);
+            
+            if (now < expirationDate) {
+                // Token is still valid, use it to authenticate
+                this.auth.signInWithCustomToken(loginData.token)
+                    .then(() => {
+                        window.location.href = '/search';
+                    })
+                    .catch((error) => {
+                        console.error('Error with persistent login:', error);
+                        localStorage.removeItem('persistentLogin');
+                    });
+            } else {
+                // Token has expired, remove it
+                localStorage.removeItem('persistentLogin');
+            }
         }
     }
 
