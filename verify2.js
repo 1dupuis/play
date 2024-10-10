@@ -196,6 +196,30 @@ class EnhancedAccessSystem {
         localStorage.setItem('persistentLogin', JSON.stringify(loginData));
     }
 
+    async signInWithCustomToken(token) {
+        try {
+            const userCredential = await this.auth.signInWithCustomToken(token);
+            const user = userCredential.user;
+            console.log('User signed in successfully:', user);
+            
+            // Optionally set persistent login data
+            this.setPersistentLogin(await user.getIdToken());
+    
+            // Redirect or update UI after successful sign-in
+            window.location.href = '/search';
+        } catch (error) {
+            console.error('Error signing in with custom token:', error);
+            // Handle specific error cases
+            if (error.code === 'auth/invalid-custom-token') {
+                console.error('The custom token is invalid.');
+            } else if (error.code === 'auth/user-not-found') {
+                console.error('No user corresponding to the given custom token.');
+            } else {
+                console.error('An unknown error occurred during sign-in.');
+            }
+        }
+    }
+
     checkPersistentLogin() {
         const persistentLogin = localStorage.getItem('persistentLogin');
         if (persistentLogin) {
@@ -204,17 +228,27 @@ class EnhancedAccessSystem {
             const expirationDate = new Date(loginData.expiration);
             
             if (now < expirationDate) {
-                // Token is still valid, use it to authenticate
-                this.auth.signInWithCustomToken(loginData.token)
-                    .then(() => {
-                        window.location.href = '/search';
-                    })
-                    .catch((error) => {
-                        console.error('Error with persistent login:', error);
-                        localStorage.removeItem('persistentLogin');
-                    });
+                // Token is still valid; use it to refresh user state
+                this.auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        try {
+                            // Refresh ID token to ensure it's valid
+                            const token = await user.getIdToken(true); // Force refresh
+                            console.log('User is already logged in with a valid token:', token);
+                            // Optionally verify token on your backend if needed
+                            window.location.href = '/search'; // Redirect to search
+                        } catch (error) {
+                            console.error('Error retrieving ID token:', error);
+                            localStorage.removeItem('persistentLogin'); // Clear expired data
+                        }
+                    } else {
+                        console.warn('User is not authenticated. Clearing persistent login.');
+                        localStorage.removeItem('persistentLogin'); // Clear if user is not authenticated
+                    }
+                });
             } else {
-                // Token has expired, remove it
+                // Token has expired; remove it from storage
+                console.warn('Persistent login token has expired.');
                 localStorage.removeItem('persistentLogin');
             }
         }
