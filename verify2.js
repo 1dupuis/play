@@ -275,18 +275,6 @@ class EnhancedAccessSystem {
         }
     }
 
-    async function redirectToSearch(userId) { //new async function !!!! redirect to search page !!!!
-        try {
-            const userRef = ref(database, `users/${userId}`);
-            const snapshot = await get(userRef);
-            const userData = snapshot.val();
-            window.location.href = 'https://dupuis.lol/search';
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            showNotification('An error occurred. Please try again.', 'error');
-        }
-    }
-
     toggleAuthMode(event) {
         event.preventDefault();
         this.isLogin = !this.isLogin;
