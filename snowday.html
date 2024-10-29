@@ -335,93 +335,7 @@
             }
         }
 
-        async function getWeatherData(lat, lon) {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-            const response = await fetch(weatherUrl);
-            if (!response.ok) {
-                throw new Error('Weather data not available');
-            }
-            return response.json();
-        }
-
-        function calculateSnowDayProbability(weatherData) {
-            const {
-                temp,
-                snowfall,
-                windSpeed,
-                visibility,
-                humidity
-            } = weatherData;
-
-            let probability = 0;
-
-            // Temperature factor (max 40 points)
-            if (temp <= -5) probability += 40;
-            else if (temp <= 0) probability += 30;
-            else if (temp <= 2) probability += 20;
-
-            // Snowfall factor (max 30 points)
-            if (snowfall >= 15) probability += 30;
-            else if (snowfall >= 10) probability += 25;
-            else if (snowfall >= 5) probability += 15;
-
-            // Wind speed factor (max 15 points)
-            if (windSpeed >= 30) probability += 15;
-            else if (windSpeed >= 20) probability += 10;
-            else if (windSpeed >= 10) probability += 5;
-
-            // Visibility factor (max 10 points)
-            if (visibility <= 1000) probability += 10;
-            else if (visibility <= 2000) probability += 5;
-
-            // Humidity factor (max 5 points)
-            if (humidity >= 90) probability += 5;
-            else if (humidity >= 80) probability += 3;
-
-            return Math.min(probability, 100);
-        }
-
-        function updateChart(hourlyData) {
-            const ctx = document.getElementById('hourlyChart').getContext('2d');
-            
-            if (hourlyChart) {
-                hourlyChart.destroy();
-            }
-
-            hourlyChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: hourlyData.times,
-                    datasets: [{
-                        label: 'Temperature (°C)',
-                        data: hourlyData.temps,
-                        borderColor: '#2563eb',
-                        tension: 0.4
-                    }, {
-                        label: 'Snowfall (mm)',
-                        data: hourlyData.snowfall,
-                        borderColor: '#9333ea',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function predictSnowDay() {
+        async function predictSnowDay() {
             const city = document.getElementById('city').value.trim();
             const province = document.getElementById('province').value;
             const predictButton = document.getElementById('predictButton');
@@ -589,6 +503,93 @@
                 predictButton.disabled = false;
                 loading.style.display = 'none';
             }
+        }
+
+
+        async function getWeatherData(lat, lon) {
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+            const response = await fetch(weatherUrl);
+            if (!response.ok) {
+                throw new Error('Weather data not available');
+            }
+            return response.json();
+        }
+
+        function calculateSnowDayProbability(weatherData) {
+            const {
+                temp,
+                snowfall,
+                windSpeed,
+                visibility,
+                humidity
+            } = weatherData;
+
+            let probability = 0;
+
+            // Temperature factor (max 40 points)
+            if (temp <= -5) probability += 40;
+            else if (temp <= 0) probability += 30;
+            else if (temp <= 2) probability += 20;
+
+            // Snowfall factor (max 30 points)
+            if (snowfall >= 15) probability += 30;
+            else if (snowfall >= 10) probability += 25;
+            else if (snowfall >= 5) probability += 15;
+
+            // Wind speed factor (max 15 points)
+            if (windSpeed >= 30) probability += 15;
+            else if (windSpeed >= 20) probability += 10;
+            else if (windSpeed >= 10) probability += 5;
+
+            // Visibility factor (max 10 points)
+            if (visibility <= 1000) probability += 10;
+            else if (visibility <= 2000) probability += 5;
+
+            // Humidity factor (max 5 points)
+            if (humidity >= 90) probability += 5;
+            else if (humidity >= 80) probability += 3;
+
+            return Math.min(probability, 100);
+        }
+
+        function updateChart(hourlyData) {
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            
+            if (hourlyChart) {
+                hourlyChart.destroy();
+            }
+
+            hourlyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hourlyData.times,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: hourlyData.temps,
+                        borderColor: '#2563eb',
+                        tension: 0.4
+                    }, {
+                        label: 'Snowfall (mm)',
+                        data: hourlyData.snowfall,
+                        borderColor: '#9333ea',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
 
         function showError(message) {
