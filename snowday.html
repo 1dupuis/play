@@ -415,26 +415,10 @@
 
     async function getWeatherData(lat, lon) {
         try {
-            // Get current conditions and hourly forecast
-            const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-            const forecastUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,alerts&appid=${API_KEY}`;
-            
-            const [currentResponse, forecastResponse] = await Promise.all([
-                fetch(currentUrl),
-                fetch(forecastUrl)
-            ]);
-    
-            if (!currentResponse.ok || !forecastResponse.ok) {
-                throw new Error('Weather data not available');
-            }
-    
-            const currentData = await currentResponse.json();
-            const forecastData = await forecastResponse.json();
-    
-            return {
-                current: currentData,
-                forecast: forecastData
-            };
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+            const response = await fetch(weatherUrl);
+            if (!response.ok) throw new Error('Weather data not available');
+            return response.json();
         } catch (error) {
             throw new Error('Failed to fetch weather data. Please try again later.');
         }
