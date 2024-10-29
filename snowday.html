@@ -449,7 +449,8 @@
             { limit: -5, score: 30 },
             { limit: 0, score: 25 },
             { limit: 2, score: 15 },
-            { limit: Infinity, score: Math.max(0, 15 - (temp - 2) * 5) } // Gradual decrease
+            { limit: 5, score: 0 }, // Above 5 degrees gives no score
+            { limit: Infinity, score: 0 }
         ];
         probability += scoreBasedOnThresholds(temp, tempThresholds);
     
@@ -461,12 +462,16 @@
             { limit: 15, score: 25 },
             { limit: 10, score: 20 },
             { limit: 5, score: 15 },
-            { limit: 0, score: 0 }
+            { limit: 0, score: 0 } // No snow gives no score
         ];
         probability += scoreBasedOnThresholds(snowfall, snowfallThresholds);
     
         // Recent snowfall adjustment
-        probability += recentSnowfall >= 10 ? 10 : recentSnowfall >= 5 ? 5 : 0;
+        if (recentSnowfall >= 10) {
+            probability += 10;
+        } else if (recentSnowfall >= 5) {
+            probability += 5;
+        }
     
         // Wind speed thresholds and scores
         const windSpeedThresholds = [
@@ -474,7 +479,7 @@
             { limit: 45, score: 7 },
             { limit: 30, score: 4 },
             { limit: 15, score: 2 },
-            { limit: 0, score: 0 }
+            { limit: 0, score: 0 } // Low wind speed gives no score
         ];
         probability += scoreBasedOnThresholds(windSpeed, windSpeedThresholds);
     
@@ -484,7 +489,7 @@
             { limit: 500, score: 4 },
             { limit: 1000, score: 3 },
             { limit: 2000, score: 2 },
-            { limit: Infinity, score: 0 }
+            { limit: Infinity, score: 0 } // Good visibility gives no score
         ];
         probability += scoreBasedOnThresholds(visibility, visibilityThresholds);
     
@@ -493,13 +498,16 @@
             { limit: 95, score: 5 },
             { limit: 90, score: 4 },
             { limit: 85, score: 3 },
-            { limit: 0, score: 0 }
+            { limit: 0, score: 0 } // Low humidity gives no score
         ];
         probability += scoreBasedOnThresholds(humidity, humidityThresholds);
     
         // Temperature trend adjustment
-        if (temperatureTrend === 'falling') probability += 5;
-        else if (temperatureTrend === 'steady') probability += 3;
+        if (temperatureTrend === 'falling') {
+            probability += 5;
+        } else if (temperatureTrend === 'steady') {
+            probability += 3;
+        }
     
         // Cap probability at 100
         return Math.min(probability, 100);
