@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' *.openweathermap.org nominatim.openstreetmap.org; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline';">
     <meta name="description" content="Snow Day Predictor for Canadian Cities">
     <title>dupuis.lol - Snow Day Predictor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
@@ -597,14 +596,10 @@
             errorMessage.style.display = 'none';
             result.style.display = 'none';
     
-            // Use Nominatim for more accurate geocoding
-            const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)},${encodeURIComponent(province)},Canada`;
-            const geoResponse = await fetch(nominatimUrl, {
-                headers: {
-                    'User-Agent': 'SnowDayPredictor/1.0'
-                }
-            });
-    
+            // Modified geocoding query to be more flexible
+            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=10&appid=${API_KEY}`;
+            const geoResponse = await fetch(geoUrl);
+            
             if (!geoResponse.ok) {
                 throw new Error('Location service unavailable');
             }
@@ -615,8 +610,23 @@
                 throw new Error('City not found');
             }
     
-            // Find the most relevant location match
-            const locationMatch = findBestLocationMatch(geoData, city, province);
+            // More flexible Canadian location matching
+            let locationMatch = null;
+            
+            // First try exact province match
+            locationMatch = geoData.find(loc => {
+                const isCanadian = loc.country === 'CA';
+                const matchesProvince = loc.state && (
+                    loc.state.includes(province) || 
+                    getProvinceFullName(province).some(name => loc.state.includes(name))
+                );
+                return isCanadian && matchesProvince;
+            });
+    
+            // If no exact match, try finding any Canadian city with the right name
+            if (!locationMatch) {
+                locationMatch = geoData.find(loc => loc.country === 'CA');
+            }
     
             if (!locationMatch) {
                 throw new Error('City not found in Canada. Please check the spelling and try again.');
@@ -625,9 +635,55 @@
             const { lat, lon } = locationMatch;
             const weatherData = await getWeatherData(lat, lon);
     
-            // Process weather data for tomorrow
-            const { hourlyData, weatherConditions } = processWeatherData(weatherData);
+            // Rest of your existing code for processing weather data...
+            const hourlyData = {
+                times: [],
+                temps: [],
+                snowfall: []
+            };
+    
+            // Get tomorrow's date at midnight
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+    
+            // Filter forecasts for tomorrow
+            const relevantForecasts = weatherData.list.filter(forecast => {
+                const forecastDate = new Date(forecast.dt * 1000);
+                return forecastDate >= tomorrow && 
+                       forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+            });
+    
+            const morningIndex = relevantForecasts.findIndex(forecast => {
+                const hour = new Date(forecast.dt * 1000).getHours();
+                return hour >= 9;
+            });
             
+            const mainForecast = relevantForecasts[morningIndex !== -1 ? morningIndex : 0];
+    
+            if (!mainForecast) {
+                throw new Error('Could not get tomorrow\'s forecast');
+            }
+    
+            // Process hourly data
+            relevantForecasts.forEach(forecast => {
+                const date = new Date(forecast.dt * 1000);
+                hourlyData.times.push(date.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                }));
+                hourlyData.temps.push(forecast.main.temp);
+                hourlyData.snowfall.push(forecast.snow ? forecast.snow['3h'] || 0 : 0);
+            });
+    
+            const weatherConditions = {
+                temp: mainForecast.main.temp,
+                snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,
+                windSpeed: mainForecast.wind.speed * 3.6,
+                visibility: mainForecast.visibility,
+                humidity: mainForecast.main.humidity
+            };
+    
             const probability = calculateSnowDayProbability(weatherConditions);
             updateWeatherDisplay(city, province, probability, weatherConditions, hourlyData);
             handleLocationSaving(city, province);
@@ -638,120 +694,7 @@
             predictButton.disabled = false;
             loading.style.display = 'none';
         }
-    }
-
-    function findBestLocationMatch(geoData, city, province) {
-        // Filter for Canadian locations
-        const canadianLocations = geoData.filter(loc => 
-            loc.display_name.includes('Canada') &&
-            matchesProvinceCode(loc.display_name, province)
-        );
-    
-        if (!canadianLocations.length) {
-            return null;
-        }
-    
-        // Score each location based on relevance
-        const scoredLocations = canadianLocations.map(loc => ({
-            location: loc,
-            score: calculateLocationScore(loc, city, province)
-        }));
-    
-        // Sort by score and return the best match
-        scoredLocations.sort((a, b) => b.score - a.score);
-        return {
-            lat: parseFloat(scoredLocations[0].location.lat),
-            lon: parseFloat(scoredLocations[0].location.lon)
-        };
-    }
-
-    function matchesProvinceCode(displayName, provinceCode) {
-        const provinceNames = getProvinceFullName(provinceCode);
-        return provinceNames.some(name => 
-            displayName.toLowerCase().includes(name.toLowerCase())
-        );
-    }
-
-    function calculateLocationScore(location, city, province) {
-        let score = 0;
-        const displayName = location.display_name.toLowerCase();
-        const searchCity = city.toLowerCase();
-        const provinceNames = getProvinceFullName(province);
-    
-        // Exact city name match
-        if (displayName.includes(searchCity)) {
-            score += 10;
-        }
-    
-        // Province match
-        if (provinceNames.some(name => 
-            displayName.includes(name.toLowerCase())
-        )) {
-            score += 5;
-        }
-    
-        // Importance score from Nominatim
-        if (location.importance) {
-            score += location.importance * 5;
-        }
-    
-        // Administrative level bonus
-        if (location.type === 'city' || location.type === 'town') {
-            score += 3;
-        }
-    
-        return score;
-    }
-
-    function processWeatherData(weatherData) {
-        const hourlyData = {
-            times: [],
-            temps: [],
-            snowfall: []
-        };
-    
-        // Get tomorrow's date at midnight
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-    
-        // Process hourly forecast data
-        const tomorrowForecasts = weatherData.forecast.hourly.filter(hour => {
-            const forecastDate = new Date(hour.dt * 1000);
-            return forecastDate >= tomorrow && 
-                   forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-        });
-    
-        tomorrowForecasts.forEach(hour => {
-            const date = new Date(hour.dt * 1000);
-            hourlyData.times.push(date.toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            }));
-            hourlyData.temps.push(hour.temp);
-            
-            // Calculate snow accumulation from precipitation
-            const snowfall = hour.snow ? hour.snow['1h'] || 0 : 
-                            (hour.precipitation ? 
-                                (hour.temp <= 2 ? hour.precipitation : 0) : 0);
-            hourlyData.snowfall.push(snowfall);
-        });
-    
-        // Get morning conditions (9 AM)
-        const morningForecast = tomorrowForecasts.find(hour => 
-            new Date(hour.dt * 1000).getHours() === 9
-        ) || tomorrowForecasts[0];
-    
-        const weatherConditions = {
-            temp: morningForecast.temp,
-            snowfall: morningForecast.snow ? morningForecast.snow['1h'] * 24 : 0, // Estimate 24-hour accumulation
-            windSpeed: morningForecast.wind_speed * 3.6, // Convert to km/h
-            visibility: morningForecast.visibility,
-            humidity: morningForecast.humidity
-        };
-    
-        return { hourlyData, weatherConditions };
-    }
+    } 
 
     function updateWeatherDisplay(city, province, probability, weatherConditions, hourlyData) {
         const resultCard = document.getElementById('result');
