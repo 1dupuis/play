@@ -427,42 +427,81 @@
     }
 
     function calculateSnowDayProbability(weatherData) {
-        const { temp, snowfall, windSpeed, visibility, humidity } = weatherData;
+        const { temp, snowfall, windSpeed, visibility, humidity, recentSnowfall, temperatureTrend } = weatherData;
     
         // Initialize base probability
         let probability = 0;
     
-        // Temperature factor (max 40 points)
-        if (temp <= -15) probability += 40;
-        else if (temp <= -10) probability += 35;
-        else if (temp <= -5) probability += 30;
-        else if (temp <= 0) probability += 25;
-        else if (temp <= 2) probability += 15;
+        // Scoring function to handle thresholds
+        const scoreBasedOnThresholds = (value, thresholds) => {
+            for (const { limit, score } of thresholds) {
+                if (value <= limit) {
+                    return score;
+                }
+            }
+            return 0; // Default score if no thresholds met
+        };
     
-        // Snowfall factor (max 40 points) - adjusted for more realistic thresholds
-        if (snowfall >= 30) probability += 40;
-        else if (snowfall >= 20) probability += 35;
-        else if (snowfall >= 15) probability += 30;
-        else if (snowfall >= 10) probability += 25;
-        else if (snowfall >= 5) probability += 20;
+        // Temperature thresholds and scores
+        const tempThresholds = [
+            { limit: -15, score: 40 },
+            { limit: -10, score: 35 },
+            { limit: -5, score: 30 },
+            { limit: 0, score: 25 },
+            { limit: 2, score: 15 },
+            { limit: Infinity, score: Math.max(0, 15 - (temp - 2) * 5) } // Gradual decrease
+        ];
+        probability += scoreBasedOnThresholds(temp, tempThresholds);
     
-        // Wind speed factor (max 10 points) - adjusted for km/h
-        if (windSpeed >= 60) probability += 10;
-        else if (windSpeed >= 45) probability += 8;
-        else if (windSpeed >= 30) probability += 6;
-        else if (windSpeed >= 15) probability += 4;
+        // Snowfall thresholds and scores
+        const snowfallThresholds = [
+            { limit: 30, score: 40 },
+            { limit: 25, score: 35 },
+            { limit: 20, score: 30 },
+            { limit: 15, score: 25 },
+            { limit: 10, score: 20 },
+            { limit: 5, score: 15 },
+            { limit: 0, score: 0 }
+        ];
+        probability += scoreBasedOnThresholds(snowfall, snowfallThresholds);
     
-        // Visibility factor (max 5 points)
-        if (visibility <= 100) probability += 5;
-        else if (visibility <= 500) probability += 4;
-        else if (visibility <= 1000) probability += 3;
-        else if (visibility <= 2000) probability += 2;
+        // Recent snowfall adjustment
+        probability += recentSnowfall >= 10 ? 10 : recentSnowfall >= 5 ? 5 : 0;
     
-        // Humidity factor (max 5 points)
-        if (humidity >= 95) probability += 5;
-        else if (humidity >= 90) probability += 4;
-        else if (humidity >= 85) probability += 3;
+        // Wind speed thresholds and scores
+        const windSpeedThresholds = [
+            { limit: 60, score: 10 },
+            { limit: 45, score: 7 },
+            { limit: 30, score: 4 },
+            { limit: 15, score: 2 },
+            { limit: 0, score: 0 }
+        ];
+        probability += scoreBasedOnThresholds(windSpeed, windSpeedThresholds);
     
+        // Visibility thresholds and scores
+        const visibilityThresholds = [
+            { limit: 100, score: 5 },
+            { limit: 500, score: 4 },
+            { limit: 1000, score: 3 },
+            { limit: 2000, score: 2 },
+            { limit: Infinity, score: 0 }
+        ];
+        probability += scoreBasedOnThresholds(visibility, visibilityThresholds);
+    
+        // Humidity thresholds and scores
+        const humidityThresholds = [
+            { limit: 95, score: 5 },
+            { limit: 90, score: 4 },
+            { limit: 85, score: 3 },
+            { limit: 0, score: 0 }
+        ];
+        probability += scoreBasedOnThresholds(humidity, humidityThresholds);
+    
+        // Temperature trend adjustment
+        if (temperatureTrend === 'falling') probability += 5;
+        else if (temperatureTrend === 'steady') probability += 3;
+    
+        // Cap probability at 100
         return Math.min(probability, 100);
     }
     
