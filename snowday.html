@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Snow Day Predictor for Canadian Cities">
+    <title>Snow Day Predictor Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #166534;
+            --warning: #854d0e;
+            --danger: #991b1b;
+            --bg-light: #f0f9ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-light);
+            color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            display: none;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .high-chance {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .medium-chance {
+            background: #fef9c3;
+            color: var(--warning);
+        }
+
+        .low-chance {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .weather-detail-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .detail-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .chart-container {
+            margin-top: 2rem;
+            height: 300px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .factors-list {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .save-location {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .saved-locations {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .location-chip {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .location-chip:hover {
+            background: var(--primary-dark);
+        }
+
+        @media (max-width: 640px) {
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Snow Day Predictor Pro 🇨🇦</h1>
+                <p>Get accurate snow day predictions for any Canadian city</p>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="city">City</label>
+                    <input 
+                        type="text" 
+                        id="city" 
+                        placeholder="Enter city name (e.g., Sudbury)"
+                        aria-label="City name"
+                        required
+                    >
+                </div>
+                <div class="input-group">
+                    <label for="province">Province</label>
+                    <select id="province" required>
+                        <option value="">Select province</option>
+                        <option value="ON">Ontario</option>
+                        <option value="BC">British Columbia</option>
+                        <option value="AB">Alberta</option>
+                        <option value="MB">Manitoba</option>
+                        <option value="NB">New Brunswick</option>
+                        <option value="NL">Newfoundland and Labrador</option>
+                        <option value="NS">Nova Scotia</option>
+                        <option value="PE">Prince Edward Island</option>
+                        <option value="QC">Quebec</option>
+                        <option value="SK">Saskatchewan</option>
+                        <option value="NT">Northwest Territories</option>
+                        <option value="NU">Nunavut</option>
+                        <option value="YT">Yukon</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="saved-locations" id="savedLocations"></div>
+            
+            <button onclick="predictSnowDay()" id="predictButton">Check Snow Day Chances</button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing weather data...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="card result-card" id="result">
+            <h2 id="predictionTitle"></h2>
+            <p id="predictionText"></p>
+            
+            <div class="weather-details" id="weatherDetails"></div>
+            
+            <div class="chart-container">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+
+            <div class="save-location">
+                <input type="checkbox" id="saveLocation">
+                <label for="saveLocation">Save this location for quick access</label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = '1234567890abcdef1234567890abcdef'; // Replace with your OpenWeatherMap API key
+        let hourlyChart = null;
+
+        // Load saved locations from localStorage
+        const savedLocations = JSON.parse(localStorage.getItem('savedLocations') || '[]');
+        updateSavedLocations();
+
+        function updateSavedLocations() {
+            const container = document.getElementById('savedLocations');
+            container.innerHTML = savedLocations
+                .map(location => `
+                    <div class="location-chip" 
+                         onclick="loadSavedLocation('${location.city}', '${location.province}')">
+                        ${location.city}, ${location.province}
+                    </div>
+                `)
+                .join('');
+        }
+
+        function loadSavedLocation(city, province) {
+            document.getElementById('city').value = city;
+            document.getElementById('province').value = province;
+            predictSnowDay();
+        }
+
+        function saveLocation(city, province) {
+            const location = { city, province };
+            if (!savedLocations.some(loc => 
+                loc.city === city && loc.province === province)) {
+                savedLocations.push(location);
+                localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
+                updateSavedLocations();
+            }
+        }
+
+        async function getWeatherData(lat, lon) {
+            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+            const response = await fetch(weatherUrl);
+            if (!response.ok) {
+                throw new Error('Weather data not available');
+            }
+            return response.json();
+        }
+
+        function calculateSnowDayProbability(weatherData) {
+            const {
+                temp,
+                snowfall,
+                windSpeed,
+                visibility,
+                humidity
+            } = weatherData;
+
+            let probability = 0;
+
+            // Temperature factor (max 40 points)
+            if (temp <= -5) probability += 40;
+            else if (temp <= 0) probability += 30;
+            else if (temp <= 2) probability += 20;
+
+            // Snowfall factor (max 30 points)
+            if (snowfall >= 15) probability += 30;
+            else if (snowfall >= 10) probability += 25;
+            else if (snowfall >= 5) probability += 15;
+
+            // Wind speed factor (max 15 points)
+            if (windSpeed >= 30) probability += 15;
+            else if (windSpeed >= 20) probability += 10;
+            else if (windSpeed >= 10) probability += 5;
+
+            // Visibility factor (max 10 points)
+            if (visibility <= 1000) probability += 10;
+            else if (visibility <= 2000) probability += 5;
+
+            // Humidity factor (max 5 points)
+            if (humidity >= 90) probability += 5;
+            else if (humidity >= 80) probability += 3;
+
+            return Math.min(probability, 100);
+        }
+
+        function updateChart(hourlyData) {
+            const ctx = document.getElementById('hourlyChart').getContext('2d');
+            
+            if (hourlyChart) {
+                hourlyChart.destroy();
+            }
+
+            hourlyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hourlyData.times,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: hourlyData.temps,
+                        borderColor: '#2563eb',
+                        tension: 0.4
+                    }, {
+                        label: 'Snowfall (mm)',
+                        data: hourlyData.snowfall,
+                        borderColor: '#9333ea',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        async function predictSnowDay() {
+    const city = document.getElementById('city').value.trim();
+    const province = document.getElementById('province').value;
+    const predictButton = document.getElementById('predictButton');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+    const result = document.getElementById('result');
+
+    if (!city || !province) {
+        showError('Please enter both city and province');
+        return;
+    }
+
+    try {
+        predictButton.disabled = true;
+        loading.style.display = 'block';
+        errorMessage.style.display = 'none';
+        result.style.display = 'none';
+
+        // Get coordinates
+        const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)},${province},CA&limit=1&appid=${API_KEY}`;
+        const geoResponse = await fetch(geoUrl);
+        if (!geoResponse.ok) {
+            throw new Error('Location not found');
+        }
+
+        const geoData = await geoResponse.json();
+        if (!geoData.length) {
+            throw new Error('City not found in the selected province');
+        }
+
+        const { lat, lon } = geoData[0];
+        const weatherData = await getWeatherData(lat, lon);
+
+        // Process weather data for next 24 hours
+        const hourlyData = {
+            times: [],
+            temps: [],
+            snowfall: []
+        };
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        const relevantForecasts = weatherData.list.filter(forecast => {
+            const forecastDate = new Date(forecast.dt * 1000);
+            return forecastDate >= tomorrow && 
+                   forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+        });
+
+        const mainForecast = relevantForecasts[3]; // 9 AM forecast
+        if (!mainForecast) {
+            throw new Error('Could not get tomorrow\'s forecast');
+        }
+
+        // Process hourly data for chart
+        relevantForecasts.forEach(forecast => {
+            const date = new Date(forecast.dt * 1000);
+            hourlyData.times.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+            hourlyData.temps.push(forecast.main.temp);
+            hourlyData.snowfall.push(forecast.snow ? forecast.snow['3h'] || 0 : 0);
+        });
+
+        // Calculate snow day probability
+        const weatherConditions = {
+            temp: mainForecast.main.temp,
+            snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,
+            windSpeed: mainForecast.wind.speed,
+            visibility: mainForecast.visibility,
+            humidity: mainForecast.main.humidity
+        };
+
+        const probability = calculateSnowDayProbability(weatherConditions);
+
+        // Update UI with results
+        const resultCard = document.getElementById('result');
+        const predictionTitle = document.getElementById('predictionTitle');
+        const predictionText = document.getElementById('predictionText');
+        const weatherDetails = document.getElementById('weatherDetails');
+
+        let resultClass, resultEmoji;
+        if (probability >= 70) {
+            resultClass = 'high-chance';
+            resultEmoji = '❄️';
+        } else if (probability >= 40) {
+            resultClass = 'medium-chance';
+            resultEmoji = '⛄';
+        } else {
+            resultClass = 'low-chance';
+            resultEmoji = '😢';
+        }
+
+        resultCard.className = `card result-card ${resultClass}`;
+        predictionTitle.textContent = `${resultEmoji} Snow Day Prediction for ${city}, ${province}`;
+        predictionText.textContent = `There is a ${probability}% chance of a snow day tomorrow.`;
+
+        // Update weather details
+        weatherDetails.innerHTML = `
+            <div class="weather-detail-card">
+                <h3>Temperature</h3>
+                <div class="detail-value">${weatherConditions.temp.toFixed(1)}°C</div>
+            </div>
+            <div class="weather-detail-card">
+                <h3>Snowfall</h3>
+                <div class="detail-value">${weatherConditions.snowfall.toFixed(1)}mm</div>
+            </div>
+            <div class="weather-detail-card">
+                <h3>Wind Speed</h3>
+                <div class="detail-value">${weatherConditions.windSpeed.toFixed(1)}m/s</div>
+            </div>
+            <div class="weather-detail-card">
+                <h3>Visibility</h3>
+                <div class="detail-value">${(weatherConditions.visibility / 1000).toFixed(1)}km</div>
+            </div>
+        `;
+
+        // Update factors list based on probability calculation
+        const factorsList = document.createElement('ul');
+        factorsList.className = 'factors-list';
+        
+        if (weatherConditions.temp <= 0) {
+            factorsList.innerHTML += `<li>Temperature is below freezing</li>`;
+        }
+        if (weatherConditions.snowfall >= 5) {
+            factorsList.innerHTML += `<li>Significant snowfall expected</li>`;
+        }
+        if (weatherConditions.windSpeed >= 20) {
+            factorsList.innerHTML += `<li>Strong winds may cause drifting snow</li>`;
+        }
+        if (weatherConditions.visibility <= 2000) {
+            factorsList.innerHTML += `<li>Poor visibility conditions</li>`;
+        }
+
+        predictionText.appendChild(factorsList);
+
+        // Update chart
+        updateChart(hourlyData);
+
+        // Handle location saving
+        const saveLocationCheckbox = document.getElementById('saveLocation');
+        saveLocationCheckbox.checked = savedLocations.some(loc => 
+            loc.city === city && loc.province === province
+        );
+
+        saveLocationCheckbox.onchange = () => {
+            if (saveLocationCheckbox.checked) {
+                saveLocation(city, province);
+            } else {
+                const index = savedLocations.findIndex(loc => 
+                    loc.city === city && loc.province === province
+                );
+                if (index !== -1) {
+                    savedLocations.splice(index, 1);
+                    localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
+                    updateSavedLocations();
+                }
+            }
+        };
+
+        result.style.display = 'block';
+
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        predictButton.disabled = false;
+        loading.style.display = 'none';
+    }
+}
+
+function showError(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    // Add input validation
+    const cityInput = document.getElementById('city');
+    const provinceSelect = document.getElementById('province');
+    const predictButton = document.getElementById('predictButton');
+
+    function validateInputs() {
+        const isValid = cityInput.value.trim() !== '' && provinceSelect.value !== '';
+        predictButton.disabled = !isValid;
+    }
+
+    cityInput.addEventListener('input', validateInputs);
+    provinceSelect.addEventListener('change', validateInputs);
+
+    // Enable enter key submission
+    cityInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !predictButton.disabled) {
+            predictSnowDay();
+        }
+    });
+
+    // Check for geolocation support and add auto-location feature
+    if ('geolocation' in navigator) {
+        const locateButton = document.createElement('button');
+        locateButton.textContent = '📍 Use My Location';
+        locateButton.style.marginTop = '1rem';
+        locateButton.onclick = async () => {
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                });
+
+                const { latitude, longitude } = position.coords;
+                const response = await fetch(
+                    `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`
+                );
+                const [location] = await response.json();
+                
+                if (location && location.country === 'CA') {
+                    cityInput.value = location.name;
+                    validateInputs();
+                } else {
+                    throw new Error('Location not found in Canada');
+                }
+            } catch (error) {
+                showError('Could not determine your location');
+            }
+        };
+        document.querySelector('.input-row').appendChild(locateButton);
+    }
+});
