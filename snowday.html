@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Snow Day Predictor for Canadian Cities">
-    <title>Snow Day Predictor Pro</title>
+    <title>dupuis.lol - Snow Day Predictor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <style>
         :root {
@@ -250,6 +250,39 @@
             color: #64748b;
         }
 
+        .temperature-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .current-conditions {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .forecast-date {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
         @media (max-width: 640px) {
             .input-row {
                 flex-direction: column;
@@ -355,6 +388,17 @@
         initializeEventListeners();
     });
 
+    async function getCurrentWeather(lat, lon) {
+        try {
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Current weather data not available');
+            return response.json();
+        } catch (error) {
+            throw new Error('Failed to fetch current weather data');
+        }
+    }
+
     function initializeEventListeners() {
         const cityInput = document.getElementById('city');
         const provinceSelect = document.getElementById('province');
@@ -413,49 +457,55 @@
         }, 5000);
     }
 
+    // Improved weather data fetching
     async function getWeatherData(lat, lon) {
         try {
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+            const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,alerts&appid=${API_KEY}`;
             const response = await fetch(weatherUrl);
             if (!response.ok) throw new Error('Weather data not available');
             return response.json();
         } catch (error) {
-            throw new Error('Failed to fetch weather data. Please try again later.');
+            throw new Error('Failed to fetch weather forecast data');
         }
     }
 
     function calculateSnowDayProbability(weatherData) {
         const { temp, snowfall, windSpeed, visibility, humidity } = weatherData;
-
-        // Initialize base probability
+    
         let probability = 0;
-
-        // Temperature factor (max 45 points) - adjusted for more accuracy
-        if (temp <= -10) probability += 45;
-        else if (temp <= -5) probability += 40;
-        else if (temp <= 0) probability += 35;
-        else if (temp <= 2) probability += 25;
-        else if (temp <= 4) probability += 15;
-
-        // Snowfall factor (max 35 points) - increased importance
-        if (snowfall >= 20) probability += 35;
-        else if (snowfall >= 15) probability += 30;
-        else if (snowfall >= 10) probability += 25;
+    
+        // Temperature factor (max 45 points) - more precise temperature ranges
+        if (temp <= -15) probability += 45;
+        else if (temp <= -10) probability += 40;
+        else if (temp <= -5) probability += 35;
+        else if (temp <= 0) probability += 30;
+        else if (temp <= 2) probability += 20;
+        else if (temp > 2) probability += 0;  // No chance if too warm
+    
+        // Snowfall factor (max 35 points)
+        if (snowfall >= 25) probability += 35;
+        else if (snowfall >= 20) probability += 30;
+        else if (snowfall >= 15) probability += 25;
+        else if (snowfall >= 10) probability += 20;
         else if (snowfall >= 5) probability += 15;
-
-        // Wind speed factor (max 10 points)
-        if (windSpeed >= 40) probability += 10;
-        else if (windSpeed >= 30) probability += 8;
-        else if (windSpeed >= 20) probability += 5;
-
+        else if (snowfall > 0) probability += 5;
+    
+        // Wind speed factor (max 10 points) - in km/h
+        if (windSpeed >= 50) probability += 10;
+        else if (windSpeed >= 40) probability += 8;
+        else if (windSpeed >= 30) probability += 6;
+        else if (windSpeed >= 20) probability += 4;
+    
         // Visibility factor (max 5 points)
-        if (visibility <= 500) probability += 5;
+        if (visibility <= 200) probability += 5;
+        else if (visibility <= 500) probability += 4;
         else if (visibility <= 1000) probability += 3;
-
+    
         // Humidity factor (max 5 points)
         if (humidity >= 95) probability += 5;
-        else if (humidity >= 85) probability += 3;
-
+        else if (humidity >= 90) probability += 3;
+        else if (humidity >= 85) probability += 1;
+    
         return Math.min(probability, 100);
     }
 
@@ -556,178 +606,221 @@
         });
     }
 
-    async function predictSnowDay() {
-        const city = document.getElementById('city').value.trim();
-        const province = document.getElementById('province').value;
-        const predictButton = document.getElementById('predictButton');
-        const loading = document.getElementById('loading');
-        const errorMessage = document.getElementById('errorMessage');
-        const result = document.getElementById('result');
-
-        if (!city || !province) {
-            showError('Please enter both city and province');
-            return;
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Snow Day Predictor for Canadian Cities">
+    <title>Snow Day Predictor Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        /* Previous styles remain the same */
+        /* Adding new styles for improved UI */
+        .temperature-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
         }
 
-        try {
-            predictButton.disabled = true;
-            loading.style.display = 'block';
-            errorMessage.style.display = 'none';
-            result.style.display = 'none';
-
-            // Get coordinates with expanded search
-            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)},${province},CA&limit=5&appid=${API_KEY}`;
-            const geoResponse = await fetch(geoUrl);
-            if (!geoResponse.ok) {
-                throw new Error('Location not found');
-            }
-
-            const geoData = await geoResponse.json();
-            if (!geoData.length) {
-                throw new Error('City not found in the selected province');
-            }
-
-            // Find the best match for the city in the province
-            const locationMatch = geoData.find(loc => 
-                loc.country === 'CA' && 
-                loc.state?.includes(province)
-            ) || geoData[0];
-
-            const { lat, lon } = locationMatch;
-            const weatherData = await getWeatherData(lat, lon);
-
-            // Process weather data for next 24 hours
-            const hourlyData = {
-                times: [],
-                temps: [],
-                snowfall: []
-            };
-
-            // Get tomorrow's date at midnight
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-
-            // Filter forecasts for tomorrow
-            const relevantForecasts = weatherData.list.filter(forecast => {
-                const forecastDate = new Date(forecast.dt * 1000);
-                return forecastDate >= tomorrow && 
-                       forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-            });
-
-            // Use morning forecast (around 9 AM) for main prediction
-            const morningIndex = relevantForecasts.findIndex(forecast => {
-                const hour = new Date(forecast.dt * 1000).getHours();
-                return hour >= 9;
-            });
-            const mainForecast = relevantForecasts[morningIndex !== -1 ? morningIndex : 0];
-
-            if (!mainForecast) {
-                throw new Error('Could not get tomorrow\'s forecast');
-            }
-
-            // Process hourly data for chart
-            relevantForecasts.forEach(forecast => {
-                const date = new Date(forecast.dt * 1000);
-                hourlyData.times.push(date.toLocaleTimeString([], { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                }));
-                hourlyData.temps.push(forecast.main.temp);
-                hourlyData.snowfall.push(forecast.snow ? forecast.snow['3h'] || 0 : 0);
-            });
-
-            // Calculate snow day probability
-            const weatherConditions = {
-                temp: mainForecast.main.temp,
-                snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,
-                windSpeed: mainForecast.wind.speed,
-                visibility: mainForecast.visibility,
-                humidity: mainForecast.main.humidity
-            };
-
-            const probability = calculateSnowDayProbability(weatherConditions);
-
-            // Update UI with results
-            const resultCard = document.getElementById('result');
-            const predictionTitle = document.getElementById('predictionTitle');
-            const predictionText = document.getElementById('predictionText');
-            const predictionEmoji = document.getElementById('predictionEmoji');
-            const weatherDetails = document.getElementById('weatherDetails');
-
-            let resultClass, resultEmoji;
-            if (probability >= 70) {
-                resultClass = 'high-chance';
-                resultEmoji = '❄️';
-            } else if (probability >= 40) {
-                resultClass = 'medium-chance';
-                resultEmoji = '⛄';
-            } else {
-                resultClass = 'low-chance';
-                resultEmoji = '🌡️';
-            }
-
-            predictionEmoji.textContent = resultEmoji;
-            predictionTitle.textContent = `Forecast for ${city}, ${province}`;
-            predictionText.textContent = `There is a ${probability}% chance of a snow day tomorrow.`;
-
-            // Update weather details with improved formatting
-            weatherDetails.innerHTML = `
-                <div class="weather-detail-card">
-                    <h3>Temperature</h3>
-                    <div class="detail-value">${weatherConditions.temp.toFixed(1)}°C</div>
-                    <p>Morning forecast</p>
-                </div>
-                <div class="weather-detail-card">
-                    <h3>Snowfall</h3>
-                    <div class="detail-value">${weatherConditions.snowfall.toFixed(1)}mm</div>
-                    <p>Expected accumulation</p>
-                </div>
-                <div class="weather-detail-card">
-                    <h3>Wind Speed</h3>
-                    <div class="detail-value">${(weatherConditions.windSpeed * 3.6).toFixed(1)}</div>
-                    <p>km/h</p>
-                </div>
-                <div class="weather-detail-card">
-                    <h3>Visibility</h3>
-                    <div class="detail-value">${(weatherConditions.visibility / 1000).toFixed(1)}</div>
-                    <p>kilometers</p>
-                </div>
-            `;
-
-            // Update chart
-            updateChart(hourlyData);
-
-            // Handle location saving
-            const saveLocationCheckbox = document.getElementById('saveLocation');
-            saveLocationCheckbox.checked = savedLocations.some(loc => 
-                loc.city === city && loc.province === province
-            );
-
-            saveLocationCheckbox.onchange = () => {
-                if (saveLocationCheckbox.checked) {
-                    saveLocation(city, province);
-                } else {
-                    const index = savedLocations.findIndex(loc => 
-                        loc.city === city && loc.province === province
-                    );
-                    if (index !== -1) {
-                        savedLocations.splice(index, 1);
-                        localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
-                        updateSavedLocations();
-                    }
-                }
-            };
-
-            result.style.display = 'block';
-
-        } catch (error) {
-            showError(error.message);
-        } finally {
-            predictButton.disabled = false;
-            loading.style.display = 'none';
+        .current-conditions {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 1px solid #e2e8f0;
         }
+
+        .forecast-date {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Previous HTML structure remains largely the same -->
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>Snow Day Predictor</h1>
+                <p>Get accurate predictions for Canadian cities</p>
+            </div>
+
+            <div class="current-conditions" id="currentConditions">
+                <!-- Current conditions will be inserted here -->
+            </div>
+
+            <div class="alert" id="dataAlert">
+                <!-- Data alerts will be shown here -->
+            </div>
+
+            <!-- Rest of the HTML remains the same -->
+        </div>
+    </div>
+
+<script>
+const API_KEY = '45014c5ab88e46556f5e1024f8d2c5ba';
+let hourlyChart = null;
+let savedLocations = JSON.parse(localStorage.getItem('savedLocations') || '[]');
+
+// New function to get current weather
+async function getCurrentWeather(lat, lon) {
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Current weather data not available');
+        return response.json();
+    } catch (error) {
+        throw new Error('Failed to fetch current weather data');
     }
+}
+
+// Improved weather data fetching
+async function getWeatherData(lat, lon) {
+    try {
+        const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,alerts&appid=${API_KEY}`;
+        const response = await fetch(weatherUrl);
+        if (!response.ok) throw new Error('Weather data not available');
+        return response.json();
+    } catch (error) {
+        throw new Error('Failed to fetch weather forecast data');
+    }
+}
+
+// Improved snow day probability calculation
+function calculateSnowDayProbability(weatherData) {
+    const { temp, snowfall, windSpeed, visibility, humidity } = weatherData;
+
+    let probability = 0;
+
+    // Temperature factor (max 45 points) - more precise temperature ranges
+    if (temp <= -15) probability += 45;
+    else if (temp <= -10) probability += 40;
+    else if (temp <= -5) probability += 35;
+    else if (temp <= 0) probability += 30;
+    else if (temp <= 2) probability += 20;
+    else if (temp > 2) probability += 0;  // No chance if too warm
+
+    // Snowfall factor (max 35 points)
+    if (snowfall >= 25) probability += 35;
+    else if (snowfall >= 20) probability += 30;
+    else if (snowfall >= 15) probability += 25;
+    else if (snowfall >= 10) probability += 20;
+    else if (snowfall >= 5) probability += 15;
+    else if (snowfall > 0) probability += 5;
+
+    // Wind speed factor (max 10 points) - in km/h
+    if (windSpeed >= 50) probability += 10;
+    else if (windSpeed >= 40) probability += 8;
+    else if (windSpeed >= 30) probability += 6;
+    else if (windSpeed >= 20) probability += 4;
+
+    // Visibility factor (max 5 points)
+    if (visibility <= 200) probability += 5;
+    else if (visibility <= 500) probability += 4;
+    else if (visibility <= 1000) probability += 3;
+
+    // Humidity factor (max 5 points)
+    if (humidity >= 95) probability += 5;
+    else if (humidity >= 90) probability += 3;
+    else if (humidity >= 85) probability += 1;
+
+    return Math.min(probability, 100);
+}
+
+async function predictSnowDay() {
+    const city = document.getElementById('city').value.trim();
+    const province = document.getElementById('province').value;
+    const predictButton = document.getElementById('predictButton');
+    const loading = document.getElementById('loading');
+    const errorMessage = document.getElementById('errorMessage');
+    const result = document.getElementById('result');
+    const dataAlert = document.getElementById('dataAlert');
+    const currentConditions = document.getElementById('currentConditions');
+
+    if (!city || !province) {
+        showError('Please enter both city and province');
+        return;
+    }
+
+    try {
+        predictButton.disabled = true;
+        loading.style.display = 'block';
+        errorMessage.style.display = 'none';
+        result.style.display = 'none';
+        dataAlert.style.display = 'none';
+
+        // Get coordinates
+        const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)},${province},CA&limit=1&appid=${API_KEY}`;
+        const geoResponse = await fetch(geoUrl);
+        if (!geoResponse.ok) throw new Error('Location not found');
+
+        const geoData = await geoResponse.json();
+        if (!geoData.length) throw new Error('City not found in the selected province');
+
+        const { lat, lon } = geoData[0];
+
+        // Get current conditions
+        const currentWeather = await getCurrentWeather(lat, lon);
+        
+        // Update current conditions display
+        currentConditions.innerHTML = `
+            <div class="forecast-date">Current Conditions</div>
+            <div>Temperature: ${currentWeather.main.temp.toFixed(1)}°C</div>
+            <div>Conditions: ${currentWeather.weather[0].description}</div>
+            <div>Wind: ${(currentWeather.wind.speed * 3.6).toFixed(1)} km/h</div>
+        `;
+
+        // Get forecast data
+        const weatherData = await getWeatherData(lat, lon);
+
+        // Get tomorrow's forecast
+        const tomorrowData = weatherData.daily[1];
+        
+        const weatherConditions = {
+            temp: tomorrowData.temp.day,
+            snowfall: tomorrowData.snow || 0,
+            windSpeed: tomorrowData.wind_speed * 3.6, // Convert to km/h
+            visibility: tomorrowData.visibility || 10000,
+            humidity: tomorrowData.humidity
+        };
+
+        const probability = calculateSnowDayProbability(weatherConditions);
+
+        // Update UI
+        updateDisplay(city, province, weatherConditions, probability);
+        updateChart(weatherData.hourly.slice(0, 24));
+
+        result.style.display = 'block';
+
+        // Show data quality alert if needed
+        if (weatherData.hourly.some(hour => hour.temp > 20)) {
+            dataAlert.textContent = "Note: Some temperature readings seem unusually high. Please verify against other sources.";
+            dataAlert.style.display = 'block';
+        }
+
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        predictButton.disabled = false;
+        loading.style.display = 'none';
+    }
+}
+    
 </script>
 </body>
 </html>
