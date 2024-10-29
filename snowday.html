@@ -581,32 +581,46 @@
             errorMessage.style.display = 'none';
             result.style.display = 'none';
     
-            // Explicitly add CA (Canada) to the geocoding query
-            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)},${province},CA&limit=5&appid=${API_KEY}`;
+            // Modified geocoding query to be more flexible
+            const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=10&appid=${API_KEY}`;
             const geoResponse = await fetch(geoUrl);
+            
             if (!geoResponse.ok) {
-                throw new Error('Location not found');
+                throw new Error('Location service unavailable');
             }
     
             const geoData = await geoResponse.json();
+            
             if (!geoData.length) {
-                throw new Error('City not found in Canada');
+                throw new Error('City not found');
             }
     
-            // Strict validation for Canadian locations
-            const locationMatch = geoData.find(loc => 
-                loc.country === 'CA' && 
-                loc.state?.includes(province)
-            );
+            // More flexible Canadian location matching
+            let locationMatch = null;
+            
+            // First try exact province match
+            locationMatch = geoData.find(loc => {
+                const isCanadian = loc.country === 'CA';
+                const matchesProvince = loc.state && (
+                    loc.state.includes(province) || 
+                    getProvinceFullName(province).some(name => loc.state.includes(name))
+                );
+                return isCanadian && matchesProvince;
+            });
+    
+            // If no exact match, try finding any Canadian city with the right name
+            if (!locationMatch) {
+                locationMatch = geoData.find(loc => loc.country === 'CA');
+            }
     
             if (!locationMatch) {
-                throw new Error('City not found in the selected Canadian province');
+                throw new Error('City not found in Canada. Please check the spelling and try again.');
             }
     
             const { lat, lon } = locationMatch;
             const weatherData = await getWeatherData(lat, lon);
     
-            // Process weather data for next 24 hours
+            // Rest of your existing code for processing weather data...
             const hourlyData = {
                 times: [],
                 temps: [],
@@ -625,11 +639,11 @@
                        forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
             });
     
-            // Use morning forecast (around 9 AM) for main prediction
             const morningIndex = relevantForecasts.findIndex(forecast => {
                 const hour = new Date(forecast.dt * 1000).getHours();
                 return hour >= 9;
             });
+            
             const mainForecast = relevantForecasts[morningIndex !== -1 ? morningIndex : 0];
     
             if (!mainForecast) {
@@ -644,22 +658,18 @@
                     minute: '2-digit' 
                 }));
                 hourlyData.temps.push(forecast.main.temp);
-                // Convert snow accumulation to mm if present
                 hourlyData.snowfall.push(forecast.snow ? forecast.snow['3h'] || 0 : 0);
             });
     
-            // Calculate snow day probability with metric values
             const weatherConditions = {
-                temp: mainForecast.main.temp,                    // Already in Celsius
-                snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,  // mm of snow
-                windSpeed: mainForecast.wind.speed * 3.6,        // Convert m/s to km/h
-                visibility: mainForecast.visibility,             // Already in meters
-                humidity: mainForecast.main.humidity            // Already percentage
+                temp: mainForecast.main.temp,
+                snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,
+                windSpeed: mainForecast.wind.speed * 3.6,
+                visibility: mainForecast.visibility,
+                humidity: mainForecast.main.humidity
             };
     
             const probability = calculateSnowDayProbability(weatherConditions);
-    
-            // Update UI
             updateWeatherDisplay(city, province, probability, weatherConditions, hourlyData);
             handleLocationSaving(city, province);
     
@@ -670,6 +680,7 @@
             loading.style.display = 'none';
         }
     }
+
 
     function updateWeatherDisplay(city, province, probability, weatherConditions, hourlyData) {
         const resultCard = document.getElementById('result');
@@ -718,6 +729,50 @@
         // Update chart with metric data
         updateChart(hourlyData);
         resultCard.style.display = 'block';
+    }
+
+    // Helper function to get full province names
+    function getProvinceFullName(provinceCode) {
+        const provinceMap = {
+            'ON': ['Ontario'],
+            'BC': ['British Columbia'],
+            'AB': ['Alberta'],
+            'MB': ['Manitoba'],
+            'NB': ['New Brunswick'],
+            'NL': ['Newfoundland and Labrador', 'Newfoundland', 'Labrador'],
+            'NS': ['Nova Scotia'],
+            'PE': ['Prince Edward Island', 'PEI'],
+            'QC': ['Quebec', 'Québec'],
+            'SK': ['Saskatchewan'],
+            'NT': ['Northwest Territories'],
+            'NU': ['Nunavut'],
+            'YT': ['Yukon', 'Yukon Territory']
+        };
+        
+        return provinceMap[provinceCode] || [];
+    }
+    
+    // Add this function to handle location saving
+    function handleLocationSaving(city, province) {
+        const saveLocationCheckbox = document.getElementById('saveLocation');
+        saveLocationCheckbox.checked = savedLocations.some(loc => 
+            loc.city === city && loc.province === province
+        );
+    
+        saveLocationCheckbox.onchange = () => {
+            if (saveLocationCheckbox.checked) {
+                saveLocation(city, province);
+            } else {
+                const index = savedLocations.findIndex(loc => 
+                    loc.city === city && loc.province === province
+                );
+                if (index !== -1) {
+                    savedLocations.splice(index, 1);
+                    localStorage.setItem('savedLocations', JSON.stringify(savedLocations));
+                    updateSavedLocations();
+                }
+            }
+        };
     }
 </script>
 </body>
