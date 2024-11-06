@@ -5,6 +5,7 @@ const config = {
             name: 'Games', 
             icon: 'fa-gamepad', 
             items: [
+                { name: '✨ ScaleUp', url: '/scaleup' },
                 { name: 'Snake Game', url: '/snake-game' },
                 { name: 'Trivia', url: '/trivia' },
                 { name: 'Motle', url: '/motle' },
@@ -32,7 +33,7 @@ const config = {
             name: 'Classroom', 
             icon: 'fa-school', 
             items: [
-                { name: 'FBL (French Book Library)', url: 'https://fbl.dupuis.lol/account/signup' },
+                { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup' },
             ]
         },
         { 
