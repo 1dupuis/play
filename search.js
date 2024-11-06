@@ -1,77 +1,102 @@
 // Configuration object for easy editing //
 const config = {
     categories: [
-        {
-            name: 'Games',
-            subtitle: 'French and English Language Games',
-            icon: 'fa-gamepad',
-            subcategories: [
-                {
-                    name: 'French Games',
-                    items: [
-                        { name: 'Motle', url: '/motle', description: 'Guess the French word of the day' },
-                        { name: 'DupuisGuessr', url: '/guessr', description: 'Guess the location of French landmarks' },
-                        { name: 'Word Voyage', url: '/word-voyage', description: 'Improve your French spelling' },
-                        { name: 'Stromae', url: '/stromae', description: 'Learn French through Stromae\'s music' },
-                        { name: 'Snake Game', url: '/snake-game', description: 'Classic snake game to practice French' }
-                    ]
-                },
-                {
-                    name: 'English Games',
-                    items: [
-                        { name: 'Trivia', url: '/trivia', description: 'Test your knowledge with trivia' }
-                    ]
-                },
-                {
-                    name: 'Music Games',
-                    items: [
-                        { name: '✨ ScaleUp', url: '/scaleup', description: 'Music scales game' }
-                    ]
-                },
-                {
-                    name: 'Other Games',
-                    items: [
-                        { name: 'Ascend', url: '/ascend', description: 'Platformer game' }
-                    ]
-                }
-            ]
-        },
-        {
-            name: 'Resources',
-            subtitle: 'Educational Materials and Tools',
-            icon: 'fa-book',
-            items: [
-                { name: '✨ Snow Day', url: '/snowday', description: 'French immersion through interactive stories' },
-                { name: 'Extension', url: '/extension/download', description: 'Browser extension for French learning' },
-                { name: 'Cuisine AI', url: '/cuisine-ai', description: 'AI-powered French cooking assistant' },
-                { name: 'Events', url: '/events', description: 'Upcoming French language events' },
-                { name: 'Café', url: '/cafe', description: 'Chat with other French learners' },
-                { name: 'Rewards', url: '/rewards', description: 'Earn rewards for your French progress' },
-                { name: 'News', url: '/news', description: 'Stay up-to-date with French news' },
-                { name: 'Translate', url: '/translate', description: 'Translate between French and other languages' }
-            ]
-        },
-        {
-            name: 'Classroom',
-            subtitle: 'French Learning for Schools',
-            icon: 'fa-school',
-            items: [
-                { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
-            ]
-        },
-        {
-            name: 'Development',
-            subtitle: 'Tools and Resources for Developers',
-            icon: 'fa-code',
-            items: [
-                { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
-                { name: 'Notes', url: '/workspace/notes', description: 'Take and share your programming notes' },
-                { name: 'Old Homepage', url: '/homepage', description: 'Access the previous version of the website' },
-                { name: 'Contact', url: '/contact', description: 'Get in touch with the dupuis.lol team' },
-                { name: 'Videos', url: '/videos', description: 'Tutorials and tech talks' },
-                { name: 'Forms', url: '/forms', description: 'Create and manage custom forms' }
-            ]
-        }
+       {
+           name: 'Games',
+           subtitle: 'French and English Language Games',
+           icon: 'fa-gamepad',
+           subcategories: [
+               {
+                   name: 'French Games',
+                   items: [
+                       { name: 'Motle', url: '/motle', description: 'Guess the French word of the day' },
+                       { name: 'DupuisGuessr', url: '/guessr', description: 'Guess the location of French landmarks' },
+                       { name: 'Word Voyage', url: '/word-voyage', description: 'Improve your French spelling' },
+                       { name: 'Stromae', url: '/stromae', description: 'Learn French through Stromae\'s music' },
+                       { name: 'Snake Game', url: '/snake-game', description: 'Classic snake game to practice French' }
+                   ]
+               },
+               {
+                   name: 'English Games',
+                   items: [
+                       { name: 'Trivia', url: '/trivia', description: 'Test your knowledge with trivia' }
+                   ]
+               },
+               {
+                   name: 'Music Games',
+                   items: [
+                       { name: '✨ ScaleUp', url: '/scaleup', description: 'Music scales game' }
+                   ]
+               },
+               {
+                   name: 'Other Games',
+                   items: [
+                       { name: 'Ascend', url: '/ascend', description: 'Platformer game' }
+                   ]
+               }
+           ]
+       },
+       {
+           name: 'Resources',
+           subtitle: 'Educational Materials and Tools',
+           icon: 'fa-book',
+           subcategories: [
+               {
+                   name: 'Learning Tools',
+                   items: [
+                       { name: '✨ Snow Day', url: '/snowday', description: 'French immersion through interactive stories' },
+                       { name: 'Extension', url: '/extension/download', description: 'Browser extension for French learning' },
+                       { name: 'Cuisine AI', url: '/cuisine-ai', description: 'AI-powered French cooking assistant' }
+                   ]
+               },
+               {
+                   name: 'Community',
+                   items: [
+                       { name: 'Events', url: '/events', description: 'Upcoming French language events' },
+                       { name: 'Café', url: '/cafe', description: 'Chat with other French learners' },
+                       { name: 'Rewards', url: '/rewards', description: 'Earn rewards for your French progress' }
+                   ]
+               },
+               {
+                   name: 'Information',
+                   items: [
+                       { name: 'News', url: '/news', description: 'Stay up-to-date with French news' },
+                       { name: 'Translate', url: '/translate', description: 'Translate between French and other languages' }
+                   ]
+               }
+           ]
+       },
+       {
+           name: 'Classroom',
+           subtitle: 'French Learning for Schools',
+           icon: 'fa-school',
+           items: [
+               { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
+           ]
+       },
+       {
+           name: 'Development',
+           subtitle: 'Tools and Resources for Developers',
+           icon: 'fa-code',
+           subcategories: [
+               {
+                   name: 'Workspace',
+                   items: [
+                       { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
+                       { name: 'Notes', url: '/workspace/notes', description: 'Take and share your programming notes' }
+                   ]
+               },
+               {
+                   name: 'Other Tools',
+                   items: [
+                       { name: 'Old Homepage', url: '/homepage', description: 'Access the previous version of the website' },
+                       { name: 'Contact', url: '/contact', description: 'Get in touch with the dupuis.lol team' },
+                       { name: 'Videos', url: '/videos', description: 'Tutorials and tech talks' },
+                       { name: 'Forms', url: '/forms', description: 'Create and manage custom forms' }
+                   ]
+               }
+           ]
+       }
     ],
     announcements: [
         {
