@@ -431,22 +431,25 @@ class DupuisApp {
     generateSearchResults(query) {
         let results = '<h2>Search Results</h2><ul class="search-results">';
         let found = false;
-
+    
         config.categories.forEach(category => {
-            category.items.forEach(item => {
-                if (item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query))) {
-                    found = true;
-                    results += `
-                        <li>
-                            <h3>${this.highlightMatch(item.name, query)}</h3>
-                            <p>${item.description ? this.highlightMatch(item.description, query) : 'No description available.'}</p>
-                            <a href="${item.url}" class="button visit-button" data-url="${item.url}">Visit Page</a>
-                        </li>
-                    `;
-                }
+            category.subcategories.forEach(subcategory => {
+                subcategory.items.forEach(item => {
+                    if (item.name.toLowerCase().includes(query) || 
+                        (item.description && item.description.toLowerCase().includes(query))) {
+                        found = true;
+                        results += `
+                            <li>
+                                <h3>${this.highlightMatch(item.name, query)}</h3>
+                                <p>${item.description ? this.highlightMatch(item.description, query) : 'No description available.'}</p>
+                                <a href="${item.url}" class="button visit-button" data-url="${item.url}">Visit Page</a>
+                            </li>
+                        `;
+                    }
+                });
             });
         });
-
+    
         results += '</ul>';
         return found ? results : `<h2>Search Results</h2><p>${config.noResultsMessage}</p>`;
     }
@@ -604,20 +607,27 @@ class DupuisApp {
     loadCategoryContent(categoryName) {
         const category = config.categories.find(cat => cat.name === categoryName);
         if (!category) return;
-
+    
         let content = `
             <h2>${category.name}</h2>
             <div class="sub-container">
-                ${category.items.map(item => `
-                    <div class="item-card">
-                        <h3>${item.name}</h3>
-                        <p>${item.description || 'No description available.'}</p>
-                        <a href="${item.url}" class="button visit-button" data-url="${item.url}">Visit Page</a>
+                ${category.subcategories.map(subcategory => `
+                    <div class="subcategory-section">
+                        <h3>${subcategory.name}</h3>
+                        <div class="items-grid">
+                            ${subcategory.items.map(item => `
+                                <div class="item-card">
+                                    <h4>${item.name}</h4>
+                                    <p>${item.description || 'No description available.'}</p>
+                                    <a href="${item.url}" class="button visit-button" data-url="${item.url}">Visit Page</a>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `).join('')}
             </div>
         `;
-
+    
         this.updateContent(content);
         this.updateActiveSidebarItem(categoryName);
     }
@@ -683,14 +693,22 @@ class DupuisApp {
         const sidebarContent = config.categories.map(category => `
             <div class="sidebar-category">
                 <h3>${category.name}</h3>
-                ${category.items.map(item => `
-                    <a href="${item.url}" class="sidebar-item" data-category="${category.name}" data-item="${item.name}">
-                        ${item.name}
-                    </a>
+                ${category.subcategories.map(subcategory => `
+                    <div class="sidebar-subcategory">
+                        <h4>${subcategory.name}</h4>
+                        ${subcategory.items.map(item => `
+                            <a href="${item.url}" class="sidebar-item" 
+                               data-category="${category.name}" 
+                               data-subcategory="${subcategory.name}"
+                               data-item="${item.name}">
+                                ${item.name}
+                            </a>
+                        `).join('')}
+                    </div>
                 `).join('')}
             </div>
         `).join('');
-
+    
         this.sidebarSection.innerHTML = sidebarContent;
     }
 
