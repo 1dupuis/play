@@ -1,1 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScaleUp</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vexflow/4.2.2/vexflow.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --text: #2b2d42;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--background) 0%, #e9ecef 100%);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '♪';
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            top: -2rem;
+            left: -2rem;
+            transform: rotate(-15deg);
+        }
+
+        header::after {
+            content: '♫';
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            bottom: -2rem;
+            right: -2rem;
+            transform: rotate(15deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            font-size: 1.2em;
+        }
+
+        .scale-display {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .note-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .note {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            animation: noteFloat 2s infinite ease-in-out;
+        }
+
+        @keyframes noteFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-secondary {
+            background: var(--accent);
+        }
+
+        select {
+            padding: 0.75rem;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        .practice-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .log-entry {
+            padding: 0.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .staff-container {
+            width: 100%;
+            height: 150px;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .achievement {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 20px;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .achievement i {
+            font-size: 1.2em;
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .metronome-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .tempo-slider {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .tempo-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tempo-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .practice-timer {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ScaleUp</h1>
+        <p>Level up your musical skills one scale at a time!</p>
+    </header>
+
+    <div class="container">
+        <!-- Main Scale Card -->
+        <div class="card">
+            <h2 class="card-title">🎵 Today's Scale Challenge</h2>
+            <select id="instrumentSelect" class="instrument-select">
+                <option value="concert">Concert Pitch</option>
+                <option value="bb">Bb Instruments</option>
+                <option value="eb">Eb Instruments</option>
+                <option value="f">F Instruments</option>
+            </select>
+            <div class="scale-display">
+                <div id="scaleStaff" class="staff-container"></div>
+                <div class="note-grid" id="noteGrid"></div>
+            </div>
+            <div class="controls">
+                <button id="playScale">▶️ Play Scale</button>
+                <button id="recordPractice" class="button-secondary">🎤 Record Practice</button>
+            </div>
+        </div>
+
+        <!-- Practice Tools Card -->
+        <div class="card">
+            <h2 class="card-title">⚡ Practice Tools</h2>
+            <div class="metronome-container">
+                <div class="tempo-control">
+                    <label for="tempoSlider">Tempo: <span id="tempoDisplay">100</span> BPM</label>
+                    <input type="range" id="tempoSlider" class="tempo-slider" min="40" max="208" value="100">
+                </div>
+                <button id="metronomeToggle">▶️ Start Metronome</button>
+            </div>
+            <div class="practice-timer" id="practiceTimer">00:00</div>
+            <button id="startPractice">⏱️ Start Practice Session</button>
+        </div>
+
+        <!-- Stats Card -->
+        <div class="card">
+            <h2 class="card-title">📊 Your Progress</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalPracticeTime">0</div>
+                    <div class="stat-label">Minutes Practiced</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="scalesLearned">0</div>
+                    <div class="stat-label">Scales Mastered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="currentStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <p>Daily Goal Progress</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Log Card -->
+        <div class="card">
+            <h2 class="card-title">📝 Practice Log</h2>
+            <div class="practice-log" id="practiceLog"></div>
+        </div>
+    </div>
+
+    <!-- Achievement Modal -->
+    <div class="modal" id="achievementModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>🏆 Achievement Unlocked!</h2>
+            <p id="achievementMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        class ScaleMaster {
+            constructor() {
+                  this.scales = [
+                { name: 'C Major', notes: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'] },
+                { name: 'F Major', notes: ['F4', 'G4', 'A4', 'Bb4', 'C5', 'D5', 'E5', 'F5'] },
+                { name: 'Bb Major', notes: ['Bb3', 'C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'Bb4'] },
+                { name: 'Eb Major', notes: ['Eb4', 'F4', 'G4', 'Ab4', 'Bb4', 'C5', 'D5', 'Eb5'] },
+                { name: 'Ab Major', notes: ['Ab3', 'Bb3', 'C4', 'Db4', 'Eb4', 'F4', 'G4', 'Ab4'] },
+                { name: 'G Major', notes: ['G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F#4', 'G4'] },
+                { name: 'D Major', notes: ['D4', 'E4', 'F#4', 'G4', 'A4', 'B4', 'C#5', 'D5'] },
+                { name: 'A Major', notes: ['A3', 'B3', 'C#4', 'D4', 'E4', 'F#4', 'G#4', 'A4'] },
+                { name: 'E Major', notes: ['E4', 'F#4', 'G#4', 'A4', 'B4', 'C#5', 'D#5', 'E5'] },
+                { name: 'B Major', notes: ['B3', 'C#4', 'D#4', 'E4', 'F#4', 'G#4', 'A#4', 'B4'] }
+            ];
+              // Extended instrument transpositions
+              this.transpositions = {
+                  concert: { semitones: 0, name: 'Concert Pitch' },
+                  bb: { semitones: 2, name: 'Bb Instruments (Clarinet, Trumpet)' },
+                  eb: { semitones: -3, name: 'Eb Instruments (Alto Sax)' },
+                  f: { semitones: -5, name: 'F Instruments (Horn)' },
+                  g: { semitones: -7, name: 'G Instruments (Alto Flute)' },
+                  a: { semitones: -9, name: 'A Instruments (Clarinet in A)' },
+                  db: { semitones: 4, name: 'Db Instruments (Piccolo)' }
+              };
+      
+              this.audioContext = null;
+              this.metronomeInterval = null;
+              this.isMetronomePlaying = false;
+              this.tempo = 100;
+              this.practiceTime = 0;
+              this.practiceInterval = null;
+              this.currentStreak = this.loadStreak();
+              this.totalPracticeTime = this.loadTotalPracticeTime();
+              this.scalesLearned = this.loadScalesLearned();
+      
+              this.initializeAudio();
+              this.initializeEventListeners();
+              this.loadDailyScale();
+              this.updateInstrumentSelect();
+              this.initializeVexFlow();
+              this.updateStats();
+              this.checkDailyStreak();
+          }
+          
+          updateInstrumentSelect() {
+            const select = document.getElementById('instrumentSelect');
+            select.innerHTML = '';
+            
+            Object.entries(this.transpositions).forEach(([key, value]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value.name;
+                select.appendChild(option);
+            });
+        }
+
+            initializeAudio() {
+                window.addEventListener('click', () => {
+                    if (!this.audioContext) {
+                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                }, { once: true });
+            }
+
+            initializeEventListeners() {
+                document.getElementById('instrumentSelect').addEventListener('change', () => this.updateScale());
+                document.getElementById('metronomeToggle').addEventListener('click', () => this.toggleMetronome());
+                document.getElementById('tempoSlider').addEventListener('input', (e) => this.updateTempo(e.target.value));
+                document.getElementById('playScale').addEventListener('click', () => this.playCurrentScale());
+                document.getElementById('startPractice').addEventListener('click', () => this.togglePracticeTimer());
+                document.getElementById('recordPractice').addEventListener('click', () => this.recordPracticeSession());
+
+                // Modal close button
+                document.querySelector('.close-modal').addEventListener('click', () => {
+                    document.getElementById('achievementModal').style.display = 'none';
+                });
+            }
+
+            loadDailyScale() {
+                const today = new Date();
+                const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                this.currentScale = this.scales[dayOfYear % this.scales.length];
+                this.updateScale();
+            }
+
+            initializeVexFlow() {
+              const div = document.getElementById('scaleStaff');
+              const renderer = new Vex.Flow.Renderer(div, Vex.Flow.Renderer.Backends.SVG);
+              renderer.resize(div.clientWidth, 120);
+              this.context = renderer.getContext();
+              this.drawScale();
+          }
+
+          drawScale() {
+            try {
+                this.context.clear();
+                const stave = new Vex.Flow.Stave(10, 10, this.context.width - 20);
+                stave.addClef('treble').setContext(this.context).draw();
+    
+                // Get notes including descending scale
+                const notes = this.getCurrentTransposedScale(true).map(noteName => {
+                    // Split note name and octave
+                    const [note, octave] = this.splitNoteAndOctave(noteName);
+                    const baseNote = note.replace('#', '').replace('b', '');
+                    const accidental = note.includes('#') ? '#' : (note.includes('b') ? 'b' : '');
+                    
+                    // Create note with correct octave
+                    const staveNote = new Vex.Flow.StaveNote({ 
+                        keys: [`${baseNote}/${octave}`], 
+                        duration: "q" 
+                    });
+                    
+                    if (accidental) {
+                        staveNote.addAccidental(0, new Vex.Flow.Accidental(accidental));
+                    }
+                    
+                    return staveNote;
+                });
+    
+                // Create and draw voices in groups of 8 notes
+                const voices = [];
+                for (let i = 0; i < notes.length; i += 8) {
+                    const voice = new Vex.Flow.Voice({ num_beats: Math.min(8, notes.length - i), beat_value: 4 });
+                    voice.addTickables(notes.slice(i, i + 8));
+                    voices.push(voice);
+                }
+    
+                voices.forEach((voice, index) => {
+                    new Vex.Flow.Formatter()
+                        .joinVoices([voice])
+                        .format([voice], (this.context.width - 50) / voices.length);
+                    voice.draw(this.context, stave);
+                });
+    
+            } catch (error) {
+                console.error('Error drawing scale:', error);
+            }
+        }
+        
+        splitNoteAndOctave(noteWithOctave) {
+            const octave = noteWithOctave.slice(-1);
+            const note = noteWithOctave.slice(0, -1);
+            return [note, octave];
+        }
+
+            updateScale() {
+                this.drawScale();
+                this.updateNoteGrid();
+            }
+
+            updateNoteGrid() {
+              const grid = document.getElementById('noteGrid');
+              grid.innerHTML = '';
+              
+              // Get notes including descending scale
+              const notes = this.getCurrentTransposedScale(true);
+              
+              notes.forEach((note, index) => {
+                  const noteEl = document.createElement('div');
+                  noteEl.className = 'note';
+                  noteEl.textContent = note;
+                  noteEl.style.animationDelay = `${index * 0.1}s`;
+                  
+                  // Add visual indication for ascending/descending
+                  if (index >= notes.length / 2) {
+                      noteEl.classList.add('descending');
+                  }
+                  
+                  grid.appendChild(noteEl);
+              });
+          }
+
+            getCurrentTransposedScale(includeDescending = false) {
+              const instrument = document.getElementById('instrumentSelect').value;
+              const transposition = this.transpositions[instrument].semitones;
+              const ascendingNotes = this.transposeNotes(this.currentScale.notes, transposition);
+              
+              if (!includeDescending) return ascendingNotes;
+              
+              // Create descending scale (excluding the first note as it's the same as the last ascending note)
+              const descendingNotes = [...ascendingNotes].reverse().slice(1);
+              return [...ascendingNotes, ...descendingNotes];
+          }
+
+            transposeNotes(notes, semitones) {
+              const chromaticScale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+              const flatScale = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+              
+              return notes.map(noteWithOctave => {
+                  // Split note and octave
+                  const [note, originalOctave] = this.splitNoteAndOctave(noteWithOctave);
+                  let octave = parseInt(originalOctave);
+                  
+                  // Handle both sharp and flat notations
+                  const useFlats = note.includes('b');
+                  const referenceScale = useFlats ? flatScale : chromaticScale;
+                  
+                  // Remove any accidentals to find base note
+                  const baseNote = note.replace('#', '').replace('b', '');
+                  let index = referenceScale.indexOf(baseNote);
+                  
+                  // Add back the accidental
+                  if (note.includes('#')) index++;
+                  if (note.includes('b')) index--;
+                  
+                  // Calculate new index and handle octave changes
+                  let newIndex = index + semitones;
+                  
+                  // Adjust octave if we cross C
+                  if (newIndex >= 12) {
+                      octave += Math.floor(newIndex / 12);
+                      newIndex = newIndex % 12;
+                  } else if (newIndex < 0) {
+                      octave += Math.floor(newIndex / 12);
+                      newIndex = (newIndex % 12 + 12) % 12;
+                  }
+                  
+                  // Return note with correct octave
+                  return useFlats ? 
+                      `${flatScale[newIndex]}${octave}` : 
+                      `${chromaticScale[newIndex]}${octave}`;
+              });
+          }
+
+            toggleMetronome() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                if (this.isMetronomePlaying) {
+                    clearInterval(this.metronomeInterval);
+                    document.getElementById('metronomeToggle').textContent = '▶️ Start Metronome';
+                } else {
+                    this.metronomeInterval = setInterval(() => this.playMetronomeClick(), (60 / this.tempo) * 1000);
+                    document.getElementById('metronomeToggle').textContent = '⏹️ Stop Metronome';
+                }
+                
+                this.isMetronomePlaying = !this.isMetronomePlaying;
+            }
+
+            playMetronomeClick() {
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(this.audioContext.destination);
+                
+                osc.frequency.value = 1000;
+                gain.gain.value = 0.1;
+                
+                osc.start(this.audioContext.currentTime);
+                osc.stop(this.audioContext.currentTime + 0.1);
+            }
+
+            updateTempo(value) {
+                this.tempo = parseInt(value);
+                document.getElementById('tempoDisplay').textContent = this.tempo;
+                
+                if (this.isMetronomePlaying) {
+                    this.toggleMetronome();
+                    this.toggleMetronome();
+                }
+            }
+
+            playCurrentScale() {
+              if (!this.audioContext) {
+                  this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              }
+      
+              const notes = this.getCurrentTransposedScale(true);
+              let delay = 0;
+              const noteDuration = 60 / this.tempo;
+      
+              notes.forEach((noteWithOctave, index) => {
+                  this.playNote(noteWithOctave, delay);
+                  delay += noteDuration;
+              });
+          }
+
+            playNote(noteWithOctave, delay) {
+              const [note, octave] = this.splitNoteAndOctave(noteWithOctave);
+              const baseFrequencies = {
+                  'C': 261.63, 'C#': 277.18, 'Db': 277.18, 'D': 293.66,
+                  'D#': 311.13, 'Eb': 311.13, 'E': 329.63, 'F': 349.23,
+                  'F#': 369.99, 'Gb': 369.99, 'G': 392.00, 'G#': 415.30,
+                  'Ab': 415.30, 'A': 440.00, 'A#': 466.16, 'Bb': 466.16,
+                  'B': 493.88
+              };
+      
+              // Calculate frequency for the specific octave
+              const baseFreq = baseFrequencies[note];
+              const octaveMultiplier = Math.pow(2, parseInt(octave) - 4);
+              const frequency = baseFreq * octaveMultiplier;
+      
+              setTimeout(() => {
+                  const osc = this.audioContext.createOscillator();
+                  const gain = this.audioContext.createGain();
+                  
+                  gain.gain.setValueAtTime(0, this.audioContext.currentTime);
+                  gain.gain.linearRampToValueAtTime(0.2, this.audioContext.currentTime + 0.01);
+                  gain.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.3);
+                  
+                  osc.connect(gain);
+                  gain.connect(this.audioContext.destination);
+                  
+                  osc.type = 'sine';
+                  osc.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                  
+                  osc.start(this.audioContext.currentTime);
+                  osc.stop(this.audioContext.currentTime + 0.3);
+              }, delay * 1000);
+          }
+
+            togglePracticeTimer() {
+                if (this.practiceInterval) {
+                    clearInterval(this.practiceInterval);
+                    this.practiceInterval = null;
+                    document.getElementById('startPractice').textContent = '⏱️ Start Practice Session';
+                } else {
+                    this.practiceInterval = setInterval(() => {
+                        this.practiceTime++;
+                        this.updatePracticeTimer();
+                    }, 1000);
+                    document.getElementById('startPractice').textContent = '⏹️ Stop Practice Session';
+                }
+            }
+
+            updatePracticeTimer() {
+                const minutes = Math.floor(this.practiceTime / 60);
+                const seconds = this.practiceTime % 60;
+                document.getElementById('practiceTimer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            recordPracticeSession() {
+                if (this.practiceTime < 60) {
+                    this.showAchievement('Practice at least 1 minute before recording!');
+                    return;
+                }
+
+                const minutes = Math.floor(this.practiceTime / 60);
+                this.totalPracticeTime += minutes;
+                this.saveTotalPracticeTime();
+                
+                const log = document.getElementById('practiceLog');
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `
+                    <span>${new Date().toLocaleDateString()} - ${this.currentScale.name}</span>
+                    <span>${minutes} minutes</span>
+                `;
+                log.insertBefore(entry, log.firstChild);
+
+                this.practiceTime = 0;
+                this.updatePracticeTimer();
+                this.updateStats();
+                this.checkAchievements();
+            }
+
+            checkAchievements() {
+                if (this.totalPracticeTime >= 60) {
+                    this.showAchievement('🎉 Dedicated Musician: Practice for 1 hour total!');
+                    this.scalesLearned++;
+                    this.saveScalesLearned();
+                }
+            }
+
+            showAchievement(message) {
+                document.getElementById('achievementMessage').textContent = message;
+                document.getElementById('achievementModal').style.display = 'flex';
+            }
+
+            checkDailyStreak() {
+                const lastPractice = localStorage.getItem('lastPracticeDate');
+                const today = new Date().toDateString();
+
+                if (lastPractice !== today) {
+                    if (lastPractice === new Date(Date.now() - 86400000).toDateString()) {
+                        this.currentStreak++;
+                    } else {
+                        this.currentStreak = 0;
+                    }
+                    this.saveStreak();
+                }
+            }
+
+            updateStats() {
+                document.getElementById('totalPracticeTime').textContent = this.totalPracticeTime;
+                document.getElementById('scalesLearned').textContent = this.scalesLearned;
+                document.getElementById('currentStreak').textContent = this.currentStreak;
+                
+                const progress = (this.practiceTime / 1800) * 100; // 30 minutes daily goal
+                document.getElementById('progressFill').style.width = `${Math.min(100, progress)}%`;
+            }
+
+            // Local Storage helpers
+            loadStreak() {
+                return parseInt(localStorage.getItem('currentStreak')) || 0;
+            }
+
+            saveStreak() {
+                localStorage.setItem('currentStreak', this.currentStreak);
+                localStorage.setItem('lastPracticeDate', new Date().toDateString());
+            }
+
+            loadTotalPracticeTime() {
+                return parseInt(localStorage.getItem('totalPracticeTime')) || 0;
+            }
+
+            saveTotalPracticeTime() {
+                localStorage.setItem('totalPracticeTime', this.totalPracticeTime);
+            }
+
+            loadScalesLearned() {
+                return parseInt(localStorage.getItem('scalesLearned')) || 0;
+            }
+
+            saveScalesLearned() {
+                localStorage.setItem('scalesLearned', this.scalesLearned);
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.scaleMaster = new ScaleMaster();
+        });
+    </script>
+</body>
+</html>
