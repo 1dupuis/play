@@ -1,4 +1,4 @@
-// Configuration object for easy editing
+// Configuration object for easy editing //
 const config = {
     categories: [
         { 
