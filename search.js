@@ -7,21 +7,31 @@ const config = {
             icon: 'fa-gamepad',
             subcategories: [
                 {
-                    name: 'English Games',
-                    items: [
-                        { name: '✨ ScaleUp', url: '/scaleup', description: 'Improve your French vocabulary' },
-                        { name: 'Snake Game', url: '/snake-game', description: 'Classic snake game to practice French' },
-                        { name: 'Trivia', url: '/trivia', description: 'Test your knowledge with French trivia' }
-                    ]
-                },
-                {
                     name: 'French Games',
                     items: [
                         { name: 'Motle', url: '/motle', description: 'Guess the French word of the day' },
                         { name: 'DupuisGuessr', url: '/guessr', description: 'Guess the location of French landmarks' },
-                        { name: 'Ascend', url: '/ascend', description: 'French language platformer game' },
                         { name: 'Word Voyage', url: '/word-voyage', description: 'Improve your French spelling' },
-                        { name: 'Stromae', url: '/stromae', description: 'Learn French through Stromae\'s music' }
+                        { name: 'Stromae', url: '/stromae', description: 'Learn French through Stromae\'s music' },
+                        { name: 'Snake Game', url: '/snake-game', description: 'Classic snake game to practice French' }
+                    ]
+                },
+                {
+                    name: 'English Games',
+                    items: [
+                        { name: 'Trivia', url: '/trivia', description: 'Test your knowledge with trivia' }
+                    ]
+                },
+                {
+                    name: 'Music Games',
+                    items: [
+                        { name: '✨ ScaleUp', url: '/scaleup', description: 'Music scales game' }
+                    ]
+                },
+                {
+                    name: 'Other Games',
+                    items: [
+                        { name: 'Ascend', url: '/ascend', description: 'Platformer game' }
                     ]
                 }
             ]
