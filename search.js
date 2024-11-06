@@ -70,9 +70,14 @@ const config = {
            name: 'Classroom',
            subtitle: 'French Learning for Schools',
            icon: 'fa-school',
-           items: [
-               { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
-           ]
+           subcategories: [
+            {
+                name: 'Classroom Resources',
+                items: [
+                    { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
+                ]
+            }
+        ]
        },
        {
            name: 'Development',
