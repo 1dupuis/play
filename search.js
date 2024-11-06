@@ -1,51 +1,65 @@
 // Configuration object for easy editing //
 const config = {
     categories: [
-        { 
-            name: 'Games', 
-            icon: 'fa-gamepad', 
-            items: [
-                { name: '✨ ScaleUp', url: '/scaleup' },
-                { name: 'Snake Game', url: '/snake-game' },
-                { name: 'Trivia', url: '/trivia' },
-                { name: 'Motle', url: '/motle' },
-                { name: 'DupuisGuessr', url: '/guessr' },
-                { name: 'Ascend', url: '/ascend' },
-                { name: 'Word Voyage', url: '/word-voyage' },
-                { name: 'Stromae', url: '/stromae' }
+        {
+            name: 'Games',
+            subtitle: 'French and English Language Games',
+            icon: 'fa-gamepad',
+            subcategories: [
+                {
+                    name: 'English Games',
+                    items: [
+                        { name: '✨ ScaleUp', url: '/scaleup', description: 'Improve your French vocabulary' },
+                        { name: 'Snake Game', url: '/snake-game', description: 'Classic snake game to practice French' },
+                        { name: 'Trivia', url: '/trivia', description: 'Test your knowledge with French trivia' }
+                    ]
+                },
+                {
+                    name: 'French Games',
+                    items: [
+                        { name: 'Motle', url: '/motle', description: 'Guess the French word of the day' },
+                        { name: 'DupuisGuessr', url: '/guessr', description: 'Guess the location of French landmarks' },
+                        { name: 'Ascend', url: '/ascend', description: 'French language platformer game' },
+                        { name: 'Word Voyage', url: '/word-voyage', description: 'Improve your French spelling' },
+                        { name: 'Stromae', url: '/stromae', description: 'Learn French through Stromae\'s music' }
+                    ]
+                }
             ]
         },
-        { 
-            name: 'Resources', 
-            icon: 'fa-book', 
+        {
+            name: 'Resources',
+            subtitle: 'Educational Materials and Tools',
+            icon: 'fa-book',
             items: [
-                { name: '✨ Snow Day', url: '/snowday' },
-                { name: 'Extension', url: '/extension/download' },
-                { name: 'Cuisine AI', url: '/cuisine-ai' },
-                { name: 'Events', url: '/events' },
-                { name: 'Café', url: '/cafe' },
-                { name: 'Rewards', url: '/rewards' },
-                { name: 'News', url: '/news' },
-                { name: 'Translate', url: '/translate' }
+                { name: '✨ Snow Day', url: '/snowday', description: 'French immersion through interactive stories' },
+                { name: 'Extension', url: '/extension/download', description: 'Browser extension for French learning' },
+                { name: 'Cuisine AI', url: '/cuisine-ai', description: 'AI-powered French cooking assistant' },
+                { name: 'Events', url: '/events', description: 'Upcoming French language events' },
+                { name: 'Café', url: '/cafe', description: 'Chat with other French learners' },
+                { name: 'Rewards', url: '/rewards', description: 'Earn rewards for your French progress' },
+                { name: 'News', url: '/news', description: 'Stay up-to-date with French news' },
+                { name: 'Translate', url: '/translate', description: 'Translate between French and other languages' }
             ]
         },
-        { 
-            name: 'Classroom', 
-            icon: 'fa-school', 
+        {
+            name: 'Classroom',
+            subtitle: 'French Learning for Schools',
+            icon: 'fa-school',
             items: [
-                { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup' },
+                { name: '✨ FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
             ]
         },
-        { 
-            name: 'Indev', 
-            icon: 'fa-code', 
+        {
+            name: 'Development',
+            subtitle: 'Tools and Resources for Developers',
+            icon: 'fa-code',
             items: [
-                { name: 'Study', url: '/workspace/study' },
-                { name: 'Notes', url: '/workspace/notes' },
-                { name: 'Old Homepage', url: '/homepage' },
-                { name: 'Contact', url: '/contact' },
-                { name: 'Videos', url: '/videos' },
-                { name: 'Forms', url: '/forms' }
+                { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
+                { name: 'Notes', url: '/workspace/notes', description: 'Take and share your programming notes' },
+                { name: 'Old Homepage', url: '/homepage', description: 'Access the previous version of the website' },
+                { name: 'Contact', url: '/contact', description: 'Get in touch with the dupuis.lol team' },
+                { name: 'Videos', url: '/videos', description: 'Tutorials and tech talks' },
+                { name: 'Forms', url: '/forms', description: 'Create and manage custom forms' }
             ]
         }
     ],
@@ -67,7 +81,7 @@ const config = {
         {
             message: "🟪 Welcome LEPSS!",
             showForever: true
-        },
+        }
     ],
     defaultCategory: 'Games',
     searchPlaceholder: 'Search dupuis.lol...',
@@ -98,6 +112,7 @@ class DupuisApp {
         this.initializeElements();
 
         this.currentCategory = null;
+        this.currentSubcategory = null;
         this.currentItem = null;
         this.isDarkMode = false;
 
@@ -187,6 +202,7 @@ class DupuisApp {
         categoryButton.innerHTML = `
             <i class="fas ${category.icon}"></i>
             <h2>${category.name}</h2>
+            <p>${category.subtitle}</p>
         `;
         categoryButton.addEventListener('click', (e) => {
             e.preventDefault();
@@ -198,6 +214,39 @@ class DupuisApp {
         categoryButton.addEventListener('mouseout', () => icon.classList.remove('fa-bounce'));
 
         return categoryButton;
+    }
+
+    generateSubcategories(subcategories) {
+        this.contentSection.innerHTML = ''; // Clear existing content
+        const fragment = document.createDocumentFragment();
+        subcategories.forEach(subcategory => {
+            const subcategoryButton = this.createSubcategoryButton(subcategory);
+            fragment.appendChild(subcategoryButton);
+        });
+        this.contentSection.appendChild(fragment);
+    }
+
+    createSubcategoryButton(subcategory) {
+        const subcategoryButton = document.createElement('div');
+        subcategoryButton.className = 'subcategory';
+        subcategoryButton.innerHTML = `
+            <h3>${subcategory.name}</h3>
+            <div class="sub-container">
+                ${subcategory.items.map(item => `
+                    <div class="item-card">
+                        <h4>${item.name}</h4>
+                        <p>${item.description || 'No description available.'}</p>
+                        <a href="${item.url}" class="button visit-button" data-url="${item.url}">Visit Page</a>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        subcategoryButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.navigateTo(`/${this.currentCategory.name.toLowerCase()}/${subcategory.name.toLowerCase()}`);
+        });
+
+        return subcategoryButton;
     }
 
     setupEventListeners() {
@@ -263,53 +312,63 @@ class DupuisApp {
     }
 
     handleRouteChange() {
-    const path = window.location.pathname;
-    const pathSegments = path.split('/').filter(segment => segment !== '');
+        const path = window.location.pathname;
+        const pathSegments = path.split('/').filter(segment => segment !== '');
 
-    if (pathSegments.length === 0) {
-        // If no path is specified, load the default category (Games)
-        this.loadCategoryContent('Games');
-        return;
-    }
+        if (pathSegments.length === 0) {
+            // If no path is specified, load the default category (Games)
+            this.loadCategoryContent('Games');
+            return;
+        }
 
-    const category = config.categories.find(cat => cat.name.toLowerCase() === pathSegments[0]);
-    if (category) {
-        this.currentCategory = category.name;
-        if (pathSegments.length === 1) {
-            this.loadCategoryContent(category.name);
-        } else {
-            const item = this.findItemByUrl(category, `/${pathSegments.join('/')}`);
-            if (item) {
-                this.currentItem = item.name;
-                this.loadItemContent(category.name, item);
+        const category = config.categories.find(cat => cat.name.toLowerCase() === pathSegments[0]);
+        if (category) {
+            this.currentCategory = category;
+            if (pathSegments.length === 1) {
+                this.loadSubcategoryContent(category.subcategories);
             } else {
-                // If the item is not found, load the category content instead of 404
-                this.loadCategoryContent(category.name);
+                const subcategory = category.subcategories.find(sub => sub.name.toLowerCase() === pathSegments[1]);
+                if (subcategory) {
+                    this.currentSubcategory = subcategory;
+                    this.loadItemContent(subcategory.items);
+                } else {
+                    // If the subcategory is not found, load the subcategory content instead of 404
+                    this.loadSubcategoryContent(category.subcategories);
+                }
+            }
+        } else {
+            const item = this.findItemByUrl(null, path);
+            if (item) {
+                const category = this.findCategoryByItem(item);
+                this.currentCategory = category;
+                this.currentItem = item.name;
+                this.loadItemContent(category.subcategories.flatMap(sub => sub.items));
+            } else {
+                // If no matching category or item is found, load the default category (Games)
+                this.loadCategoryContent('Games');
             }
         }
-    } else {
-        const item = this.findItemByUrl(null, path);
-        if (item) {
-            const category = this.findCategoryByItem(item);
-            this.currentCategory = category.name;
-            this.currentItem = item.name;
-            this.loadItemContent(category.name, item);
-        } else {
-            // If no matching category or item is found, load the default category (Games)
-            this.loadCategoryContent('Games');
-        }
     }
-}
 
     findItemByUrl(category, url) {
         if (category) {
             return category.items.find(item => item.url === url);
         }
-        return config.categories.flatMap(cat => cat.items).find(item => item.url === url);
+        return config.categories.flatMap(cat => cat.subcategories.flatMap(sub => sub.items)).find(item => item.url === url);
     }
 
     findCategoryByItem(item) {
-        return config.categories.find(category => category.items.includes(item));
+        return config.categories.find(category => category.subcategories.some(subcategory => subcategory.items.includes(item)));
+    }
+
+    loadSubcategoryContent(subcategories) {
+        this.generateSubcategories(subcategories);
+        this.updateActiveSidebarItem(this.currentCategory.name);
+    }
+
+    loadItemContent(items) {
+        // Here, instead of displaying a mock content, we'll actually load the page content
+        window.location.href = this.currentItem.url;
     }
 
     navigateTo(url, replace = false) {
@@ -595,15 +654,27 @@ class DupuisApp {
         this.sidebarSection.innerHTML = sidebarContent;
     }
 
-    updateActiveSidebarItem(categoryName, itemName = null) {
+    updateActiveSidebarItem(categoryName, subcategoryName = null, itemName = null) {
         const sidebarItems = this.sidebarSection.querySelectorAll('.sidebar-item');
         sidebarItems.forEach(item => {
             item.classList.remove('active');
             item.removeAttribute('aria-current');
         });
 
-        if (itemName) {
+        if (subcategoryName) {
+            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"][data-subcategory="${subcategoryName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                activeItem.setAttribute('aria-current', 'page');
+            }
+        } else if (itemName) {
             const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"][data-item="${itemName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                activeItem.setAttribute('aria-current', 'page');
+            }
+        } else {
+            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"]`);
             if (activeItem) {
                 activeItem.classList.add('active');
                 activeItem.setAttribute('aria-current', 'page');
