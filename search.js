@@ -44,7 +44,7 @@ const config = {
                {
                    name: 'Learning Tools',
                    items: [
-                       { name: '✨ Snow Day', url: '/snowday', description: 'Snow day predictor in Canada' },
+                       { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
                        { name: 'Extension', url: '/extension/download', description: 'Browser extension for French learning' },
                        { name: 'Cuisine AI', url: '/cuisine-ai', description: 'AI-powered French cooking assistant' }
                    ]
@@ -60,6 +60,7 @@ const config = {
                {
                    name: 'Information',
                    items: [
+                       { name: '✨ Snow Day', url: '/snowday', description: 'Snow day predictor in Canada' },
                        { name: 'News', url: '/news', description: 'Stay up-to-date with French news' },
                        { name: 'Translate', url: '/translate', description: 'Translate between French and other languages' }
                    ]
@@ -87,7 +88,6 @@ const config = {
                {
                    name: 'Workspace',
                    items: [
-                       { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
                        { name: 'Notes', url: '/workspace/notes', description: 'Take and share your programming notes' }
                    ]
                },
