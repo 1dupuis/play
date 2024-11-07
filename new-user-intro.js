@@ -4,6 +4,26 @@ import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/1
 
 const NewUserIntro = {
 
+    constructor() {
+        this.config = {
+            totalSteps: 4,
+            animationDuration: 300,
+            storageKey: 'hasCompletedIntro',
+            minTimePerStep: 1000, // Minimum time in ms before allowing next step
+        };
+
+        this.state = {
+            currentStep: 1,
+            startTime: null,
+            user: null,
+            hasInteracted: false
+        };
+
+        this.modal = null;
+        this.auth = null;
+        this.db = null;
+    }
+
     initializeFirebase() {
         const firebaseConfig = {
             apiKey: "AIzaSyAToB2gXmzCK4t-1dW5urnGG87gbK6MxR8",
@@ -15,33 +35,15 @@ const NewUserIntro = {
             appId: "1:807402660080:web:545d4e1287f5803ebda235",
             measurementId: "G-TR8JMF5FRY"
         };
-        initializeApp(firebaseConfig);
-    }
-    
-    // Configuration
-    config: {
-        totalSteps: 4,
-        animationDuration: 300,
-        storageKey: 'hasCompletedIntro',
-        minTimePerStep: 1000, // Minimum time in ms before allowing next step
-    },
-
-    // State management
-    state: {
-        currentStep: 1,
-        startTime: null,
-        user: null,
-        hasInteracted: false
-    },
-
-    // Initialize the intro system
-    init() {
-        // Initialize Firebase first
-        this.initializeFirebase();
         
-        // Get Firebase instances using new SDK
+        initializeApp(firebaseConfig);
         this.auth = getAuth();
         this.db = getDatabase();
+    }
+
+    init() {
+        // Initialize Firebase
+        this.initializeFirebase();
         
         // Bind auth state listener
         this.auth.onAuthStateChanged(this.handleAuthStateChange.bind(this));
@@ -58,39 +60,34 @@ const NewUserIntro = {
         const isNewUser = await this.checkIfNewUser(user.uid);
         
         if (isNewUser) {
-            // Wait a bit to let the main app load
             setTimeout(() => this.startIntroExperience(), 1000);
-            // Track analytics
             this.logAnalytics('intro_started', { userId: user.uid });
         }
-    },
+    }
 
     // Check if user is new
     async checkIfNewUser(userId) {
         try {
-            const userRef = this.db.ref(`users/${userId}/${this.config.storageKey}`);
-            const snapshot = await userRef.once('value');
+            const userRef = ref(this.db, `users/${userId}/${this.config.storageKey}`);
+            const snapshot = await get(userRef);
             return !snapshot.exists();
         } catch (error) {
             console.error('Error checking user status:', error);
             return false;
         }
-    },
+    }
 
-    // Start the introduction experience
     async startIntroExperience() {
         this.modal = this.createModal();
         document.body.appendChild(this.modal);
         
-        // Delay to allow DOM insertion
         requestAnimationFrame(() => {
             this.modal.classList.add('visible');
             this.state.startTime = Date.now();
         });
 
-        // Set up offline support
         this.setupOfflineSupport();
-    },
+    }
 
     // Create the modal HTML structure
     createModal() {
@@ -165,7 +162,7 @@ const NewUserIntro = {
         this.setupEventListeners(modal);
         
         return modal;
-    },
+    }
 
     // Set up event listeners
     setupEventListeners(modal) {
@@ -179,7 +176,6 @@ const NewUserIntro = {
             });
         });
 
-        // Add keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (!this.modal) return;
             
@@ -191,7 +187,7 @@ const NewUserIntro = {
                 this.handleAction('back');
             }
         });
-    },
+    }
 
     // Handle button actions
     handleAction(action) {
@@ -212,35 +208,26 @@ const NewUserIntro = {
                 this.confirmSkip();
                 break;
         }
-    },
+    }
 
-    // Navigation guard
     canProceed() {
         return Date.now() - this.state.startTime >= this.config.minTimePerStep;
-    },
+    }
 
-    // Go to specific step
     goToStep(step) {
-        // Update state
         this.state.currentStep = step;
         this.state.hasInteracted = true;
         
-        // Update UI
         const steps = this.modal.querySelectorAll('.intro-step');
         steps.forEach(s => s.classList.remove('active'));
         
         const currentStep = this.modal.querySelector(`[data-step="${step}"]`);
         currentStep.classList.add('active');
         
-        // Update progress
         this.updateProgress();
-        
-        // Update buttons
         this.updateButtons();
-        
-        // Log analytics
         this.logAnalytics('step_viewed', { step });
-    },
+    }
 
     // Update progress bar and indicators
     updateProgress() {
@@ -250,18 +237,16 @@ const NewUserIntro = {
         
         progressFill.style.width = `${progress}%`;
         stepIndicator.textContent = this.state.currentStep;
-    },
+    }
 
-    // Update button states
     updateButtons() {
         const backBtn = this.modal.querySelector('.back-btn');
         const nextBtn = this.modal.querySelector('.next-btn');
         
         backBtn.disabled = this.state.currentStep === 1;
         nextBtn.textContent = this.state.currentStep === this.config.totalSteps ? 'Get Started!' : 'Next';
-    },
+    }
 
-    // Confirm skip action
     confirmSkip() {
         if (this.state.hasInteracted) {
             this.completeIntro();
@@ -271,24 +256,20 @@ const NewUserIntro = {
                 this.completeIntro();
             }
         }
-    },
+    }
 
     // Complete the introduction
     async completeIntro() {
         try {
-            // Mark as completed in database
-            await this.db.ref(`users/${this.state.user.uid}/${this.config.storageKey}`).set(true);
+            const userRef = ref(this.db, `users/${this.state.user.uid}`);
+            await set(ref(this.db, `${userRef}/${this.config.storageKey}`), true);
+            await set(ref(this.db, `${userRef}/introCompletedAt`), new Date().toISOString());
             
-            // Store completion timestamp
-            await this.db.ref(`users/${this.state.user.uid}/introCompletedAt`).set(firebase.database.ServerValue.TIMESTAMP);
-            
-            // Log completion
             this.logAnalytics('intro_completed', {
                 stepsViewed: this.state.currentStep,
                 timeSpent: Date.now() - this.state.startTime
             });
 
-            // Remove modal with animation
             this.modal.classList.remove('visible');
             setTimeout(() => {
                 this.modal.remove();
@@ -299,31 +280,29 @@ const NewUserIntro = {
             console.error('Error completing intro:', error);
             alert('There was an error saving your progress. Please try again.');
         }
-    },
+    }
 
-    // Setup offline support
     setupOfflineSupport() {
         window.addEventListener('online', () => {
             if (this.pendingCompletion) {
                 this.completeIntro();
             }
         });
-    },
+    }
 
-    // Log analytics events
-    logAnalytics(event, data = {}) {
+    async logAnalytics(event, data = {}) {
         try {
-            const analyticsRef = this.db.ref('analytics/intro-experience').push();
-            analyticsRef.set({
+            const analyticsRef = ref(this.db, 'analytics/intro-experience');
+            await set(ref(this.db, `${analyticsRef}/${new Date().getTime()}`), {
                 event,
                 data,
-                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                timestamp: new Date().toISOString(),
                 userId: this.state.user.uid
             });
         } catch (error) {
             console.error('Error logging analytics:', error);
         }
-    },
+    }
 
     // Inject required styles
     injectStyles() {
@@ -583,9 +562,14 @@ const NewUserIntro = {
     }
 };
 
+// Create and export instance
+const newUserIntro = new NewUserIntro();
+
 // Initialize when document is ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => NewUserIntro.init());
+    document.addEventListener('DOMContentLoaded', () => newUserIntro.init());
 } else {
-    NewUserIntro.init();
+    newUserIntro.init();
 }
+
+export default newUserIntro;
