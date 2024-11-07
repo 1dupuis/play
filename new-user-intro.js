@@ -3,6 +3,21 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, se
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
 const NewUserIntro = {
+
+    initializeFirebase() {
+        const firebaseConfig = {
+            apiKey: "AIzaSyAToB2gXmzCK4t-1dW5urnGG87gbK6MxR8",
+            authDomain: "dupuis-lol.firebaseapp.com",
+            databaseURL: "https://dupuis-lol-default-rtdb.firebaseio.com",
+            projectId: "dupuis-lol",
+            storageBucket: "dupuis-lol.appspot.com",
+            messagingSenderId: "807402660080",
+            appId: "1:807402660080:web:545d4e1287f5803ebda235",
+            measurementId: "G-TR8JMF5FRY"
+        };
+        initializeApp(firebaseConfig);
+    }
+    
     // Configuration
     config: {
         totalSteps: 4,
@@ -21,16 +36,19 @@ const NewUserIntro = {
 
     // Initialize the intro system
     init() {
-        // Get Firebase instances
-        this.auth = firebase.auth();
-        this.db = firebase.database();
+        // Initialize Firebase first
+        this.initializeFirebase();
+        
+        // Get Firebase instances using new SDK
+        this.auth = getAuth();
+        this.db = getDatabase();
         
         // Bind auth state listener
         this.auth.onAuthStateChanged(this.handleAuthStateChange.bind(this));
         
         // Create and inject CSS
         this.injectStyles();
-    },
+    }
 
     // Handle authentication state changes
     async handleAuthStateChange(user) {
