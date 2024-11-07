@@ -39,7 +39,7 @@ const NewUserIntro = {
         initializeApp(firebaseConfig);
         this.auth = getAuth();
         this.db = getDatabase();
-    };
+    },
 
     init() {
         // Initialize Firebase
@@ -50,7 +50,7 @@ const NewUserIntro = {
         
         // Create and inject CSS
         this.injectStyles();
-    }
+    },
 
     // Handle authentication state changes
     async handleAuthStateChange(user) {
@@ -63,7 +63,7 @@ const NewUserIntro = {
             setTimeout(() => this.startIntroExperience(), 1000);
             this.logAnalytics('intro_started', { userId: user.uid });
         }
-    }
+    },
 
     // Check if user is new
     async checkIfNewUser(userId) {
@@ -75,7 +75,7 @@ const NewUserIntro = {
             console.error('Error checking user status:', error);
             return false;
         }
-    }
+    },
 
     async startIntroExperience() {
         this.modal = this.createModal();
@@ -87,7 +87,7 @@ const NewUserIntro = {
         });
 
         this.setupOfflineSupport();
-    }
+    },
 
     // Create the modal HTML structure
     createModal() {
