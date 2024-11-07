@@ -22,7 +22,7 @@ const NewUserIntro = {
         this.modal = null;
         this.auth = null;
         this.db = null;
-    }
+    },
 
     initializeFirebase() {
         const firebaseConfig = {
@@ -39,7 +39,7 @@ const NewUserIntro = {
         initializeApp(firebaseConfig);
         this.auth = getAuth();
         this.db = getDatabase();
-    }
+    };
 
     init() {
         // Initialize Firebase
