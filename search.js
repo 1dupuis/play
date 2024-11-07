@@ -44,7 +44,7 @@ const config = {
                {
                    name: 'Learning Tools',
                    items: [
-                       { name: '✨ Snow Day', url: '/snowday', description: 'French immersion through interactive stories' },
+                       { name: '✨ Snow Day', url: '/snowday', description: 'Snow day predictor in Canada' },
                        { name: 'Extension', url: '/extension/download', description: 'Browser extension for French learning' },
                        { name: 'Cuisine AI', url: '/cuisine-ai', description: 'AI-powered French cooking assistant' }
                    ]
