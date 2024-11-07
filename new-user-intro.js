@@ -162,7 +162,7 @@ const NewUserIntro = {
         this.setupEventListeners(modal);
         
         return modal;
-    }
+    },
 
     // Set up event listeners
     setupEventListeners(modal) {
@@ -187,7 +187,7 @@ const NewUserIntro = {
                 this.handleAction('back');
             }
         });
-    }
+    },
 
     // Handle button actions
     handleAction(action) {
@@ -208,7 +208,7 @@ const NewUserIntro = {
                 this.confirmSkip();
                 break;
         }
-    }
+    },
 
     canProceed() {
         return Date.now() - this.state.startTime >= this.config.minTimePerStep;
@@ -227,7 +227,7 @@ const NewUserIntro = {
         this.updateProgress();
         this.updateButtons();
         this.logAnalytics('step_viewed', { step });
-    }
+    },
 
     // Update progress bar and indicators
     updateProgress() {
@@ -237,7 +237,7 @@ const NewUserIntro = {
         
         progressFill.style.width = `${progress}%`;
         stepIndicator.textContent = this.state.currentStep;
-    }
+    },
 
     updateButtons() {
         const backBtn = this.modal.querySelector('.back-btn');
@@ -245,7 +245,7 @@ const NewUserIntro = {
         
         backBtn.disabled = this.state.currentStep === 1;
         nextBtn.textContent = this.state.currentStep === this.config.totalSteps ? 'Get Started!' : 'Next';
-    }
+    },
 
     confirmSkip() {
         if (this.state.hasInteracted) {
@@ -280,7 +280,7 @@ const NewUserIntro = {
             console.error('Error completing intro:', error);
             alert('There was an error saving your progress. Please try again.');
         }
-    }
+    };
 
     setupOfflineSupport() {
         window.addEventListener('online', () => {
@@ -288,7 +288,7 @@ const NewUserIntro = {
                 this.completeIntro();
             }
         });
-    }
+    };
 
     async logAnalytics(event, data = {}) {
         try {
@@ -302,7 +302,7 @@ const NewUserIntro = {
         } catch (error) {
             console.error('Error logging analytics:', error);
         }
-    }
+    },
 
     // Inject required styles
     injectStyles() {
