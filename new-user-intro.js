@@ -280,7 +280,7 @@ const NewUserIntro = {
             console.error('Error completing intro:', error);
             alert('There was an error saving your progress. Please try again.');
         }
-    };
+    },
 
     setupOfflineSupport() {
         window.addEventListener('online', () => {
@@ -288,7 +288,7 @@ const NewUserIntro = {
                 this.completeIntro();
             }
         });
-    };
+    },
 
     async logAnalytics(event, data = {}) {
         try {
@@ -560,7 +560,7 @@ const NewUserIntro = {
         `;
         document.head.appendChild(styles);
     }
-};
+}
 
 // Create and export instance
 const newUserIntro = new NewUserIntro();
