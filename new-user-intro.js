@@ -22,7 +22,7 @@ class NewUserIntro {
         this.modal = null;
         this.auth = null;
         this.db = null;
-    },
+    }
 
     initializeFirebase() {
         const firebaseConfig = {
@@ -39,7 +39,7 @@ class NewUserIntro {
         initializeApp(firebaseConfig);
         this.auth = getAuth();
         this.db = getDatabase();
-    },
+    }
 
     init() {
         // Initialize Firebase
@@ -50,7 +50,7 @@ class NewUserIntro {
         
         // Create and inject CSS
         this.injectStyles();
-    },
+    }
 
     // Handle authentication state changes
     async handleAuthStateChange(user) {
@@ -63,7 +63,7 @@ class NewUserIntro {
             setTimeout(() => this.startIntroExperience(), 1000);
             this.logAnalytics('intro_started', { userId: user.uid });
         }
-    },
+    }
 
     // Check if user is new
     async checkIfNewUser(userId) {
@@ -75,7 +75,7 @@ class NewUserIntro {
             console.error('Error checking user status:', error);
             return false;
         }
-    },
+    }
 
     async startIntroExperience() {
         this.modal = this.createModal();
@@ -87,7 +87,7 @@ class NewUserIntro {
         });
 
         this.setupOfflineSupport();
-    },
+    }
 
     // Create the modal HTML structure
     createModal() {
@@ -162,7 +162,7 @@ class NewUserIntro {
         this.setupEventListeners(modal);
         
         return modal;
-    },
+    }
 
     // Set up event listeners
     setupEventListeners(modal) {
@@ -187,7 +187,7 @@ class NewUserIntro {
                 this.handleAction('back');
             }
         });
-    },
+    }
 
     // Handle button actions
     handleAction(action) {
@@ -208,11 +208,11 @@ class NewUserIntro {
                 this.confirmSkip();
                 break;
         }
-    },
+    }
 
     canProceed() {
         return Date.now() - this.state.startTime >= this.config.minTimePerStep;
-    },
+    }
 
     goToStep(step) {
         this.state.currentStep = step;
@@ -227,7 +227,7 @@ class NewUserIntro {
         this.updateProgress();
         this.updateButtons();
         this.logAnalytics('step_viewed', { step });
-    },
+    }
 
     // Update progress bar and indicators
     updateProgress() {
@@ -237,7 +237,7 @@ class NewUserIntro {
         
         progressFill.style.width = `${progress}%`;
         stepIndicator.textContent = this.state.currentStep;
-    },
+    }
 
     updateButtons() {
         const backBtn = this.modal.querySelector('.back-btn');
@@ -245,7 +245,7 @@ class NewUserIntro {
         
         backBtn.disabled = this.state.currentStep === 1;
         nextBtn.textContent = this.state.currentStep === this.config.totalSteps ? 'Get Started!' : 'Next';
-    },
+    }
 
     confirmSkip() {
         if (this.state.hasInteracted) {
@@ -256,7 +256,7 @@ class NewUserIntro {
                 this.completeIntro();
             }
         }
-    },
+    }
 
     // Complete the introduction
     async completeIntro() {
@@ -280,7 +280,7 @@ class NewUserIntro {
             console.error('Error completing intro:', error);
             alert('There was an error saving your progress. Please try again.');
         }
-    },
+    }
 
     setupOfflineSupport() {
         window.addEventListener('online', () => {
@@ -288,7 +288,7 @@ class NewUserIntro {
                 this.completeIntro();
             }
         });
-    },
+    }
 
     async logAnalytics(event, data = {}) {
         try {
@@ -302,7 +302,7 @@ class NewUserIntro {
         } catch (error) {
             console.error('Error logging analytics:', error);
         }
-    },
+    }
 
     // Inject required styles
     injectStyles() {
