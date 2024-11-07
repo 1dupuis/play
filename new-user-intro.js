@@ -212,7 +212,7 @@ const NewUserIntro = {
 
     canProceed() {
         return Date.now() - this.state.startTime >= this.config.minTimePerStep;
-    }
+    },
 
     goToStep(step) {
         this.state.currentStep = step;
@@ -256,7 +256,7 @@ const NewUserIntro = {
                 this.completeIntro();
             }
         }
-    }
+    },
 
     // Complete the introduction
     async completeIntro() {
