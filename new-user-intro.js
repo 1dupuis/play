@@ -101,7 +101,7 @@ class NewUserIntro {
         modal.innerHTML = `
             <div class="intro-modal-content">
                 <div class="intro-header">
-                    <img src="/assets/logo.png" alt="dupuis.lol logo" class="intro-logo">
+                    <img src="dupuis-lol-web-icon.png" alt="dupuis.lol logo" class="intro-logo">
                     <h2>Welcome to dupuis.lol! 🎉</h2>
                     <div class="progress-container">
                         <div class="progress-bar">
