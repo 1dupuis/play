@@ -116,9 +116,6 @@ class NewUserIntro {
                         <div class="step-icon">🎨</div>
                         <h3>Learn French</h3>
                         <p>Welcome to your personalized French learning journey! We'll help you master French through interactive lessons, games, and real conversations.</p>
-                        <div class="feature-preview">
-                            <img src="/api/placeholder/400/200" alt="Learning Interface Preview">
-                        </div>
                     </div>
 
                     <div class="intro-step" data-step="2">
@@ -136,9 +133,6 @@ class NewUserIntro {
                         <div class="step-icon">📈</div>
                         <h3>Track Your Progress</h3>
                         <p>Watch your French skills grow with detailed progress tracking, achievements, and personalized learning recommendations.</p>
-                        <div class="progress-preview">
-                            <div class="chart-placeholder"></div>
-                        </div>
                     </div>
 
                     <div class="intro-step" data-step="4">
