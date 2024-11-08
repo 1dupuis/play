@@ -114,7 +114,7 @@ class NewUserIntro {
                 <div class="intro-body">
                     <div class="intro-step active" data-step="1">
                         <div class="step-icon">🎨</div>
-                        <h3>Learn French with Style</h3>
+                        <h3>Learn French</h3>
                         <p>Welcome to your personalized French learning journey! We'll help you master French through interactive lessons, games, and real conversations.</p>
                         <div class="feature-preview">
                             <img src="/api/placeholder/400/200" alt="Learning Interface Preview">
@@ -144,7 +144,7 @@ class NewUserIntro {
                     <div class="intro-step" data-step="4">
                         <div class="step-icon">👥</div>
                         <h3>Join Our Community</h3>
-                        <p>Connect with fellow learners, practice with native speakers, and access a wealth of resources to accelerate your learning.</p>
+                        <p>Connect with fellow learners, practice with native speakers, and access resources to accelerate your learning.</p>
                         <div class="community-features">
                             <span class="feature-tag">Study Groups</span>
                             <span class="feature-tag">Live Practice</span>
