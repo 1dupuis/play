@@ -70,7 +70,12 @@ class NewUserIntro {
         try {
             const userRef = ref(this.db, `users/${userId}/${this.config.storageKey}`);
             const snapshot = await get(userRef);
-            return !snapshot.exists();
+            if (!snapshot.exists()) {
+                // If the user doesn't have the 'hasCompletedIntro' field, set it to false
+                await set(userRef, false);
+                return true;
+            }
+            return false;
         } catch (error) {
             console.error('Error checking user status:', error);
             return false;
