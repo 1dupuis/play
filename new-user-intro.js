@@ -283,7 +283,7 @@ class NewUserIntro {
 
         } catch (error) {
             console.error('Error completing intro:', error);
-            alert('There was an error saving your progress. Please try again.');
+            location.reload(true);
         }
     }
 
