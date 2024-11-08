@@ -126,9 +126,9 @@ class NewUserIntro {
                         <h3>Interactive Games & Activities</h3>
                         <p>Learn through play with our collection of French learning games, quizzes, and interactive exercises designed to make learning fun and effective.</p>
                         <div class="games-preview">
-                            <div class="game-card">Vocabulary Challenge</div>
-                            <div class="game-card">Grammar Quest</div>
-                            <div class="game-card">Pronunciation Pro</div>
+                            <div class="game-card">Motle</div>
+                            <div class="game-card">Ascend</div>
+                            <div class="game-card">Trivia</div>
                         </div>
                     </div>
 
@@ -144,11 +144,10 @@ class NewUserIntro {
                     <div class="intro-step" data-step="4">
                         <div class="step-icon">👥</div>
                         <h3>Join Our Community</h3>
-                        <p>Connect with fellow learners, practice with native speakers, and access resources to accelerate your learning.</p>
+                        <p>Connect with fellow learners, practice, and access resources to accelerate your learning.</p>
                         <div class="community-features">
-                            <span class="feature-tag">Study Groups</span>
-                            <span class="feature-tag">Live Practice</span>
-                            <span class="feature-tag">Learning Resources</span>
+                            <span class="feature-tag">Events</span>
+                            <span class="feature-tag">Cafe</span>
                         </div>
                     </div>
                 </div>
