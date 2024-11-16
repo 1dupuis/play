@@ -567,12 +567,28 @@
             };
             return translations[this.config.language]?.[key] || translations.en[key] || key;
         }
+
+    retryDOMContentLoaded() {
+        let maxRetries = 5;   // Maximum number of retries
+        let retryDelay = 500;  // Delay in milliseconds between retries
+        let retryCount = 0;    // Current retry count
+
+        // Check if document is still loading
+        if (document.readyState === 'loading') {
+            if (retryCount < maxRetries) {
+                console.log(`Document is loading... Retrying (${retryCount + 1}/${maxRetries})`);
+                retryCount++;
+                setTimeout(retryDOMContentLoaded, retryDelay); // Retry after delay
+            } else {
+                console.error('Failed to attach DOMContentLoaded listener: Max retries reached');
+            }
+        } else {
+            console.log('Document is already loaded...');
+            AccessControl.init();  // Initialize once the DOM is ready
+        }
     };
+    },
 
     // Initialize the AccessControl object
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => AccessControl.init());
-    } else {
-        AccessControl.init();
-    }
+    retryDOMContentLoaded();
 })();
