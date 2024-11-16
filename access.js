@@ -238,7 +238,41 @@
             window.addEventListener('popstate', () => this.handleNavigation());
             document.addEventListener('click', (e) => this.interceptClicks(e));
             this.setLanguage(this.getLanguageFromCookie() || this.getBrowserLanguage() || this.config.language);
+            this.checkAuthStatus();  // Corrected to call the new method
             this.log('Access Control initialized');
+        },
+
+        checkAuthStatus() {
+            // Check if either Firebase host or persistentLogin exists in localStorage
+            const hasFirebaseAuth = localStorage.getItem('firebase:host:dupuis-lol-default-rtdb.firebaseio.com');
+            const hasPersistentLogin = localStorage.getItem('persistentLogin');
+        
+            // If neither key exists, show a notification and redirect the user
+            if (!hasFirebaseAuth && !hasPersistentLogin) {
+                // Create a user-friendly notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px;
+                    background: #4A5568;
+                    color: white;
+                    border-radius: 4px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                `;
+                notification.textContent = 'Please sign up to continue';
+                document.body.appendChild(notification);
+                
+                // Remove notification after 3 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+                
+                // Redirect to dupuis.lol
+                window.location.href = 'https://dupuis.lol';
+            }
         },
 
         handleNavigation() {
