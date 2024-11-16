@@ -1,20 +1,37 @@
-// Trivia Game Module
 const TriviaGame = (function() {
-    // Private variables
+    // Private variables with default values
     let currentQuestionIndex = 0;
     let score = 0;
     let triviaQuestions = [];
     let gameLanguage = 'en';
     let gameDifficulty = 'medium';
     let gameCategory = '9';
-    
+    let timeLeft = 0;
     let timer;
-    const TIMER_DURATION = 20; // Constant for timer duration
+    let streak = 0;
+    let highestStreak = 0;
+    let isLoading = false;
+    
+    const TIMER_DURATION = 20;
+    const MAX_LEADERBOARD_ENTRIES = 10;
+    const STREAK_BONUS = 5;
+    const TIME_BONUS_THRESHOLD = 10;
+    const TIME_BONUS_POINTS = 2;
 
-    // DOM elements
+    // DOM elements cache
     const elements = {};
 
-    // Localization
+    // Keyboard shortcuts configuration
+    const keyboardShortcuts = {
+        '1': 0,
+        '2': 1,
+        '3': 2,
+        '4': 3,
+        'n': 'nextQuestion',
+        'Enter': 'nextQuestion'
+    };
+
+    // Localization strings
     const localizations = {
         fr: {
             startGame: 'Commencer le Trivia',
@@ -27,13 +44,18 @@ const TriviaGame = (function() {
             finalScore: 'Votre score final est',
             playAgain: 'Rejouer',
             close: 'Fermer',
-            addWord: 'Ajouter',
-            translate: 'Traduire',
             enterName: 'Entrez votre nom pour le classement:',
             errorFetchingQuestions: 'Erreur lors de la récupération des questions. Veuillez réessayer.',
             retry: 'Réessayer',
-            delete: 'Supprimer',
-            translated: 'Traduit'
+            streak: 'Série de',
+            timeBonus: 'Bonus de temps',
+            streakBonus: 'Bonus de série',
+            pressKey: 'Appuyez sur {key} pour',
+            loading: 'Chargement...',
+            currentStreak: 'Série actuelle',
+            highestStreak: 'Meilleure série',
+            bonusPoints: 'Points bonus',
+            timeRemaining: 'Temps restant'
         },
         en: {
             startGame: 'Start Trivia',
@@ -46,80 +68,153 @@ const TriviaGame = (function() {
             finalScore: 'Your final score is',
             playAgain: 'Play Again',
             close: 'Close',
-            addWord: 'Add',
-            translate: 'Translate',
             enterName: 'Enter your name for the leaderboard:',
             errorFetchingQuestions: 'Error fetching questions. Please try again.',
             retry: 'Retry',
-            delete: 'Delete',
-            translated: 'Translated'
+            streak: 'Streak of',
+            timeBonus: 'Time Bonus',
+            streakBonus: 'Streak Bonus',
+            pressKey: 'Press {key} for',
+            loading: 'Loading...',
+            currentStreak: 'Current Streak',
+            highestStreak: 'Highest Streak',
+            bonusPoints: 'Bonus Points',
+            timeRemaining: 'Time Remaining'
         }
     };
 
-    // Fetch trivia questions from an API
-    async function fetchTriviaQuestions() {
-        try {
-            let apiUrl;
-            if (gameLanguage === 'fr') {
-                // French trivia API
-                apiUrl = 'https://quizzapi.jomoreschi.fr/api/v1/quiz?limit=10';
-            } else {
-                // English trivia API (Open Trivia Database)
-                apiUrl = `https://opentdb.com/api.php?amount=10&category=${gameCategory}&difficulty=${gameDifficulty}&type=multiple`;
+    // Utility Functions
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    async function fetchWithRetry(url, maxRetries = 3) {
+        let lastError;
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                lastError = error;
+                await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
             }
+        }
+        throw lastError;
+    }
 
-            const response = await fetch(apiUrl);
-            const data = await response.json();
+    function showLoadingState(loading) {
+        isLoading = loading;
+        if (elements.startGame) {
+            elements.startGame.disabled = loading;
+            elements.startGame.innerHTML = loading ? 
+                `<i class="fas fa-spinner fa-spin"></i> ${getLocalizedString('loading')}` : 
+                getLocalizedString('startGame');
+        }
+    }
 
+    async function fetchTriviaQuestions() {
+        showLoadingState(true);
+        try {
+            const apiUrl = gameLanguage === 'fr'
+                ? 'https://quizzapi.jomoreschi.fr/api/v1/quiz?limit=10'
+                : `https://opentdb.com/api.php?amount=10&category=${gameCategory}&difficulty=${gameDifficulty}&type=multiple`;
+
+            const data = await fetchWithRetry(apiUrl);
+            
             if (gameLanguage === 'fr') {
-                // Process French API data
                 if (!Array.isArray(data.quizzes) || data.quizzes.length === 0) {
                     throw new Error('No questions received from French API');
                 }
-                triviaQuestions = data.quizzes.map(item => ({
-                    question: decodeHTML(item.question),
-                    answers: [item.answer, ...item.badAnswers].sort(() => Math.random() - 0.5),
-                    correctAnswer: item.answer
-                }));
+                triviaQuestions = processFrenchQuestions(data.quizzes);
             } else {
-                // Process English API data
                 if (data.response_code !== 0 || !Array.isArray(data.results)) {
                     throw new Error('Failed to fetch questions from English API');
                 }
-                triviaQuestions = data.results.map(question => ({
-                    question: decodeHTML(question.question),
-                    answers: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
-                    correctAnswer: question.correct_answer
-                }));
-            }
-
-            if (triviaQuestions.length === 0) {
-                throw new Error('No questions received from API');
+                triviaQuestions = processEnglishQuestions(data.results);
             }
 
             startGame();
         } catch (error) {
             console.error('Error fetching trivia questions:', error);
-            showModal(getLocalizedString('errorFetchingQuestions'), getLocalizedString('retry'), fetchTriviaQuestions);
+            showModal(
+                getLocalizedString('errorFetchingQuestions'),
+                error.message,
+                getLocalizedString('retry'),
+                fetchTriviaQuestions
+            );
+        } finally {
+            showLoadingState(false);
         }
     }
-    
-    function decodeHTML(html) {
-        const txt = document.createElement('textarea');
-        txt.innerHTML = html;
-        return txt.value;
+
+    function processFrenchQuestions(questions) {
+        return questions.map(item => ({
+            question: decodeHTML(item.question),
+            answers: shuffleArray([item.answer, ...item.badAnswers]),
+            correctAnswer: item.answer
+        }));
     }
 
-    // Start the game
+    function processEnglishQuestions(questions) {
+        return questions.map(question => ({
+            question: decodeHTML(question.question),
+            answers: shuffleArray([...question.incorrect_answers, question.correct_answer]),
+            correctAnswer: question.correct_answer
+        }));
+    }
+
+    function shuffleArray(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+
     function startGame() {
         currentQuestionIndex = 0;
         score = 0;
+        streak = 0;
+        highestStreak = 0;
+        updateScore();
         loadQuestion();
-        updateUI();
         showSection('trivia-center');
+        setupKeyboardShortcuts();
     }
 
-    // Load a question
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', handleKeyPress);
+    }
+
+    function handleKeyPress(event) {
+        if (isLoading) return;
+        
+        const key = event.key.toLowerCase();
+        if (keyboardShortcuts.hasOwnProperty(key)) {
+            event.preventDefault();
+            const action = keyboardShortcuts[key];
+            
+            if (typeof action === 'number') {
+                const buttons = elements.answers?.getElementsByTagName('button');
+                if (buttons && buttons[action] && !buttons[action].disabled) {
+                    buttons[action].click();
+                }
+            } else if (action === 'nextQuestion' && !elements.nextQuestion?.classList.contains('hidden')) {
+                elements.nextQuestion.click();
+            }
+        }
+    }
+
     function loadQuestion() {
         if (currentQuestionIndex >= triviaQuestions.length) {
             endGame();
@@ -127,89 +222,102 @@ const TriviaGame = (function() {
         }
 
         const question = triviaQuestions[currentQuestionIndex];
+        
         if (elements.question) {
             elements.question.innerHTML = decodeHTML(question.question);
         }
+
         if (elements.answers) {
             elements.answers.innerHTML = '';
-
             question.answers.forEach((answer, index) => {
                 const button = document.createElement('button');
-                button.innerHTML = decodeHTML(answer);
+                button.innerHTML = `${index + 1}. ${decodeHTML(answer)}`;
                 button.addEventListener('click', () => checkAnswer(answer));
+                button.setAttribute('data-key', index + 1);
                 elements.answers.appendChild(button);
             });
         }
 
-        if (elements.nextQuestion) {
-            elements.nextQuestion.classList.add('hidden');
-        }
+        elements.nextQuestion?.classList.add('hidden');
         if (elements.feedback) {
             elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback';
         }
+
         updateProgress();
-        startTimer(); // Start the timer for the new question
+        startTimer();
     }
 
-    // Check the selected answer
     function checkAnswer(selectedAnswer) {
+        if (isLoading) return;
+        
         clearInterval(timer);
         const question = triviaQuestions[currentQuestionIndex];
+        const isCorrect = selectedAnswer === question.correctAnswer;
         const buttons = elements.answers.getElementsByTagName('button');
 
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].disabled = true;
-            if (buttons[i].textContent === question.correctAnswer) {
-                buttons[i].classList.add('correct');
-            } else if (buttons[i].textContent === selectedAnswer) {
-                buttons[i].classList.add('incorrect');
+        Array.from(buttons).forEach(button => {
+            button.disabled = true;
+            if (button.textContent.slice(3) === question.correctAnswer) {
+                button.classList.add('correct');
+            } else if (button.textContent.slice(3) === selectedAnswer) {
+                button.classList.add(isCorrect ? 'correct' : 'incorrect');
             }
-        }
+        });
 
-        if (selectedAnswer === question.correctAnswer) {
+        let bonusPoints = 0;
+        let feedbackMessage = '';
+
+        if (isCorrect) {
+            streak++;
+            highestStreak = Math.max(highestStreak, streak);
             score++;
-            elements.feedback.textContent = getLocalizedString('correct');
-            elements.feedback.classList.add('correct');
+
+            // Time bonus
+            if (timeLeft > TIME_BONUS_THRESHOLD) {
+                bonusPoints += TIME_BONUS_POINTS;
+                feedbackMessage += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}\n`;
+            }
+
+            // Streak bonus
+            if (streak >= 3) {
+                bonusPoints += STREAK_BONUS;
+                feedbackMessage += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}\n`;
+            }
+
+            score += bonusPoints;
+            feedbackMessage = `${getLocalizedString('correct')}\n${feedbackMessage}
+                             ${getLocalizedString('currentStreak')}: ${streak}`;
+            elements.feedback.className = 'feedback correct';
         } else {
-            elements.feedback.innerHTML = `${getLocalizedString('incorrect')}: ${decodeHTML(question.correctAnswer)}`;
-            elements.feedback.classList.add('incorrect');
+            streak = 0;
+            feedbackMessage = `${getLocalizedString('incorrect')}: ${decodeHTML(question.correctAnswer)}`;
+            elements.feedback.className = 'feedback incorrect';
         }
 
+        elements.feedback.innerHTML = feedbackMessage;
         updateScore();
-        elements.nextQuestion.classList.remove('hidden');
+        elements.nextQuestion?.classList.remove('hidden');
     }
 
-    // Load the next question
-    function loadNextQuestion() {
-        currentQuestionIndex++;
-        loadQuestion();
+    function updateScore() {
+        if (elements.currentScore) {
+            elements.currentScore.innerHTML = `${score} <small>(${getLocalizedString('highestStreak')}: ${highestStreak})</small>`;
+        }
     }
 
-    // End the game
-    function endGame() {
-        showModal(
-            getLocalizedString('gameOver'),
-            `${getLocalizedString('finalScore')} ${score}/${triviaQuestions.length}`,
-            getLocalizedString('playAgain'),
-            startGame
-        );
-        updateLeaderboard(score);
-    }
-
-    // Update progress bar
     function updateProgress() {
         const progressPercentage = ((currentQuestionIndex + 1) / triviaQuestions.length) * 100;
-        elements.progress.style.width = `${progressPercentage}%`;
-        elements.questionNumber.textContent = `${currentQuestionIndex + 1}/${triviaQuestions.length}`;
+        if (elements.progress) {
+            elements.progress.style.width = `${progressPercentage}%`;
+        }
+        if (elements.questionNumber) {
+            elements.questionNumber.textContent = `Question ${currentQuestionIndex + 1}/${triviaQuestions.length}`;
+        }
     }
 
-    // Start timer for each question
     function startTimer() {
-        // Clear any existing timer
-        if (timer) {
-            clearInterval(timer);
-        }
-
+        clearInterval(timer);
         timeLeft = TIMER_DURATION;
         updateTimerDisplay();
         
@@ -223,115 +331,79 @@ const TriviaGame = (function() {
         }, 1000);
     }
 
-    // Update timer display
     function updateTimerDisplay() {
         if (elements.timeLeft) {
-            elements.timeLeft.textContent = `${getLocalizedString('timeLeft')}: ${timeLeft}s`;
+            const timerClass = timeLeft > TIME_BONUS_THRESHOLD ? 'timer-bonus' : '';
+            elements.timeLeft.className = timerClass;
+            elements.timeLeft.textContent = `${timeLeft}s${timeLeft > TIME_BONUS_THRESHOLD ? ' (Bonus!)' : ''}`;
         }
     }
-    // Update score display
-    function updateScore() {
-        elements.currentScore.textContent = `${getLocalizedString('score')}: ${score}`;
-    }
 
-    // Vocabulary feature
-    function addVocabularyWord() {
-        const word = elements.newWord.value.trim();
-        const translation = elements.wordTranslation.value.trim();
+    function endGame() {
+        const finalMessage = `
+            ${getLocalizedString('finalScore')}: ${score}/${triviaQuestions.length}
+            ${getLocalizedString('highestStreak')}: ${highestStreak}
+        `;
         
-        if (word && translation) {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span>${escapeHTML(word)} - ${escapeHTML(translation)}</span>
-                <button class="delete-word">${getLocalizedString('delete')}</button>
-            `;
-            li.querySelector('.delete-word').addEventListener('click', () => {
-                li.remove();
-                saveVocabulary();
-            });
-            elements.vocabList.appendChild(li);
-            elements.newWord.value = '';
-            elements.wordTranslation.value = '';
-            saveVocabulary();
-        }
+        showModal(
+            getLocalizedString('gameOver'),
+            finalMessage,
+            getLocalizedString('playAgain'),
+            () => {
+                updateLeaderboard(score);
+                startGame();
+            }
+        );
     }
 
-    // Save vocabulary to local storage
-    function saveVocabulary() {
-        const words = Array.from(elements.vocabList.children).map(li => {
-            const [word, translation] = li.querySelector('span').textContent.split(' - ');
-            return { word, translation };
-        });
-        localStorage.setItem('vocabulary', JSON.stringify(words));
-    }
-
-    // Load vocabulary from local storage
-    function loadVocabulary() {
-        const words = JSON.parse(localStorage.getItem('vocabulary')) || [];
-        words.forEach(({ word, translation }) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span>${escapeHTML(word)} - ${escapeHTML(translation)}</span>
-                <button class="delete-word">${getLocalizedString('delete')}</button>
-            `;
-            li.querySelector('.delete-word').addEventListener('click', () => {
-                li.remove();
-                saveVocabulary();
-            });
-            elements.vocabList.appendChild(li);
-        });
-    }
-
-    // Translation feature (mock implementation)
-    function translateText() {
-        const text = elements.textToTranslate.value.trim();
-        const fromLang = elements.translateFrom.value;
-        const toLang = elements.translateTo.value;
-        if (text) {
-            // In a real application, you would call an API here
-            elements.translationResult.textContent = `${getLocalizedString('translated')} (${fromLang} to ${toLang}): ${text}`;
-        }
-    }
-
-    // Leaderboard feature
     function updateLeaderboard(newScore) {
-        const playerName = prompt(getLocalizedString('enterName'));
-        if (playerName) {
-            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            leaderboard.push({ 
-                name: playerName, 
-                score: newScore, 
-                language: gameLanguage, 
-                difficulty: gameDifficulty 
-            });
-            leaderboard.sort((a, b) => b.score - a.score);
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard.slice(0, 10)));
-            displayLeaderboard();
-        }
+        const playerName = prompt(getLocalizedString('enterName'))?.trim();
+        if (!playerName) return;
+
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        const now = new Date().toISOString();
+        
+        leaderboard.push({
+            name: playerName,
+            score: newScore,
+            language: gameLanguage,
+            difficulty: gameDifficulty,
+            highestStreak,
+            date: now
+        });
+
+        leaderboard.sort((a, b) => b.score - a.score);
+        localStorage.setItem('leaderboard', JSON.stringify(leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES)));
+        displayLeaderboard();
     }
 
-    // Display leaderboard
     function displayLeaderboard() {
+        if (!elements.leaderboardBody) return;
+
         const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
         elements.leaderboardBody.innerHTML = '';
+        
         leaderboard.forEach((entry, index) => {
             const row = document.createElement('tr');
+            const date = new Date(entry.date);
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${escapeHTML(entry.name)}</td>
                 <td>${entry.score}</td>
-                <td>${entry.language}</td>
+                <td>${entry.language.toUpperCase()}</td>
                 <td>${entry.difficulty}</td>
+                <td>${entry.highestStreak || 0}</td>
+                <td>${date.toLocaleDateString()}</td>
             `;
             elements.leaderboardBody.appendChild(row);
         });
     }
 
-    // Show modal
     function showModal(title, message, actionText, actionCallback) {
         elements.modalTitle.textContent = title;
         elements.modalMessage.textContent = message;
         elements.modal.style.display = 'block';
+
         if (actionText && actionCallback) {
             elements.modalAction.textContent = actionText;
             elements.modalAction.classList.remove('hidden');
@@ -342,173 +414,215 @@ const TriviaGame = (function() {
         } else {
             elements.modalAction.classList.add('hidden');
         }
+
+        elements.modalClose.onclick = closeModal;
     }
 
-    // Close modal
     function closeModal() {
         elements.modal.style.display = 'none';
     }
 
-    // Utility function to decode HTML entities
     function decodeHTML(html) {
         const txt = document.createElement('textarea');
         txt.innerHTML = html;
         return txt.value;
     }
 
-    // Utility function to escape HTML entities
     function escapeHTML(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
-    // Get localized string
     function getLocalizedString(key) {
-        return localizations[gameLanguage][key] || key;
+        return localizations[gameLanguage]?.[key] || key;
     }
 
-    // Setup navigation
     function setupNavigation() {
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
+        document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = e.target.getAttribute('href').slice(1);
                 showSection(targetId);
             });
         });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.altKey) {
+                const num = parseInt(e.key);
+                if (num >= 1 && num <= 3) {
+                    e.preventDefault();
+                    const sections = ['home', 'trivia-center', 'leaderboard'];
+                    showSection(sections[num - 1]);
+                }
+            }
+        });
     }
 
-    // Show selected section
     function showSection(sectionId) {
-        const sections = document.querySelectorAll('main > section');
-        sections.forEach(section => {
-            if (section.id === sectionId) {
-                section.classList.remove('hidden-section');
-                section.classList.add('active-section');
-            } else {
-                section.classList.add('hidden-section');
-                section.classList.remove('active-section');
-            }
+        if (timer && sectionId !== 'trivia-center') {
+            clearInterval(timer);
+        }
+
+        document.querySelectorAll('main > section').forEach(section => {
+            section.classList.toggle('hidden-section', section.id !== sectionId);
+            section.classList.toggle('active-section', section.id === sectionId);
         });
 
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-            if (link.getAttribute('href') === `#${sectionId}`) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
+        document.querySelectorAll('nav a').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${sectionId}`);
         });
+
+        // Save last active section to localStorage
+        localStorage.setItem('lastActiveSection', sectionId);
     }
 
-    // Update UI elements based on selected language
     function updateUI() {
-        if (elements.startGame) elements.startGame.textContent = getLocalizedString('startGame');
-        if (elements.nextQuestion) elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
-        if (elements.addWord) elements.addWord.textContent = getLocalizedString('addWord');
-        if (elements.translateBtn) elements.translateBtn.textContent = getLocalizedString('translate');
-        if (elements.modalClose) elements.modalClose.textContent = getLocalizedString('close');
-        // Update other UI elements as needed
+        if (elements.startGame) {
+            elements.startGame.textContent = getLocalizedString('startGame');
+        }
+        if (elements.nextQuestion) {
+            elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+        }
 
-        // Hide or show difficulty and category selectors based on language
-        if (elements.gameDifficulty && elements.gameCategory) {
-            if (gameLanguage === 'fr') {
-                elements.gameDifficulty.parentElement.style.display = 'none';
-                elements.gameCategory.parentElement.style.display = 'none';
-            } else {
-                elements.gameDifficulty.parentElement.style.display = '';
-                elements.gameCategory.parentElement.style.display = '';
+        const isFrench = gameLanguage === 'fr';
+        if (elements.gameDifficulty?.parentElement) {
+            elements.gameDifficulty.parentElement.style.display = isFrench ? 'none' : '';
+        }
+        if (elements.gameCategory?.parentElement) {
+            elements.gameCategory.parentElement.style.display = isFrench ? 'none' : '';
+        }
+
+        // Update keyboard shortcut hints
+        document.querySelectorAll('[data-key]').forEach(element => {
+            const key = element.dataset.key;
+            const hint = document.createElement('small');
+            hint.className = 'keyboard-hint';
+            hint.textContent = `(${getLocalizedString('pressKey').replace('{key}', key)})`;
+            element.appendChild(hint);
+        });
+    }
+
+    function saveGameState() {
+        const gameState = {
+            gameLanguage,
+            gameDifficulty,
+            gameCategory,
+            highestStreak: localStorage.getItem('highestStreak') || 0
+        };
+        localStorage.setItem('gameSettings', JSON.stringify(gameState));
+    }
+
+    function loadGameState() {
+        try {
+            const savedState = JSON.parse(localStorage.getItem('gameSettings'));
+            if (savedState) {
+                gameLanguage = savedState.gameLanguage || 'en';
+                gameDifficulty = savedState.gameDifficulty || 'medium';
+                gameCategory = savedState.gameCategory || '9';
+                highestStreak = parseInt(savedState.highestStreak) || 0;
+
+                // Update select elements
+                if (elements.gameLanguage) elements.gameLanguage.value = gameLanguage;
+                if (elements.gameDifficulty) elements.gameDifficulty.value = gameDifficulty;
+                if (elements.gameCategory) elements.gameCategory.value = gameCategory;
             }
+        } catch (error) {
+            console.error('Error loading game state:', error);
         }
     }
-    
-    // Initialize the game
-    function init() {
-        // Initialize elements object
-        const elementIds = [
-            'game-language', 'game-difficulty', 'game-category', 'start-game', 'question-number',
-            'current-score', 'progress', 'question', 'answers', 'feedback', 'time-left',
-            'next-question', 'leaderboard-body', 'modal', 'modal-title', 'modal-message',
-            'modal-close', 'modal-action', 'new-word', 'word-translation', 'add-word',
-            'vocab-list', 'text-to-translate', 'translate-from', 'translate-to', 'translate-btn',
-            'translation-result', 'notes'
-        ];
 
-        elementIds.forEach(id => {
-            elements[id.replace(/-./g, x => x[1].toUpperCase())] = document.getElementById(id);
+    function init() {
+        // Initialize elements object with all required DOM elements
+        [
+            'gameLanguage', 'gameDifficulty', 'gameCategory', 'startGame', 'questionNumber',
+            'currentScore', 'progress', 'question', 'answers', 'feedback', 'timeLeft',
+            'nextQuestion', 'leaderboardBody', 'modal', 'modalTitle', 'modalMessage',
+            'modalClose', 'modalAction'
+        ].forEach(id => {
+            const domId = id.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+            elements[id] = document.getElementById(domId);
         });
 
-        // Add event listeners only if elements exist
-        if (elements.startGame) elements.startGame.addEventListener('click', fetchTriviaQuestions);
-        if (elements.nextQuestion) elements.nextQuestion.addEventListener('click', loadNextQuestion);
-        if (elements.addWord) elements.addWord.addEventListener('click', addVocabularyWord);
-        if (elements.translateBtn) elements.translateBtn.addEventListener('click', translateText);
-        if (elements.modalClose) elements.modalClose.addEventListener('click', closeModal);
-        if (elements.gameLanguage) {
-            elements.gameLanguage.addEventListener('change', (e) => {
-                gameLanguage = e.target.value;
-                updateUI();
-            });
-        }
-        if (elements.gameDifficulty) {
-            elements.gameDifficulty.addEventListener('change', (e) => {
-                gameDifficulty = e.target.value;
-            });
-        }
-        if (elements.gameCategory) {
-            elements.gameCategory.addEventListener('change', (e) => {
-                gameCategory = e.target.value;
-            });
-        }
+        // Set up event listeners with error handling
+        const addSafeEventListener = (element, event, handler) => {
+            if (element) {
+                element.addEventListener(event, (...args) => {
+                    try {
+                        handler(...args);
+                    } catch (error) {
+                        console.error(`Error in ${event} handler:`, error);
+                    }
+                });
+            }
+        };
 
-        loadVocabulary();
+        // Debounced save function
+        const debouncedSave = debounce(saveGameState, 500);
+
+        // Set up main event listeners
+        addSafeEventListener(elements.startGame, 'click', fetchTriviaQuestions);
+        addSafeEventListener(elements.nextQuestion, 'click', () => {
+            currentQuestionIndex++;
+            loadQuestion();
+        });
+        addSafeEventListener(elements.modalClose, 'click', closeModal);
+        
+        // Add change listeners with automatic saving
+        addSafeEventListener(elements.gameLanguage, 'change', e => {
+            gameLanguage = e.target.value;
+            updateUI();
+            debouncedSave();
+        });
+        
+        addSafeEventListener(elements.gameDifficulty, 'change', e => {
+            gameDifficulty = e.target.value;
+            debouncedSave();
+        });
+        
+        addSafeEventListener(elements.gameCategory, 'change', e => {
+            gameCategory = e.target.value;
+            debouncedSave();
+        });
+
+        // Initialize the game
+        loadGameState();
         displayLeaderboard();
         setupNavigation();
         updateUI();
 
-        // Save notes automatically
-        if (elements.notes) {
-            elements.notes.addEventListener('input', () => {
-                localStorage.setItem('userNotes', elements.notes.value);
-            });
+        // Restore last active section or default to home
+        const lastSection = localStorage.getItem('lastActiveSection') || 'home';
+        showSection(lastSection);
 
-            // Load saved notes
-            const savedNotes = localStorage.getItem('userNotes');
-            if (savedNotes) {
-                elements.notes.value = savedNotes;
+        // Close modal on outside click
+        window.addEventListener('click', e => {
+            if (e.target === elements.modal) {
+                closeModal();
             }
-        }
+        });
 
-        // Set initial language
-        if (elements.gameLanguage) {
-            elements.gameLanguage.addEventListener('change', (e) => {
-                gameLanguage = e.target.value;
-                updateUI();
-                // Refetch questions when language changes
-                fetchTriviaQuestions();
-            });
-        }
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && timer) {
+                clearInterval(timer);
+            } else if (!document.hidden && elements.timeLeft && timeLeft > 0) {
+                startTimer();
+            }
+        });
 
-        // Set initial difficulty
-        if (elements.gameDifficulty) {
-            gameDifficulty = elements.gameDifficulty.value;
-        }
-
-        // Set initial category
-        if (elements.gameCategory) {
-            gameCategory = elements.gameCategory.value;
-        }
-
-        // Show initial section
-        showSection('home');
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            saveGameState();
+            if (timer) {
+                clearInterval(timer);
+            }
+        });
     }
 
-    // Public methods
-    return {
-        init: init
-    };
+    // Public API
+    return { init };
 })();
 
 // Initialize the game when the page loads
