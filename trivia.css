@@ -393,6 +393,25 @@ select:focus, input[type="text"]:focus {
     opacity: 1;
 }
 
+.leaderboard-prompt {
+    text-align: center;
+    padding: 1rem;
+}
+
+.leaderboard-prompt input {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
 .modal-content {
     background-color: white;
     margin: 15% auto;
