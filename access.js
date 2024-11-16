@@ -587,8 +587,6 @@
                 AccessControl.init();  // Initialize once the DOM is ready
             }
         }
+        retryDOMContentLoaded();
     }
-
-    // Initialize the AccessControl object
-    retryDOMContentLoaded();
 })();
