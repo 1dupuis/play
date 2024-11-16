@@ -586,7 +586,7 @@
                 console.log('Document is already loaded...');
                 AccessControl.init();  // Initialize once the DOM is ready
             }
-        };
+        },
         retryDOMContentLoaded();
     }
 })();
