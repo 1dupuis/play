@@ -220,13 +220,13 @@ const TriviaGame = (function() {
             endGame();
             return;
         }
-
+    
         const question = triviaQuestions[currentQuestionIndex];
         
         if (elements.question) {
             elements.question.innerHTML = decodeHTML(question.question);
         }
-
+    
         if (elements.answers) {
             elements.answers.innerHTML = '';
             question.answers.forEach((answer, index) => {
@@ -237,13 +237,13 @@ const TriviaGame = (function() {
                 elements.answers.appendChild(button);
             });
         }
-
+    
         elements.nextQuestion?.classList.add('hidden');
         if (elements.feedback) {
             elements.feedback.textContent = '';
             elements.feedback.className = 'feedback';
         }
-
+    
         updateProgress();
         startTimer();
     }
@@ -255,7 +255,7 @@ const TriviaGame = (function() {
         const question = triviaQuestions[currentQuestionIndex];
         const isCorrect = selectedAnswer === question.correctAnswer;
         const buttons = elements.answers.getElementsByTagName('button');
-
+    
         Array.from(buttons).forEach(button => {
             button.disabled = true;
             if (button.textContent.slice(3) === question.correctAnswer) {
@@ -264,27 +264,27 @@ const TriviaGame = (function() {
                 button.classList.add(isCorrect ? 'correct' : 'incorrect');
             }
         });
-
+    
         let bonusPoints = 0;
         let feedbackMessage = '';
-
+    
         if (isCorrect) {
             streak++;
             highestStreak = Math.max(highestStreak, streak);
             score++;
-
+    
             // Time bonus
             if (timeLeft > TIME_BONUS_THRESHOLD) {
                 bonusPoints += TIME_BONUS_POINTS;
                 feedbackMessage += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}\n`;
             }
-
+    
             // Streak bonus
             if (streak >= 3) {
                 bonusPoints += STREAK_BONUS;
                 feedbackMessage += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}\n`;
             }
-
+    
             score += bonusPoints;
             feedbackMessage = `${getLocalizedString('correct')}\n${feedbackMessage}
                              ${getLocalizedString('currentStreak')}: ${streak}`;
@@ -294,10 +294,20 @@ const TriviaGame = (function() {
             feedbackMessage = `${getLocalizedString('incorrect')}: ${decodeHTML(question.correctAnswer)}`;
             elements.feedback.className = 'feedback incorrect';
         }
-
+    
         elements.feedback.innerHTML = feedbackMessage;
         updateScore();
-        elements.nextQuestion?.classList.remove('hidden');
+    
+        // Show appropriate button based on question number
+        if (elements.nextQuestion) {
+            elements.nextQuestion.classList.remove('hidden');
+            // Change button text on last question
+            if (currentQuestionIndex === triviaQuestions.length - 1) {
+                elements.nextQuestion.textContent = getLocalizedString('finalScore');
+            } else {
+                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+            }
+        }
     }
 
     function updateScore() {
@@ -340,41 +350,179 @@ const TriviaGame = (function() {
     }
 
     function endGame() {
-        const finalMessage = `
-            ${getLocalizedString('finalScore')}: ${score}/${triviaQuestions.length}
-            ${getLocalizedString('highestStreak')}: ${highestStreak}
-        `;
+        // Clear any existing timers and disable answer buttons
+        clearInterval(timer);
+        if (elements.answers) {
+            const buttons = elements.answers.getElementsByTagName('button');
+            Array.from(buttons).forEach(button => {
+                button.disabled = true;
+            });
+        }
         
+        // Hide next question button and update UI elements
+        if (elements.nextQuestion) {
+            elements.nextQuestion.classList.add('hidden');
+        }
+        
+        // Calculate final statistics
+        const correctAnswers = Math.floor(score - (score % 1)); // Handle any potential decimal scores
+        const totalQuestions = triviaQuestions.length;
+        const percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+        
+        const finalMessage = `
+            ${getLocalizedString('finalScore')}: ${correctAnswers}/${totalQuestions} (${percentageScore}%)
+            ${getLocalizedString('highestStreak')}: ${highestStreak}
+            ${getLocalizedString('bonusPoints')}: ${score - correctAnswers}
+        `.trim();
+    
+        // Show the game over modal
         showModal(
             getLocalizedString('gameOver'),
             finalMessage,
             getLocalizedString('playAgain'),
             () => {
-                updateLeaderboard(score);
-                startGame();
+                promptForLeaderboard(score);
             }
         );
+    
+        // Save current game stats
+        try {
+            const gameStats = {
+                score: score,
+                highestStreak: highestStreak,
+                totalQuestions: totalQuestions,
+                language: gameLanguage,
+                difficulty: gameDifficulty,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('lastGameStats', JSON.stringify(gameStats));
+        } catch (error) {
+            console.error('Error saving game stats:', error);
+        }
     }
 
-    function updateLeaderboard(newScore) {
-        const playerName = prompt(getLocalizedString('enterName'))?.trim();
-        if (!playerName) return;
-
-        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        const now = new Date().toISOString();
+    function promptForLeaderboard(finalScore) {
+        // Close the current modal first
+        closeModal();
         
-        leaderboard.push({
-            name: playerName,
-            score: newScore,
-            language: gameLanguage,
-            difficulty: gameDifficulty,
-            highestStreak,
-            date: now
-        });
+        // Create and show a custom prompt for name entry
+        const promptHTML = `
+            <div class="leaderboard-prompt">
+                <h3>${getLocalizedString('enterName')}</h3>
+                <input type="text" id="player-name-input" maxlength="20" placeholder="Your name">
+                <div class="button-group">
+                    <button id="submit-score" class="primary-button">${getLocalizedString('close')}</button>
+                    <button id="skip-leaderboard" class="secondary-button">${getLocalizedString('playAgain')}</button>
+                </div>
+            </div>
+        `;
+        
+        showModal(
+            getLocalizedString('enterName'),
+            promptHTML,
+            null,
+            null
+        );
+    
+        // Get the newly created elements
+        const nameInput = document.getElementById('player-name-input');
+        const submitButton = document.getElementById('submit-score');
+        const skipButton = document.getElementById('skip-leaderboard');
+    
+        if (nameInput && submitButton && skipButton) {
+            // Focus the input field
+            nameInput.focus();
+    
+            // Handle submit button click
+            submitButton.onclick = () => {
+                const playerName = nameInput.value.trim();
+                if (playerName) {
+                    updateLeaderboard(playerName, finalScore);
+                }
+                startNewGame();
+            };
+    
+            // Handle skip button click
+            skipButton.onclick = () => {
+                startNewGame();
+            };
+    
+            // Handle enter key in input
+            nameInput.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    submitButton.click();
+                }
+            };
+        }
+    }
 
-        leaderboard.sort((a, b) => b.score - a.score);
-        localStorage.setItem('leaderboard', JSON.stringify(leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES)));
-        displayLeaderboard();
+    function startNewGame() {
+        // Reset game state
+        currentQuestionIndex = 0;
+        score = 0;
+        streak = 0;
+        highestStreak = 0;
+        
+        // Clear any existing timers
+        clearInterval(timer);
+        
+        // Clear the modal
+        closeModal();
+        
+        // Update UI elements
+        updateScore();
+        if (elements.feedback) {
+            elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback';
+        }
+        
+        // Start new game
+        fetchTriviaQuestions();
+    }
+
+    function updateLeaderboard(playerName, finalScore) {
+        try {
+            // Get existing leaderboard or create new one
+            let leaderboard = [];
+            try {
+                leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            } catch (e) {
+                console.error('Error parsing leaderboard:', e);
+                leaderboard = [];
+            }
+    
+            // Create new entry
+            const newEntry = {
+                name: escapeHTML(playerName.substring(0, 20)), // Limit name length and escape HTML
+                score: Number(finalScore.toFixed(1)), // Ensure score is a number with max 1 decimal
+                language: gameLanguage,
+                difficulty: gameDifficulty,
+                highestStreak: highestStreak,
+                date: new Date().toISOString()
+            };
+    
+            // Add new entry and sort
+            leaderboard.push(newEntry);
+            leaderboard.sort((a, b) => b.score - a.score);
+    
+            // Keep only top entries
+            leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES);
+    
+            // Save to localStorage
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    
+            // Update displayed leaderboard
+            displayLeaderboard();
+    
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
+            showModal(
+                'Error',
+                'There was an error saving your score. Please try again.',
+                'OK',
+                closeModal
+            );
+        }
     }
 
     function displayLeaderboard() {
