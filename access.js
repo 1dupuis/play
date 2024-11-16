@@ -527,14 +527,14 @@
             const lang = navigator.language || navigator.userLanguage;
             return lang.split('-')[0];
         },
-
+        
         setCookie(name, value, days) {
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + date.toUTCString();
             document.cookie = name + "=" + value + ";" + expires + ";path=/";
         },
-
+        
         translate(key) {
             const translations = {
                 en: {
@@ -566,17 +566,44 @@
                 }
             };
             return translations[this.config.language]?.[key] || translations.en[key] || key;
-        },
-            if (document.readyState === 'loading') {
-                if (retryCount < maxRetries) {
-                    console.log(`Document is loading... Retrying (${retryCount + 1}/${maxRetries})`);
-                    retryCount++;
-                    setTimeout(retryDOMContentLoaded, retryDelay); // Retry after delay
+        }
+        }; // End of AccessControl object
+        
+        // DOM Loading Logic
+        const initializeAccessControl = () => {
+            const maxRetries = 5;
+            const retryDelay = 1000;
+            let retryCount = 0;
+        
+            const tryInitialize = () => {
+                if (document.readyState === 'loading') {
+                    if (retryCount < maxRetries) {
+                        console.log(`Document is loading... Retrying (${retryCount + 1}/${maxRetries})`);
+                        retryCount++;
+                        setTimeout(tryInitialize, retryDelay);
+                    } else {
+                        console.error('Failed to initialize AccessControl: Max retries reached');
+                    }
                 } else {
-                    console.error('Failed to attach DOMContentLoaded listener: Max retries reached');
+                    console.log('Document is ready, initializing AccessControl...');
+                    AccessControl.init();
                 }
+            };
+        
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    console.log('DOMContentLoaded event fired');
+                    AccessControl.init();
+                });
+                // Also try initialization in case the event was missed
+                tryInitialize();
             } else {
-                console.log('Document is already loaded...');
-                AccessControl.init();  // Initialize once the DOM is ready
+                console.log('Document already loaded, initializing AccessControl...');
+                AccessControl.init();
             }
-})();
+        };
+        
+        // Start initialization process
+        initializeAccessControl();
+        
+        })(); // End of IIFE
