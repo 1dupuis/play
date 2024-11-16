@@ -588,5 +588,4 @@
             }
         },
         retryDOMContentLoaded()
-    }
 })();
