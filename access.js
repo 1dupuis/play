@@ -566,7 +566,7 @@
                 }
             };
             return translations[this.config.language]?.[key] || translations.en[key] || key;
-        };
+        },
             if (document.readyState === 'loading') {
                 if (retryCount < maxRetries) {
                     console.log(`Document is loading... Retrying (${retryCount + 1}/${maxRetries})`);
