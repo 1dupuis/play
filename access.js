@@ -566,14 +566,7 @@
                 }
             };
             return translations[this.config.language]?.[key] || translations.en[key] || key;
-        },
-
-        retryDOMContentLoaded() {
-            let maxRetries = 5;   // Maximum number of retries
-            let retryDelay = 500;  // Delay in milliseconds between retries
-            let retryCount = 0;    // Current retry count
-    
-            // Check if document is still loading
+        };
             if (document.readyState === 'loading') {
                 if (retryCount < maxRetries) {
                     console.log(`Document is loading... Retrying (${retryCount + 1}/${maxRetries})`);
@@ -586,6 +579,4 @@
                 console.log('Document is already loaded...');
                 AccessControl.init();  // Initialize once the DOM is ready
             }
-        },
-        retryDOMContentLoaded()
 })();
