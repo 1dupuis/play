@@ -252,8 +252,23 @@ const TriviaGame = (function() {
         if (isLoading) return;
         
         clearInterval(timer);
+        
+        // Validate that we have a valid question before proceeding
+        if (currentQuestionIndex >= triviaQuestions.length || !triviaQuestions[currentQuestionIndex]) {
+            console.warn('No valid question found for index:', currentQuestionIndex);
+            endGame();
+            return;
+        }
+        
         const question = triviaQuestions[currentQuestionIndex];
         const isCorrect = selectedAnswer === question.correctAnswer;
+        
+        // Ensure we have the answers element before proceeding
+        if (!elements.answers) {
+            console.error('Answers element not found');
+            return;
+        }
+        
         const buttons = elements.answers.getElementsByTagName('button');
     
         Array.from(buttons).forEach(button => {
@@ -293,16 +308,17 @@ const TriviaGame = (function() {
             elements.feedback.className = 'feedback incorrect';
         }
     
-        elements.feedback.innerHTML = feedbackMessage;
+        if (elements.feedback) {
+            elements.feedback.innerHTML = feedbackMessage;
+        }
         updateScore();
     
         // Show next question button or end game
         if (elements.nextQuestion) {
             elements.nextQuestion.classList.remove('hidden');
-            elements.nextQuestion.disabled = false; // Ensure button is enabled
+            elements.nextQuestion.disabled = false;
             
             if (currentQuestionIndex === triviaQuestions.length - 1) {
-                // On last question, make the button end the game directly
                 elements.nextQuestion.textContent = getLocalizedString('finalScore');
                 elements.nextQuestion.onclick = endGame;
             } else {
