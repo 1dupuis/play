@@ -273,13 +273,11 @@ const TriviaGame = (function() {
             highestStreak = Math.max(highestStreak, streak);
             score++;
     
-            // Time bonus
             if (timeLeft > TIME_BONUS_THRESHOLD) {
                 bonusPoints += TIME_BONUS_POINTS;
                 feedbackMessage += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}\n`;
             }
     
-            // Streak bonus
             if (streak >= 3) {
                 bonusPoints += STREAK_BONUS;
                 feedbackMessage += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}\n`;
@@ -298,14 +296,21 @@ const TriviaGame = (function() {
         elements.feedback.innerHTML = feedbackMessage;
         updateScore();
     
-        // Show appropriate button based on question number
+        // Show next question button or end game
         if (elements.nextQuestion) {
             elements.nextQuestion.classList.remove('hidden');
-            // Change button text on last question
+            elements.nextQuestion.disabled = false; // Ensure button is enabled
+            
             if (currentQuestionIndex === triviaQuestions.length - 1) {
+                // On last question, make the button end the game directly
                 elements.nextQuestion.textContent = getLocalizedString('finalScore');
+                elements.nextQuestion.onclick = endGame;
             } else {
                 elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+                elements.nextQuestion.onclick = () => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                };
             }
         }
     }
@@ -350,42 +355,26 @@ const TriviaGame = (function() {
     }
 
     function endGame() {
-        // Clear any existing timers and disable answer buttons
+        // Clear any existing timers and event listeners
         clearInterval(timer);
-        if (elements.answers) {
-            const buttons = elements.answers.getElementsByTagName('button');
-            Array.from(buttons).forEach(button => {
-                button.disabled = true;
-            });
-        }
-        
-        // Hide next question button and update UI elements
         if (elements.nextQuestion) {
+            elements.nextQuestion.onclick = null;
             elements.nextQuestion.classList.add('hidden');
         }
         
         // Calculate final statistics
-        const correctAnswers = Math.floor(score - (score % 1)); // Handle any potential decimal scores
+        const correctAnswers = Math.floor(score);
         const totalQuestions = triviaQuestions.length;
         const percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+        const bonusPoints = score - correctAnswers;
         
         const finalMessage = `
             ${getLocalizedString('finalScore')}: ${correctAnswers}/${totalQuestions} (${percentageScore}%)
             ${getLocalizedString('highestStreak')}: ${highestStreak}
-            ${getLocalizedString('bonusPoints')}: ${score - correctAnswers}
+            ${getLocalizedString('bonusPoints')}: ${bonusPoints}
         `.trim();
     
-        // Show the game over modal
-        showModal(
-            getLocalizedString('gameOver'),
-            finalMessage,
-            getLocalizedString('playAgain'),
-            () => {
-                promptForLeaderboard(score);
-            }
-        );
-    
-        // Save current game stats
+        // Save game stats before showing modal
         try {
             const gameStats = {
                 score: score,
@@ -399,13 +388,20 @@ const TriviaGame = (function() {
         } catch (error) {
             console.error('Error saving game stats:', error);
         }
+    
+        // Show game over modal and prompt for leaderboard entry
+        showModal(
+            getLocalizedString('gameOver'),
+            finalMessage,
+            getLocalizedString('playAgain'),
+            () => {
+                closeModal();
+                promptForLeaderboard(score);
+            }
+        );
     }
 
     function promptForLeaderboard(finalScore) {
-        // Close the current modal first
-        closeModal();
-        
-        // Create and show a custom prompt for name entry
         const promptHTML = `
             <div class="leaderboard-prompt">
                 <h3>${getLocalizedString('enterName')}</h3>
@@ -424,32 +420,29 @@ const TriviaGame = (function() {
             null
         );
     
-        // Get the newly created elements
         const nameInput = document.getElementById('player-name-input');
         const submitButton = document.getElementById('submit-score');
         const skipButton = document.getElementById('skip-leaderboard');
     
         if (nameInput && submitButton && skipButton) {
-            // Focus the input field
             nameInput.focus();
     
-            // Handle submit button click
             submitButton.onclick = () => {
                 const playerName = nameInput.value.trim();
                 if (playerName) {
                     updateLeaderboard(playerName, finalScore);
                 }
+                closeModal();
                 startNewGame();
             };
     
-            // Handle skip button click
             skipButton.onclick = () => {
+                closeModal();
                 startNewGame();
             };
     
-            // Handle enter key in input
             nameInput.onkeypress = (e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && nameInput.value.trim()) {
                     submitButton.click();
                 }
             };
@@ -457,27 +450,124 @@ const TriviaGame = (function() {
     }
 
     function startNewGame() {
-        // Reset game state
-        currentQuestionIndex = 0;
-        score = 0;
-        streak = 0;
-        highestStreak = 0;
-        
-        // Clear any existing timers
-        clearInterval(timer);
-        
-        // Clear the modal
-        closeModal();
-        
-        // Update UI elements
-        updateScore();
-        if (elements.feedback) {
-            elements.feedback.textContent = '';
-            elements.feedback.className = 'feedback';
+        // Prevent starting a new game while one is being initialized
+        if (isLoading) {
+            console.warn('Game initialization already in progress');
+            return;
         }
         
-        // Start new game
-        fetchTriviaQuestions();
+        try {
+            isLoading = true;
+            
+            // Clear all timers and intervals
+            clearInterval(timer);
+            timer = null;
+            timeLeft = 0;
+            
+            // Reset all game state variables
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+            highestStreak = Math.max(highestStreak || 0, 0); // Preserve highest streak across games
+            triviaQuestions = [];
+            
+            // Clean up UI elements
+            if (elements.nextQuestion) {
+                elements.nextQuestion.onclick = null;
+                elements.nextQuestion.classList.add('hidden');
+                elements.nextQuestion.disabled = false;
+                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+            }
+            
+            if (elements.answers) {
+                elements.answers.innerHTML = '';
+            }
+            
+            if (elements.question) {
+                elements.question.innerHTML = '';
+            }
+            
+            if (elements.feedback) {
+                elements.feedback.textContent = '';
+                elements.feedback.className = 'feedback';
+            }
+            
+            if (elements.timeLeft) {
+                elements.timeLeft.textContent = '';
+                elements.timeLeft.className = '';
+            }
+            
+            if (elements.progress) {
+                elements.progress.style.width = '0%';
+            }
+            
+            if (elements.questionNumber) {
+                elements.questionNumber.textContent = '';
+            }
+            
+            // Reset score display
+            updateScore();
+            
+            // Clean up any modal that might be open
+            closeModal();
+            
+            // Remove any existing keyboard event listeners
+            document.removeEventListener('keydown', handleKeyPress);
+            
+            // Save current game settings
+            saveGameState();
+            
+            // Show loading state
+            showLoadingState(true);
+            
+            // Ensure we're on the trivia section
+            showSection('trivia-center');
+            
+            // Reset keyboard shortcuts
+            setupKeyboardShortcuts();
+            
+            // Add error handling for fetch
+            fetchTriviaQuestions().catch(error => {
+                console.error('Error starting new game:', error);
+                showModal(
+                    getLocalizedString('errorFetchingQuestions'),
+                    error.message,
+                    getLocalizedString('retry'),
+                    () => {
+                        isLoading = false;
+                        startNewGame();
+                    }
+                );
+            }).finally(() => {
+                // Ensure loading state is reset even if there's an error
+                isLoading = false;
+                showLoadingState(false);
+            });
+            
+            // Update the UI with current game settings
+            updateUI();
+            
+            // Log game start for debugging
+            console.log('New game started:', {
+                language: gameLanguage,
+                difficulty: gameDifficulty,
+                category: gameCategory
+            });
+            
+        } catch (error) {
+            console.error('Error in startNewGame:', error);
+            
+            // Show error to user
+            showModal(
+                'Error',
+                'Failed to start new game. Please try again.',
+                'Retry',
+                () => {
+                    isLoading = false;
+                    startNewGame();
+                }
+            );
+        }
     }
 
     function updateLeaderboard(playerName, finalScore) {
