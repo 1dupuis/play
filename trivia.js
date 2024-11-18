@@ -216,14 +216,9 @@ const TriviaGame = (function() {
     }
 
     function loadQuestion() {
-        // Clear any existing timer
-        if (timer) {
-            clearInterval(timer);
-        }
-    
-        // If we've reached the end of questions, end the game
+        // Validate question index before proceeding
         if (currentQuestionIndex >= triviaQuestions.length) {
-            elements.nextQuestion?.classList.add('hidden');
+            console.log('Reached end of questions, ending game...');
             endGame();
             return;
         }
@@ -235,7 +230,6 @@ const TriviaGame = (function() {
             return;
         }
         
-        // Reset the UI for the new question
         if (elements.question) {
             elements.question.innerHTML = decodeHTML(question.question);
         }
@@ -246,14 +240,16 @@ const TriviaGame = (function() {
                 const button = document.createElement('button');
                 button.innerHTML = `${index + 1}. ${decodeHTML(answer)}`;
                 button.addEventListener('click', () => {
-                    handleAnswerClick(answer);
+                    // Prevent multiple clicks
+                    Array.from(elements.answers.getElementsByTagName('button'))
+                        .forEach(btn => btn.disabled = true);
+                    checkAnswer(answer);
                 });
                 button.setAttribute('data-key', index + 1);
                 elements.answers.appendChild(button);
             });
         }
     
-        // Hide next question button and clear feedback
         elements.nextQuestion?.classList.add('hidden');
         if (elements.feedback) {
             elements.feedback.textContent = '';
@@ -264,19 +260,17 @@ const TriviaGame = (function() {
         startTimer();
     }
 
-    function handleAnswerClick(answer) {
-        // Prevent multiple clicks
-        if (elements.answers) {
-            Array.from(elements.answers.getElementsByTagName('button'))
-                .forEach(btn => btn.disabled = true);
-        }
-        checkAnswer(answer);
-    }
-
     function checkAnswer(selectedAnswer) {
         if (isLoading) return;
         
         clearInterval(timer);
+        
+        // Validate question index
+        if (currentQuestionIndex >= triviaQuestions.length) {
+            console.log('No more questions available, ending game...');
+            endGame();
+            return;
+        }
         
         const question = triviaQuestions[currentQuestionIndex];
         if (!question) {
@@ -336,35 +330,27 @@ const TriviaGame = (function() {
         }
         updateScore();
     
-        // Show next question button or end game button
+        // Show next question button or end game
         if (elements.nextQuestion) {
             elements.nextQuestion.classList.remove('hidden');
             elements.nextQuestion.disabled = false;
             
-            const isLastQuestion = currentQuestionIndex === triviaQuestions.length - 1;
-            
-            elements.nextQuestion.textContent = isLastQuestion ? 
-                getLocalizedString('gameOver') : 
-                getLocalizedString('nextQuestion');
-            
-            elements.nextQuestion.onclick = isLastQuestion ? 
-                finishGame : 
-                handleNextQuestion;
+            if (currentQuestionIndex >= triviaQuestions.length - 1) {
+                // This is the last question
+                elements.nextQuestion.textContent = getLocalizedString('finalScore');
+                elements.nextQuestion.onclick = endGame;
+            } else {
+                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+                elements.nextQuestion.onclick = () => {
+                    if (currentQuestionIndex < triviaQuestions.length - 1) {
+                        currentQuestionIndex++;
+                        loadQuestion();
+                    } else {
+                        endGame();
+                    }
+                };
+            }
         }
-    }
-
-    function handleNextQuestion() {
-        currentQuestionIndex++;
-        loadQuestion();
-    }
-
-    function finishGame() {
-        // Remove the next question button click handler
-        if (elements.nextQuestion) {
-            elements.nextQuestion.onclick = null;
-            elements.nextQuestion.classList.add('hidden');
-        }
-        endGame();
     }
 
     function updateScore() {
@@ -407,13 +393,12 @@ const TriviaGame = (function() {
     }
 
     function endGame() {
-        // Prevent multiple endGame calls
-        if (isLoading) return;
-        isLoading = true;
-    
-        // Clear timers and event listeners
+        // Clear any existing timers and event listeners
         clearInterval(timer);
-        document.removeEventListener('keydown', handleKeyPress);
+        if (elements.nextQuestion) {
+            elements.nextQuestion.onclick = null;
+            elements.nextQuestion.classList.add('hidden');
+        }
         
         // Calculate final statistics
         const correctAnswers = Math.floor(score);
@@ -427,7 +412,7 @@ const TriviaGame = (function() {
             ${getLocalizedString('bonusPoints')}: ${bonusPoints}
         `.trim();
     
-        // Save game stats
+        // Save game stats before showing modal
         try {
             const gameStats = {
                 score: score,
@@ -442,11 +427,7 @@ const TriviaGame = (function() {
             console.error('Error saving game stats:', error);
         }
     
-        // Reset game state
-        currentQuestionIndex = 0;
-        timeLeft = 0;
-        
-        // Show final modal
+        // Show game over modal and prompt for leaderboard entry
         showModal(
             getLocalizedString('gameOver'),
             finalMessage,
@@ -456,8 +437,6 @@ const TriviaGame = (function() {
                 promptForLeaderboard(score);
             }
         );
-    
-        isLoading = false;
     }
 
     function promptForLeaderboard(finalScore) {
