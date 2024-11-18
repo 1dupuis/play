@@ -265,13 +265,6 @@ const TriviaGame = (function() {
         
         clearInterval(timer);
         
-        // Validate question index
-        if (currentQuestionIndex >= triviaQuestions.length) {
-            console.log('No more questions available, ending game...');
-            endGame();
-            return;
-        }
-        
         const question = triviaQuestions[currentQuestionIndex];
         if (!question) {
             console.error('Invalid question data, ending game...');
@@ -337,17 +330,13 @@ const TriviaGame = (function() {
             
             if (currentQuestionIndex >= triviaQuestions.length - 1) {
                 // This is the last question
-                elements.nextQuestion.textContent = getLocalizedString('finalScore');
+                elements.nextQuestion.textContent = getLocalizedString('gameOver');
                 elements.nextQuestion.onclick = endGame;
             } else {
                 elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
                 elements.nextQuestion.onclick = () => {
-                    if (currentQuestionIndex < triviaQuestions.length - 1) {
-                        currentQuestionIndex++;
-                        loadQuestion();
-                    } else {
-                        endGame();
-                    }
+                    currentQuestionIndex++;
+                    loadQuestion();
                 };
             }
         }
@@ -395,10 +384,7 @@ const TriviaGame = (function() {
     function endGame() {
         // Clear any existing timers and event listeners
         clearInterval(timer);
-        if (elements.nextQuestion) {
-            elements.nextQuestion.onclick = null;
-            elements.nextQuestion.classList.add('hidden');
-        }
+        document.removeEventListener('keydown', handleKeyPress);
         
         // Calculate final statistics
         const correctAnswers = Math.floor(score);
