@@ -216,12 +216,19 @@ const TriviaGame = (function() {
     }
 
     function loadQuestion() {
+        // Validate question index before proceeding
         if (currentQuestionIndex >= triviaQuestions.length) {
+            console.log('Reached end of questions, ending game...');
             endGame();
             return;
         }
     
         const question = triviaQuestions[currentQuestionIndex];
+        if (!question) {
+            console.error('Invalid question data for index:', currentQuestionIndex);
+            endGame();
+            return;
+        }
         
         if (elements.question) {
             elements.question.innerHTML = decodeHTML(question.question);
@@ -232,7 +239,12 @@ const TriviaGame = (function() {
             question.answers.forEach((answer, index) => {
                 const button = document.createElement('button');
                 button.innerHTML = `${index + 1}. ${decodeHTML(answer)}`;
-                button.addEventListener('click', () => checkAnswer(answer));
+                button.addEventListener('click', () => {
+                    // Prevent multiple clicks
+                    Array.from(elements.answers.getElementsByTagName('button'))
+                        .forEach(btn => btn.disabled = true);
+                    checkAnswer(answer);
+                });
                 button.setAttribute('data-key', index + 1);
                 elements.answers.appendChild(button);
             });
@@ -253,17 +265,22 @@ const TriviaGame = (function() {
         
         clearInterval(timer);
         
-        // Validate that we have a valid question before proceeding
-        if (currentQuestionIndex >= triviaQuestions.length || !triviaQuestions[currentQuestionIndex]) {
-            console.warn('No valid question found for index:', currentQuestionIndex);
+        // Validate question index
+        if (currentQuestionIndex >= triviaQuestions.length) {
+            console.log('No more questions available, ending game...');
             endGame();
             return;
         }
         
         const question = triviaQuestions[currentQuestionIndex];
+        if (!question) {
+            console.error('Invalid question data, ending game...');
+            endGame();
+            return;
+        }
+        
         const isCorrect = selectedAnswer === question.correctAnswer;
         
-        // Ensure we have the answers element before proceeding
         if (!elements.answers) {
             console.error('Answers element not found');
             return;
@@ -318,14 +335,19 @@ const TriviaGame = (function() {
             elements.nextQuestion.classList.remove('hidden');
             elements.nextQuestion.disabled = false;
             
-            if (currentQuestionIndex === triviaQuestions.length - 1) {
+            if (currentQuestionIndex >= triviaQuestions.length - 1) {
+                // This is the last question
                 elements.nextQuestion.textContent = getLocalizedString('finalScore');
                 elements.nextQuestion.onclick = endGame;
             } else {
                 elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
                 elements.nextQuestion.onclick = () => {
-                    currentQuestionIndex++;
-                    loadQuestion();
+                    if (currentQuestionIndex < triviaQuestions.length - 1) {
+                        currentQuestionIndex++;
+                        loadQuestion();
+                    } else {
+                        endGame();
+                    }
                 };
             }
         }
@@ -484,7 +506,7 @@ const TriviaGame = (function() {
             currentQuestionIndex = 0;
             score = 0;
             streak = 0;
-            highestStreak = Math.max(highestStreak || 0, 0); // Preserve highest streak across games
+            highestStreak = Math.max(highestStreak || 0, 0);
             triviaQuestions = [];
             
             // Clean up UI elements
@@ -495,23 +517,14 @@ const TriviaGame = (function() {
                 elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
             }
             
-            if (elements.answers) {
-                elements.answers.innerHTML = '';
-            }
-            
-            if (elements.question) {
-                elements.question.innerHTML = '';
-            }
-            
-            if (elements.feedback) {
-                elements.feedback.textContent = '';
-                elements.feedback.className = 'feedback';
-            }
-            
-            if (elements.timeLeft) {
-                elements.timeLeft.textContent = '';
-                elements.timeLeft.className = '';
-            }
+            // Reset UI elements
+            const elementsToClean = ['answers', 'question', 'feedback', 'timeLeft'];
+            elementsToClean.forEach(elementId => {
+                if (elements[elementId]) {
+                    elements[elementId].innerHTML = '';
+                    elements[elementId].className = elementId;
+                }
+            });
             
             if (elements.progress) {
                 elements.progress.style.width = '0%';
@@ -524,56 +537,44 @@ const TriviaGame = (function() {
             // Reset score display
             updateScore();
             
-            // Clean up any modal that might be open
+            // Clean up modal
             closeModal();
             
-            // Remove any existing keyboard event listeners
+            // Remove keyboard event listeners
             document.removeEventListener('keydown', handleKeyPress);
             
-            // Save current game settings
+            // Save game state
             saveGameState();
             
             // Show loading state
             showLoadingState(true);
             
-            // Ensure we're on the trivia section
+            // Show trivia section
             showSection('trivia-center');
             
             // Reset keyboard shortcuts
             setupKeyboardShortcuts();
             
-            // Add error handling for fetch
-            fetchTriviaQuestions().catch(error => {
-                console.error('Error starting new game:', error);
-                showModal(
-                    getLocalizedString('errorFetchingQuestions'),
-                    error.message,
-                    getLocalizedString('retry'),
-                    () => {
-                        isLoading = false;
-                        startNewGame();
-                    }
-                );
-            }).finally(() => {
-                // Ensure loading state is reset even if there's an error
-                isLoading = false;
-                showLoadingState(false);
-            });
-            
-            // Update the UI with current game settings
-            updateUI();
-            
-            // Log game start for debugging
-            console.log('New game started:', {
-                language: gameLanguage,
-                difficulty: gameDifficulty,
-                category: gameCategory
-            });
-            
+            // Fetch questions with error handling
+            return fetchTriviaQuestions()
+                .catch(error => {
+                    console.error('Error starting new game:', error);
+                    showModal(
+                        getLocalizedString('errorFetchingQuestions'),
+                        error.message,
+                        getLocalizedString('retry'),
+                        () => {
+                            isLoading = false;
+                            startNewGame();
+                        }
+                    );
+                })
+                .finally(() => {
+                    isLoading = false;
+                    showLoadingState(false);
+                });
         } catch (error) {
             console.error('Error in startNewGame:', error);
-            
-            // Show error to user
             showModal(
                 'Error',
                 'Failed to start new game. Please try again.',
