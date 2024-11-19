@@ -216,19 +216,12 @@ const TriviaGame = (function() {
     }
 
     function loadQuestion() {
-        // Validate question index before proceeding
         if (currentQuestionIndex >= triviaQuestions.length) {
-            console.log('Reached end of questions, ending game...');
             endGame();
             return;
         }
     
         const question = triviaQuestions[currentQuestionIndex];
-        if (!question) {
-            console.error('Invalid question data for index:', currentQuestionIndex);
-            endGame();
-            return;
-        }
         
         if (elements.question) {
             elements.question.innerHTML = decodeHTML(question.question);
@@ -239,12 +232,7 @@ const TriviaGame = (function() {
             question.answers.forEach((answer, index) => {
                 const button = document.createElement('button');
                 button.innerHTML = `${index + 1}. ${decodeHTML(answer)}`;
-                button.addEventListener('click', () => {
-                    // Prevent multiple clicks
-                    Array.from(elements.answers.getElementsByTagName('button'))
-                        .forEach(btn => btn.disabled = true);
-                    checkAnswer(answer);
-                });
+                button.addEventListener('click', () => checkAnswer(answer));
                 button.setAttribute('data-key', index + 1);
                 elements.answers.appendChild(button);
             });
@@ -264,28 +252,8 @@ const TriviaGame = (function() {
         if (isLoading) return;
         
         clearInterval(timer);
-        
-        // Validate question index
-        if (currentQuestionIndex >= triviaQuestions.length) {
-            console.log('No more questions available, ending game...');
-            endGame();
-            return;
-        }
-        
         const question = triviaQuestions[currentQuestionIndex];
-        if (!question) {
-            console.error('Invalid question data, ending game...');
-            endGame();
-            return;
-        }
-        
         const isCorrect = selectedAnswer === question.correctAnswer;
-        
-        if (!elements.answers) {
-            console.error('Answers element not found');
-            return;
-        }
-        
         const buttons = elements.answers.getElementsByTagName('button');
     
         Array.from(buttons).forEach(button => {
@@ -305,11 +273,13 @@ const TriviaGame = (function() {
             highestStreak = Math.max(highestStreak, streak);
             score++;
     
+            // Time bonus
             if (timeLeft > TIME_BONUS_THRESHOLD) {
                 bonusPoints += TIME_BONUS_POINTS;
                 feedbackMessage += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}\n`;
             }
     
+            // Streak bonus
             if (streak >= 3) {
                 bonusPoints += STREAK_BONUS;
                 feedbackMessage += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}\n`;
@@ -325,30 +295,17 @@ const TriviaGame = (function() {
             elements.feedback.className = 'feedback incorrect';
         }
     
-        if (elements.feedback) {
-            elements.feedback.innerHTML = feedbackMessage;
-        }
+        elements.feedback.innerHTML = feedbackMessage;
         updateScore();
     
-        // Show next question button or end game
+        // Show appropriate button based on question number
         if (elements.nextQuestion) {
             elements.nextQuestion.classList.remove('hidden');
-            elements.nextQuestion.disabled = false;
-            
-            if (currentQuestionIndex >= triviaQuestions.length - 1) {
-                // This is the last question
+            // Change button text on last question
+            if (currentQuestionIndex === triviaQuestions.length - 1) {
                 elements.nextQuestion.textContent = getLocalizedString('finalScore');
-                elements.nextQuestion.onclick = endGame;
             } else {
                 elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
-                elements.nextQuestion.onclick = () => {
-                    if (currentQuestionIndex < triviaQuestions.length - 1) {
-                        currentQuestionIndex++;
-                        loadQuestion();
-                    } else {
-                        endGame();
-                    }
-                };
             }
         }
     }
@@ -393,26 +350,42 @@ const TriviaGame = (function() {
     }
 
     function endGame() {
-        // Clear any existing timers and event listeners
+        // Clear any existing timers and disable answer buttons
         clearInterval(timer);
+        if (elements.answers) {
+            const buttons = elements.answers.getElementsByTagName('button');
+            Array.from(buttons).forEach(button => {
+                button.disabled = true;
+            });
+        }
+        
+        // Hide next question button and update UI elements
         if (elements.nextQuestion) {
-            elements.nextQuestion.onclick = null;
             elements.nextQuestion.classList.add('hidden');
         }
         
         // Calculate final statistics
-        const correctAnswers = Math.floor(score);
+        const correctAnswers = Math.floor(score - (score % 1)); // Handle any potential decimal scores
         const totalQuestions = triviaQuestions.length;
         const percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-        const bonusPoints = score - correctAnswers;
         
         const finalMessage = `
             ${getLocalizedString('finalScore')}: ${correctAnswers}/${totalQuestions} (${percentageScore}%)
             ${getLocalizedString('highestStreak')}: ${highestStreak}
-            ${getLocalizedString('bonusPoints')}: ${bonusPoints}
+            ${getLocalizedString('bonusPoints')}: ${score - correctAnswers}
         `.trim();
     
-        // Save game stats before showing modal
+        // Show the game over modal
+        showModal(
+            getLocalizedString('gameOver'),
+            finalMessage,
+            getLocalizedString('playAgain'),
+            () => {
+                promptForLeaderboard(score);
+            }
+        );
+    
+        // Save current game stats
         try {
             const gameStats = {
                 score: score,
@@ -426,20 +399,13 @@ const TriviaGame = (function() {
         } catch (error) {
             console.error('Error saving game stats:', error);
         }
-    
-        // Show game over modal and prompt for leaderboard entry
-        showModal(
-            getLocalizedString('gameOver'),
-            finalMessage,
-            getLocalizedString('playAgain'),
-            () => {
-                closeModal();
-                promptForLeaderboard(score);
-            }
-        );
     }
 
     function promptForLeaderboard(finalScore) {
+        // Close the current modal first
+        closeModal();
+        
+        // Create and show a custom prompt for name entry
         const promptHTML = `
             <div class="leaderboard-prompt">
                 <h3>${getLocalizedString('enterName')}</h3>
@@ -458,29 +424,32 @@ const TriviaGame = (function() {
             null
         );
     
+        // Get the newly created elements
         const nameInput = document.getElementById('player-name-input');
         const submitButton = document.getElementById('submit-score');
         const skipButton = document.getElementById('skip-leaderboard');
     
         if (nameInput && submitButton && skipButton) {
+            // Focus the input field
             nameInput.focus();
     
+            // Handle submit button click
             submitButton.onclick = () => {
                 const playerName = nameInput.value.trim();
                 if (playerName) {
                     updateLeaderboard(playerName, finalScore);
                 }
-                closeModal();
                 startNewGame();
             };
     
+            // Handle skip button click
             skipButton.onclick = () => {
-                closeModal();
                 startNewGame();
             };
     
+            // Handle enter key in input
             nameInput.onkeypress = (e) => {
-                if (e.key === 'Enter' && nameInput.value.trim()) {
+                if (e.key === 'Enter') {
                     submitButton.click();
                 }
             };
@@ -488,103 +457,27 @@ const TriviaGame = (function() {
     }
 
     function startNewGame() {
-        // Prevent starting a new game while one is being initialized
-        if (isLoading) {
-            console.warn('Game initialization already in progress');
-            return;
+        // Reset game state
+        currentQuestionIndex = 0;
+        score = 0;
+        streak = 0;
+        highestStreak = 0;
+        
+        // Clear any existing timers
+        clearInterval(timer);
+        
+        // Clear the modal
+        closeModal();
+        
+        // Update UI elements
+        updateScore();
+        if (elements.feedback) {
+            elements.feedback.textContent = '';
+            elements.feedback.className = 'feedback';
         }
         
-        try {
-            isLoading = true;
-            
-            // Clear all timers and intervals
-            clearInterval(timer);
-            timer = null;
-            timeLeft = 0;
-            
-            // Reset all game state variables
-            currentQuestionIndex = 0;
-            score = 0;
-            streak = 0;
-            highestStreak = Math.max(highestStreak || 0, 0);
-            triviaQuestions = [];
-            
-            // Clean up UI elements
-            if (elements.nextQuestion) {
-                elements.nextQuestion.onclick = null;
-                elements.nextQuestion.classList.add('hidden');
-                elements.nextQuestion.disabled = false;
-                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
-            }
-            
-            // Reset UI elements
-            const elementsToClean = ['answers', 'question', 'feedback', 'timeLeft'];
-            elementsToClean.forEach(elementId => {
-                if (elements[elementId]) {
-                    elements[elementId].innerHTML = '';
-                    elements[elementId].className = elementId;
-                }
-            });
-            
-            if (elements.progress) {
-                elements.progress.style.width = '0%';
-            }
-            
-            if (elements.questionNumber) {
-                elements.questionNumber.textContent = '';
-            }
-            
-            // Reset score display
-            updateScore();
-            
-            // Clean up modal
-            closeModal();
-            
-            // Remove keyboard event listeners
-            document.removeEventListener('keydown', handleKeyPress);
-            
-            // Save game state
-            saveGameState();
-            
-            // Show loading state
-            showLoadingState(true);
-            
-            // Show trivia section
-            showSection('trivia-center');
-            
-            // Reset keyboard shortcuts
-            setupKeyboardShortcuts();
-            
-            // Fetch questions with error handling
-            return fetchTriviaQuestions()
-                .catch(error => {
-                    console.error('Error starting new game:', error);
-                    showModal(
-                        getLocalizedString('errorFetchingQuestions'),
-                        error.message,
-                        getLocalizedString('retry'),
-                        () => {
-                            isLoading = false;
-                            startNewGame();
-                        }
-                    );
-                })
-                .finally(() => {
-                    isLoading = false;
-                    showLoadingState(false);
-                });
-        } catch (error) {
-            console.error('Error in startNewGame:', error);
-            showModal(
-                'Error',
-                'Failed to start new game. Please try again.',
-                'Retry',
-                () => {
-                    isLoading = false;
-                    startNewGame();
-                }
-            );
-        }
+        // Start new game
+        fetchTriviaQuestions();
     }
 
     function updateLeaderboard(playerName, finalScore) {
