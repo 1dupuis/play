@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Snow Day Predictor for Canadian Cities">
     <title>dupuis.lol - Snow Day Predictor</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="addelement.js" defer></script>
     <script src="theme.js" defer></script>
     <script src="access.js" defer></script>
@@ -426,6 +426,37 @@
             throw new Error('Failed to fetch weather data. Please try again later.');
         }
     }
+    
+    function calculateAdvancedSnowDayProbability(forecast72Hours) {
+        // Enhanced probability calculation over 72 hours
+        const probabilities = forecast72Hours.map(forecastPeriod => {
+            let periodProbability = 0;
+            
+            // Weighted factors for snow day occurrence
+            if (forecastPeriod.temp <= -10) periodProbability += 40;
+            else if (forecastPeriod.temp <= -5) periodProbability += 30;
+            else if (forecastPeriod.temp <= 0) periodProbability += 20;
+            
+            // Enhanced snowfall calculation
+            if (forecastPeriod.snowfall >= 25) periodProbability += 50;
+            else if (forecastPeriod.snowfall >= 15) periodProbability += 40;
+            else if (forecastPeriod.snowfall >= 10) periodProbability += 30;
+            else if (forecastPeriod.snowfall >= 5) periodProbability += 20;
+            
+            // Wind and visibility factors
+            if (forecastPeriod.windSpeed >= 40) periodProbability += 15;
+            if (forecastPeriod.visibility <= 500) periodProbability += 10;
+            
+            return Math.min(periodProbability, 100);
+        });
+
+        // Calculate a consensus probability across forecast periods
+        const averageProbability = probabilities.reduce((a, b) => a + b, 0) / probabilities.length;
+        const maxProbability = Math.max(...probabilities);
+        
+        // Combining average and max gives a more nuanced prediction
+        return Math.round((averageProbability + maxProbability) / 2);
+    }
 
     function calculateSnowDayProbability(weatherData) {
         const { temp, snowfall, windSpeed, visibility, humidity, pressure, clouds } = weatherData;
@@ -480,52 +511,59 @@
     
     function updateChart(hourlyData) {
         const ctx = document.getElementById('hourlyChart').getContext('2d');
-        
+    
+        // Destroy the previous chart if it exists
         if (hourlyChart) {
             hourlyChart.destroy();
         }
-
+    
+        // Create the new chart instance
         hourlyChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: hourlyData.times,
-                datasets: [{
-                    label: 'Temperature (°C)',
-                    data: hourlyData.temps,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y'
-                }, 
-                {
-                    label: 'Wind Speed (km/h)',
-                    data: hourlyData.windSpeed,
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Snowfall (mm)',
-                    data: hourlyData.snowfall,
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    yAxisID: 'y1'
-                }]
+                datasets: [
+                    {
+                        label: 'Temperature (°C)',
+                        data: hourlyData.temps,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y',  // Temperature axis
+                        pointRadius: 3, // Adjust point radius for better visibility
+                    },
+                    {
+                        label: 'Wind Speed (km/h)',
+                        data: hourlyData.windSpeed,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y',  // Wind speed shares the same axis as Temperature
+                        pointRadius: 3, 
+                    },
+                    {
+                        label: 'Snowfall (mm)',
+                        data: hourlyData.snowfall,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y1',  // Separate axis for Snowfall
+                        pointRadius: 3,
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
                     intersect: false,
-                    mode: 'index'
+                    mode: 'index', // Ensure tooltips are displayed for all datasets
                 },
                 plugins: {
                     legend: {
@@ -554,11 +592,15 @@
                 scales: {
                     x: {
                         grid: {
-                            display: true
+                            display: true,
+                            color: 'rgba(15, 23, 42, 0.1)', // Lighter grid lines for x-axis
                         },
                         ticks: {
                             maxRotation: 45,
-                            minRotation: 45
+                            minRotation: 45,
+                            font: {
+                                size: 11 // Smaller font size for x-axis labels
+                            }
                         }
                     },
                     y: {
@@ -568,7 +610,13 @@
                         },
                         title: {
                             display: true,
-                            text: 'Temperature (°C) & Wind Speed (km/h)'
+                            text: 'Temperature (°C) & Wind Speed (km/h)',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false, // Adjust this based on the data range
                         }
                     },
                     y1: {
@@ -578,7 +626,13 @@
                         },
                         title: {
                             display: true,
-                            text: 'Snowfall (mm)'
+                            text: 'Snowfall (mm)',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            beginAtZero: false, // Adjust this based on data
                         }
                     }
                 }
@@ -618,16 +672,11 @@
                 throw new Error('City not found');
             }
     
-            let locationMatch = null;
-            locationMatch = geoData.find(loc => {
+            let locationMatch = geoData.find(loc => {
                 const isCanadian = loc.country === 'CA';
                 const matchesProvince = loc.state && (loc.state.includes(province) || getProvinceFullName(province).some(name => loc.state.includes(name)));
                 return isCanadian && matchesProvince;
-            });
-    
-            if (!locationMatch) {
-                locationMatch = geoData.find(loc => loc.country === 'CA');
-            }
+            }) || geoData.find(loc => loc.country === 'CA');
     
             if (!locationMatch) {
                 throw new Error('City not found in Canada. Please check the spelling and try again.');
@@ -636,7 +685,24 @@
             const { lat, lon } = locationMatch;
             const weatherData = await getWeatherData(lat, lon);
     
-            let hourlyData = {
+            const today = new Date();
+            const forecast72Hours = weatherData.list
+                .filter(forecast => {
+                    const forecastDate = new Date(forecast.dt * 1000);
+                    return forecastDate >= today && forecastDate < new Date(today.getTime() + 48 * 60 * 60 * 1000);
+                })
+                .map(forecast => ({
+                    date: new Date(forecast.dt * 1000),
+                    temp: forecast.main.temp,
+                    snowfall: forecast.snow ? forecast.snow['3h'] || 0 : 0,
+                    windSpeed: forecast.wind.speed * 3.6,
+                    visibility: forecast.visibility || 10000,
+                    humidity: forecast.main.humidity,
+                    clouds: forecast.clouds.all
+                }));
+    
+            // Sort for time-based analysis and chart purposes
+            const hourlyData = {
                 times: [],
                 temps: [],
                 snowfall: [],
@@ -645,50 +711,27 @@
                 pressure: []
             };
     
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-    
-            const relevantForecasts = weatherData.list.filter(forecast => {
-                const forecastDate = new Date(forecast.dt * 1000);
-                return forecastDate >= tomorrow && forecastDate < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
+            forecast72Hours.forEach(period => {
+                hourlyData.times.push(period.date.toLocaleString());
+                hourlyData.temps.push(period.temp);
+                hourlyData.snowfall.push(period.snowfall);
+                hourlyData.windSpeed.push(period.windSpeed);
             });
     
-            const morningIndex = relevantForecasts.findIndex(forecast => {
-                const hour = new Date(forecast.dt * 1000).getHours();
-                return hour >= 9;
-            });
+            const snowDayProbability = calculateAdvancedSnowDayProbability(forecast72Hours);
     
-            const mainForecast = relevantForecasts[morningIndex !== -1 ? morningIndex : 0];
-            
-            if (!mainForecast) {
-                throw new Error('Could not get tomorrow\'s forecast');
-            }
+            // Take the most significant forecast period for detailed display
+            const mainForecast = forecast72Hours.reduce((max, forecast) => 
+                (forecast.snowfall > max.snowfall) ? forecast : max
+            );
     
-            relevantForecasts.forEach(forecast => {
-                const date = new Date(forecast.dt * 1000); // Convert Unix timestamp to a date object
-                
-                // Push time, temperature, snowfall, wind speed, humidity, and pressure into respective arrays
-                hourlyData.times.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-                hourlyData.temps.push(forecast.main.temp);  // Temperature in °C
-                hourlyData.snowfall.push(forecast.snow ? forecast.snow['3h'] || 0 : 0); // Snowfall in mm (if exists)
-                hourlyData.windSpeed.push(forecast.wind.speed * 3.6);  // Wind speed in km/h
-                hourlyData.humidity.push(forecast.main.humidity); // Humidity percentage
-                hourlyData.pressure.push(forecast.main.pressure); // Pressure in hPa
-            });
-    
-            const weatherConditions = {
-                temp: mainForecast.main.temp,
-                snowfall: mainForecast.snow ? mainForecast.snow['3h'] || 0 : 0,
-                windSpeed: mainForecast.wind.speed * 3.6,
-                visibility: mainForecast.visibility,
-                humidity: mainForecast.main.humidity,
-                pressure: mainForecast.main.pressure,
-                clouds: mainForecast.clouds.all
-            };
-    
-            const probability = calculateSnowDayProbability(weatherConditions);
-            updateWeatherDisplay(city, province, probability, weatherConditions, hourlyData);
+            updateWeatherDisplay(
+                city, 
+                province, 
+                snowDayProbability, 
+                mainForecast, 
+                hourlyData
+            );
             handleLocationSaving(city, province);
     
         } catch (error) {
@@ -731,7 +774,7 @@
             <div class="weather-detail-card">
                 <h3>Snowfall</h3>
                 <div class="detail-value">${weatherConditions.snowfall.toFixed(1)} mm</div>
-                <p>expected tomorrow</p>
+                <p>Expected tomorrow</p>
             </div>
             <div class="weather-detail-card">
                 <h3>Wind Speed</h3>
