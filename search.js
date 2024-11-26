@@ -44,7 +44,7 @@ const config = {
                {
                    name: 'Application',
                    items: [
-                       { name: '🧑‍💼 Sip or Spit', url: 'https://siporspit.dupuis.lol', description: 'Collaborative coding workspace' },
+                       { name: '🧑‍💼 Sip or Spit', url: 'https://siporspit.dupuis.lol', description: 'Google Gemini business game' },
                    ]
                },
                {
