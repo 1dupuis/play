@@ -42,6 +42,12 @@ const config = {
            icon: 'fa-book',
            subcategories: [
                {
+                   name: 'Application',
+                   items: [
+                       { name: '🧑‍💼 Sip or Spit', url: 'https://siporspit.dupuis.lol', description: 'Collaborative coding workspace' },
+                   ]
+               },
+               {
                    name: 'Learning Tools',
                    items: [
                        { name: 'Study', url: '/workspace/study', description: 'Collaborative coding workspace' },
