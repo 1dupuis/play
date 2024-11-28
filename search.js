@@ -42,7 +42,7 @@ const config = {
            icon: 'fa-book',
            subcategories: [
                {
-                   name: '❇️ Artificial Intelgence',
+                   name: '❇️ AI',
                    items: [
                        { name: 'Make or Break', url: 'https://mob.dupuis.lol', description: 'Google Gemini business game' },
                    ],
