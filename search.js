@@ -45,6 +45,9 @@ const config = {
                    name: 'Application',
                    items: [
                        { name: '🧑‍💼 Make or Break', url: 'https://mob.dupuis.lol', description: 'Google Gemini business game' },
+                   ],
+                   items: [
+                       { name: '✨ ChatDupuis', url: 'https://chat.dupuis.lol', description: 'Google Gemini French tutor' },
                    ]
                },
                {
