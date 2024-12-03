@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduQuiz - AI-Powered Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+        window.GoogleGenerativeAI = GoogleGenerativeAI;
+    </script>
+    <style>
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-animation { animation: slideIn 0.5s ease-out, pulse 2s infinite; }
+        .correct-answer { background-color: #4CAF50 !important; color: white !important; }
+        .incorrect-answer { background-color: #F44336 !important; color: white !important; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8">
+        <div id="setup-container" class="max-w-xl mx-auto bg-white shadow-2xl rounded-xl p-6">
+            <h1 class="text-4xl font-extrabold text-center mb-8 text-blue-800">EduQuiz</h1>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2">YouTube Video URL</label>
+                    <input 
+                        type="text" 
+                        id="youtube-url" 
+                        placeholder="Paste YouTube Educational Video Link" 
+                        class="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Subject Focus</label>
+                        <select 
+                            id="subject-focus" 
+                            class="w-full p-3 border-2 border-blue-300 rounded-lg"
+                        >
+                            <option value="general">General Learning</option>
+                            <option value="science">Science</option>
+                            <option value="math">Mathematics</option>
+                            <option value="history">History</option>
+                            <option value="technology">Technology</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">Difficulty</label>
+                        <select 
+                            id="difficulty-level" 
+                            class="w-full p-3 border-2 border-blue-300 rounded-lg"
+                        >
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button 
+                    id="start-game" 
+                    class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 font-bold"
+                >
+                    Start Interactive Learning
+                </button>
+            </div>
+        </div>
+
+        <div id="game-container" class="hidden mt-8">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 bg-white rounded-xl shadow-2xl p-6">
+                    <div id="video-section" class="mb-4">
+                        <div id="youtube-player" class="w-full aspect-video"></div>
+                    </div>
+                    
+                    <div id="quiz-section" class="hidden quiz-animation">
+                        <h2 id="quiz-question" class="text-2xl font-semibold mb-6 text-gray-800"></h2>
+                        <div id="quiz-options" class="grid grid-cols-2 gap-4"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-2xl p-6">
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <span class="font-bold text-blue-600">Score:</span>
+                            <span id="current-score" class="ml-2 text-lg">0</span>
+                        </div>
+                        <div>
+                            <span class="font-bold text-green-600">Streak:</span>
+                            <span id="current-streak" class="ml-2 text-lg">0</span>
+                        </div>
+                    </div>
+
+                    <canvas id="score-chart" class="w-full h-48"></canvas>
+
+                    <div class="mt-4 text-center">
+                        <h3 class="font-bold text-xl mb-2">Achievements</h3>
+                        <div id="achievements" class="grid grid-cols-4 gap-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    class EduQuizApp {
+        constructor() {
+            this.GEMINI_API_KEY = 'AIzaSyDZm9VpvHeGrS5YSYvZqTaL3q7tiXyH9dc';
+            this.initializeApp();
+        }
+
+        initializeApp() {
+            this.score = 0;
+            this.streak = 0;
+            this.quizHistory = [];
+            this.achievementTracker = new Set();
+            this.scoreChart = null;
+            this.geminiModel = null;
+
+            this.setupEventListeners();
+            this.setupLocalStorage();
+            this.setupScoreChart();
+        }
+
+        setupEventListeners() {
+            document.getElementById('start-game').addEventListener('click', () => this.startGame());
+        }
+
+        setupLocalStorage() {
+            if (!localStorage.getItem('eduquiz_stats')) {
+                localStorage.setItem('eduquiz_stats', JSON.stringify({
+                    totalGames: 0,
+                    highestScore: 0,
+                    longestStreak: 0
+                }));
+            }
+        }
+
+        setupScoreChart() {
+            const ctx = document.getElementById('score-chart').getContext('2d');
+            this.scoreChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Score Progress',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        async startGame() {
+            const videoUrl = document.getElementById('youtube-url').value;
+            const subject = document.getElementById('subject-focus').value;
+            const difficulty = document.getElementById('difficulty-level').value;
+
+            if (!videoUrl) {
+                alert('Please enter a YouTube video URL');
+                return;
+            }
+
+            try {
+                // Initialize Gemini AI
+                const genAI = new GoogleGenerativeAI(this.GEMINI_API_KEY);
+                this.geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+                document.getElementById('setup-container').classList.add('hidden');
+                document.getElementById('game-container').classList.remove('hidden');
+
+                this.initializeYouTubePlayer(this.extractVideoId(videoUrl));
+            } catch (error) {
+                console.error('AI Initialization Error:', error);
+                alert('Failed to initialize Gemini AI. Check your API key configuration.');
+            }
+        }
+
+        extractVideoId(url) {
+            const match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        initializeYouTubePlayer(videoId) {
+            this.player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: { 'playsinline': 1 },
+                events: {
+                    'onReady': this.onPlayerReady.bind(this),
+                    'onStateChange': this.onPlayerStateChange.bind(this)
+                }
+            });
+        }
+
+        onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                this.scheduleQuiz();
+            }
+        }
+
+        scheduleQuiz() {
+            setTimeout(() => {
+                this.generateQuiz();
+            }, 3 * 60 * 1000); // Every 3 minutes
+        }
+
+        async generateQuiz() {
+            this.player.pauseVideo();
+
+            try {
+                const prompt = `Generate an educational multiple-choice quiz question. 
+                Provide a challenging question with 4 answer options and specify the correct answer.
+                Format strictly as JSON: 
+                {
+                    "question": "What is the main concept?",
+                    "options": ["Option A", "Option B", "Option C", "Option D"],
+                    "correctIndex": 1
+                }`;
+
+                const result = await this.geminiModel.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
+
+                // More robust JSON extraction
+                const jsonMatch = text.match(/\{[\s\S]*?\}/);
+                if (!jsonMatch) throw new Error('Invalid response format');
+
+                const quizData = JSON.parse(jsonMatch[0]);
+                this.displayQuiz(quizData);
+            } catch (error) {
+                console.error('Quiz Generation Error:', error);
+                // Fallback to default quiz if AI fails
+                this.displayDefaultQuiz();
+            }
+        }
+
+        displayDefaultQuiz() {
+            const defaultQuiz = {
+                question: "What is the primary purpose of learning?",
+                options: [
+                    "To earn money", 
+                    "To gain knowledge and grow", 
+                    "To pass exams", 
+                    "To impress others"
+                ],
+                correctIndex: 1
+            };
+            this.displayQuiz(defaultQuiz);
+        }
+
+        displayQuiz(quizData) {
+            const quizSection = document.getElementById('quiz-section');
+            const questionElement = document.getElementById('quiz-question');
+            const optionsContainer = document.getElementById('quiz-options');
+
+            questionElement.textContent = quizData.question;
+            optionsContainer.innerHTML = '';
+
+            quizData.options.forEach((option, index) => {
+                const optionButton = document.createElement('button');
+                optionButton.textContent = option;
+                optionButton.classList.add(
+                    'p-3', 'rounded-lg', 'bg-blue-100', 
+                    'hover:bg-blue-200', 'transition', 'font-semibold'
+                );
+                
+                optionButton.addEventListener('click', () => this.checkAnswer(index === quizData.correctIndex, optionButton));
+                optionsContainer.appendChild(optionButton);
+            });
+
+            quizSection.classList.remove('hidden');
+        }
+
+        // Rest of the methods remain the same as in previous implementation
+        checkAnswer(isCorrect, buttonElement) {
+            if (isCorrect) {
+                this.score += 10;
+                this.streak++;
+                buttonElement.classList.add('correct-answer');
+                this.updateScoreChart();
+                this.updateAchievements();
+            } else {
+                this.streak = 0;
+                buttonElement.classList.add('incorrect-answer');
+            }
+
+            this.updateScoreDisplay();
+            
+            setTimeout(() => {
+                document.getElementById('quiz-section').classList.add('hidden');
+                this.player.playVideo();
+            }, 1500);
+        }
+
+        // Remaining methods (updateScoreChart, updateAchievements, updateScoreDisplay) stay the same
+        updateScoreChart() {
+            this.quizHistory.push(this.score);
+            this.scoreChart.data.labels.push(this.quizHistory.length);
+            this.scoreChart.data.datasets[0].data = this.quizHistory;
+            this.scoreChart.update();
+        }
+
+        updateAchievements() {
+            const achievements = [
+                { name: 'Rookie', condition: 50 },
+                { name: 'Scholar', condition: 100 },
+                { name: 'Master', condition: 250 }
+            ];
+
+            const achievementsContainer = document.getElementById('achievements');
+            achievements.forEach(achievement => {
+                if (this.score >= achievement.condition && !this.achievementTracker.has(achievement.name)) {
+                    this.achievementTracker.add(achievement.name);
+                    const badge = document.createElement('div');
+                    badge.textContent = achievement.name;
+                    badge.classList.add('bg-green-200', 'p-1', 'text-center', 'rounded');
+                    achievementsContainer.appendChild(badge);
+                }
+            });
+        }
+
+        updateScoreDisplay() {
+            document.getElementById('current-score').textContent = this.score;
+            document.getElementById('current-streak').textContent = this.streak;
+
+            const stats = JSON.parse(localStorage.getItem('eduquiz_stats'));
+            stats.highestScore = Math.max(stats.highestScore, this.score);
+            stats.longestStreak = Math.max(stats.longestStreak, this.streak);
+            localStorage.setItem('eduquiz_stats', JSON.stringify(stats));
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        new EduQuizApp();
+    });
+    </script>
+</body>
+</html>
