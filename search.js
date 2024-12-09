@@ -113,6 +113,10 @@ const config = {
     ],
     announcements: [
         {
+            message: "❇️ Resources --> GameGenie (Create Games From AI!)",
+            showForever: true
+        },
+        {
             message: "⚠️ Scheduled Weekly Maintenance in Progress.",
             startTime: "00:00",
             endTime: "24:00",
@@ -125,10 +129,6 @@ const config = {
             endTime: "24:00",
             days: ["Monday"],
             persistent: true
-        },
-        {
-            message: "🟪 Welcome LEPSS!",
-            showForever: true
         }
     ],
     defaultCategory: 'Games',
