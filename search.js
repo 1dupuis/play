@@ -44,6 +44,7 @@ const config = {
                {
                    name: '❇️ AI',
                    items: [
+                       { name: 'GameGenie', url: 'https://gg.dupuis.lol', description: 'Google Gemini game maker' },
                        { name: 'Make or Break', url: 'https://mob.dupuis.lol', description: 'Google Gemini business game' },
                        { name: 'ChatDupuis', url: 'https://chat.dupuis.lol', description: 'Google Gemini French tutor' }
                    ]
