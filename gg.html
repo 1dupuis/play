@@ -244,6 +244,68 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             div.textContent = str;
             return div.innerHTML;
         }
+        
+        // Add this function to the existing script, just before the 'Game generation event listener'
+
+        async function improveGeneratedGame(originalCode, gamePrompt, complexityLevel, gameStyle) {
+            const improvementPrompt = `Review and improve the following HTML game code. Identify and fix:
+            1. Any potential bugs or performance issues
+            2. Cross-browser compatibility problems
+            3. Accessibility improvements
+            4. Code readability and efficiency
+            5. Responsive design enhancements
+        
+            CONTEXT:
+            Original Game Concept: ${gamePrompt}
+            Complexity Level: ${complexityLevel}
+            Design Style: ${gameStyle}
+        
+            IMPROVEMENT GUIDELINES:
+            - Maintain the EXACT same structure (ONE HTML file, no external dependencies)
+            - Preserve the core game mechanics
+            - Use modern JavaScript best practices
+            - Enhance code quality without changing fundamental functionality
+            - Ensure mobile responsiveness
+            - Add comments explaining any complex logic
+            - Optimize performance
+        
+            ORIGINAL CODE:
+            ${originalCode}
+        
+            CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`;
+        
+            try {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': GEMINI_API_KEY
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: improvementPrompt
+                            }]
+                        }]
+                    })
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+        
+                const data = await response.json();
+                const improvedGameCode = data.candidates[0].content.parts[0].text
+                    .replace(/```html/g, '')
+                    .replace(/```/g, '')
+                    .trim();
+        
+                return improvedGameCode;
+            } catch (error) {
+                console.error('Game Improvement Error:', error);
+                return null;
+            }
+        }
 
         // Game generation event listener
         document.getElementById('generateBtn').addEventListener('click', async () => {
@@ -256,19 +318,19 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             const gamePreview = document.getElementById('gamePreview');
             const generatedCodeElement = document.getElementById('generatedCode');
             const deleteGameBtn = document.getElementById('deleteGameBtn');
-
+        
             // Input validation
             if (!gamePrompt.trim()) {
                 alert('Please describe your game concept!');
                 return;
             }
-
+        
             // Reset UI
             loadingSpinner.classList.remove('hidden');
             previewContainer.classList.add('hidden');
             codeContainer.classList.add('hidden');
             gamePreview.innerHTML = '';
-
+        
             try {
                 const detailedPrompt = createDetailedPrompt(gamePrompt, complexityLevel, gameStyle);
                 
@@ -286,23 +348,32 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                         }]
                     })
                 });
-
+        
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
+        
                 const data = await response.json();
-                const gameCode = data.candidates[0].content.parts[0].text
+                let gameCode = data.candidates[0].content.parts[0].text
                     .replace(/```html/g, '')
                     .replace(/```/g, '')
                     .trim();
-
+        
+                // Attempt to improve the generated game
+                loadingSpinner.querySelector('p').textContent = 'Refining game code...';
+                const improvedGameCode = await improveGeneratedGame(gameCode, gamePrompt, complexityLevel, gameStyle);
+                
+                // Use improved code if successfully generated
+                if (improvedGameCode) {
+                    gameCode = improvedGameCode;
+                }
+        
                 // Beautify HTML for readability
                 const beautifiedCode = html_beautify(gameCode, {
                     indent_size: 2,
                     wrap_line_length: 80
                 });
-
+        
                 // Create game iframe
                 const gameFrame = document.createElement('iframe');
                 gameFrame.id = 'gameFrame';
@@ -313,20 +384,20 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                 gameFrame.style.position = 'absolute';
                 gameFrame.style.top = '0';
                 gameFrame.style.left = '0';
-
+        
                 gamePreview.innerHTML = '';
                 gamePreview.appendChild(gameFrame);
-
+        
                 // Syntax highlighting and code display
                 generatedCodeElement.textContent = beautifiedCode;
                 Prism.highlightElement(generatedCodeElement);
-
+        
                 // Update UI
                 loadingSpinner.classList.add('hidden');
                 previewContainer.classList.remove('hidden');
                 codeContainer.classList.remove('hidden');
                 deleteGameBtn.classList.remove('hidden');
-
+        
             } catch (error) {
                 handleApiError(error);
             }
