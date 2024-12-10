@@ -57,9 +57,9 @@
                                     id="complexityLevel" 
                                     class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
-                                    <option value="basic">Basic (Simple Mechanics)</option>
-                                    <option value="intermediate" selected>Intermediate (Moderate Complexity)</option>
-                                    <option value="advanced">Advanced (Complex Interactions)</option>
+                                    <option value="basic">Basic</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
                                 </select>
                             </div>
                             <div>
@@ -68,9 +68,9 @@
                                     id="gameStyle" 
                                     class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 >
-                                    <option value="pixel">Pixel Art</option>
-                                    <option value="modern" selected>Modern Minimalist</option>
-                                    <option value="colorful">Colorful & Vibrant</option>
+                                    <option value="minimal">Minimal</option>
+                                    <option value="professional" selected>Professional</option>
+                                    <option value="vibrant">Vibrant</option>
                                 </select>
                             </div>
                         </div>
@@ -170,32 +170,32 @@
         const GEMINI_API_KEY = 'AIzaSyDZm9VpvHeGrS5YSYvZqTaL3q7tiXyH9dc';
 
         // Enhanced game generation prompt
-        function createDetailedPrompt(gamePrompt, complexity, style) {
-            const complexityInstructions = {
-                basic: 'Implement a game with straightforward mechanics, minimal state management, and simple interactions.',
-                intermediate: 'Create a game with moderate complexity, including multiple game states, basic scoring, and more sophisticated player interactions.',
-                advanced: 'Develop a complex game with advanced mechanics, multiple levels, intricate state management, and sophisticated gameplay elements.'
-            };
+        function createDetailedPrompt(contextPrompt, complexity, style) {
+    const complexityInstructions = {
+        basic: 'Develop a straightforward tool or app with minimal features, simple logic, and intuitive interactions.',
+        intermediate: 'Build an application with moderate complexity, incorporating multiple features, user state management, and responsive design.',
+        advanced: 'Create a highly sophisticated app with advanced functionality, dynamic state handling, integrations, and extensive user interaction options.'
+    };
 
-            const styleInstructions = {
-                pixel: 'Use a classic pixel art aesthetic with retro-inspired graphics and limited color palette.',
-                modern: 'Design a clean, minimalist interface with smooth, contemporary animations and subtle color transitions.',
-                colorful: 'Create vibrant, high-contrast visuals with playful animations and engaging color schemes.'
-            };
+    const styleInstructions = {
+        minimal: 'Design a clean, minimalist interface with an emphasis on usability and clear, modern design elements.',
+        vibrant: 'Use a visually engaging design with bold colors, playful animations, and an interactive user experience.',
+        professional: 'Craft a sleek, professional aesthetic with a focus on functionality, subtle gradients, and polished UI components.'
+    };
 
-            return `Generate a complete, self-contained HTML5 game with these specifications:
+    return `Generate a complete, self-contained HTML5 application with these specifications:
 
 ABSOLUTE REQUIREMENTS:
-- ENTIRE game must be in ONE HTML file
-- NO external dependencies
+- ENTIRE application must be in ONE HTML file
+- NO external dependencies (e.g., no external CSS or JS files)
 - MUST run immediately in browser
 - FULLY SELF-EXECUTABLE
 - Cross-browser compatible
 - Mobile-responsive
 - Performance optimized
 
-GAME CONTEXT:
-${gamePrompt}
+APPLICATION CONTEXT:
+${contextPrompt}
 
 COMPLEXITY STRATEGY: 
 ${complexityInstructions[complexity]}
@@ -205,16 +205,17 @@ ${styleInstructions[style]}
 
 IMPLEMENTATION GUIDELINES:
 - Pure JavaScript implementation
-- Efficient, readable code
+- Efficient, modular, and readable code
 - Error-resistant structure
-- Responsive design
-- Minimal global variable usage
-- Use modern ES6+ features
-- Include basic error handling
-- Prioritize user experience
+- Responsive design for various screen sizes
+- Avoid unnecessary global variables
+- Use modern ES6+ features (e.g., arrow functions, classes, modules)
+- Include robust error handling
+- Prioritize user accessibility and experience
+- Optimize for performance without compromising functionality
 
 CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`;
-        }
+}
 
         // Utility function to handle API errors
         function handleApiError(error) {
