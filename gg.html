@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameGenie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-indigo-900 min-h-screen flex flex-col antialiased text-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="bg-gray-800 shadow-2xl rounded-3xl overflow-hidden border-4 border-indigo-600">
+            <div class="bg-gradient-to-r from-indigo-700 to-purple-600 text-white py-8 px-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-5xl font-extrabold tracking-tight flex items-center">
+                            🎮 GameGenie
+                            <span class="ml-4 bg-purple-500 text-sm px-3 py-1 rounded-full">AI-Powered</span>
+                        </h1>
+                        <p class="mt-3 text-indigo-100 text-xl">Unleash Your Game Development Creativity</p>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="bg-white/10 rounded-full p-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-900">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="gamePrompt" class="block text-sm font-medium text-gray-300 mb-2">Game Concept</label>
+                            <textarea 
+                                id="gamePrompt" 
+                                rows="4" 
+                                class="w-full rounded-lg bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+                                placeholder="Describe your dream game! Examples:
+• Retro pixel art Snake game
+• Physics-based puzzle platformer
+• Space invaders with unique mechanics
+• Interactive memory challenge"
+                            ></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Game Complexity</label>
+                                <select 
+                                    id="complexityLevel" 
+                                    class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                    <option value="basic">Basic (Simple Mechanics)</option>
+                                    <option value="intermediate" selected>Intermediate (Moderate Complexity)</option>
+                                    <option value="advanced">Advanced (Complex Interactions)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Game Style</label>
+                                <select 
+                                    id="gameStyle" 
+                                    class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                    <option value="pixel">Pixel Art</option>
+                                    <option value="modern" selected>Modern Minimalist</option>
+                                    <option value="colorful">Colorful & Vibrant</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="bg-gray-800 rounded-lg p-4 h-full border border-gray-700">
+                            <h3 class="text-xl font-semibold text-white mb-3">🚀 Game Generation Tips</h3>
+                            <ul class="space-y-2 text-sm text-gray-300">
+                                <li>• Be specific about game mechanics</li>
+                                <li>• Describe core gameplay loop</li>
+                                <li>• Mention any unique twists</li>
+                                <li>• Consider player interactions</li>
+                                <li>• Think about visual style</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex space-x-4">
+                    <button 
+                        id="generateBtn" 
+                        class="flex-1 bg-indigo-600 text-white py-4 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold flex items-center justify-center space-x-3 transform hover:scale-105"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                        </svg>
+                        <span>Generate Game</span>
+                    </button>
+                    <button 
+                        id="deleteGameBtn" 
+                        class="bg-red-600 text-white py-4 px-6 rounded-lg hover:bg-red-700 transition duration-300 font-semibold flex items-center justify-center space-x-3 hidden transform hover:scale-105"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Delete Game</span>
+                    </button>
+                </div>
+
+                <div id="loadingSpinner" class="mt-6 text-center hidden">
+                    <div class="inline-block animate-spin w-16 h-16 border-[6px] border-current border-t-transparent text-indigo-600 rounded-full"></div>
+                    <p class="mt-4 text-gray-300 text-lg">Crafting your game...</p>
+                </div>
+
+                <div id="previewContainer" class="mt-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-3xl font-bold text-white">Game Preview</h2>
+                        <div class="flex space-x-3">
+                            <button id="fullscreenBtn" class="text-indigo-300 hover:text-white transition duration-300 flex items-center bg-gray-800 px-3 py-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                </svg>
+                                Fullscreen
+                            </button>
+                            <button id="reloadGameBtn" class="text-green-300 hover:text-white transition duration-300 flex items-center bg-gray-800 px-3 py-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Reload
+                            </button>
+                        </div>
+                    </div>
+                    <div id="gamePreview" class="bg-gray-800 rounded-lg p-4 min-h-[600px] relative border-2 border-gray-700 shadow-inner overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xl">
+                            Game will appear here
+                        </div>
+                    </div>
+                </div>
+
+                <div id="codeContainer" class="mt-6 hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-3xl font-bold text-white">Game Source Code</h2>
+                        <div class="flex space-x-3">
+                            <button id="copyCodeBtn" class="text-indigo-300 hover:text-white transition duration-300 flex items-center bg-gray-800 px-3 py-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Copy Code
+                            </button>
+                            <button id="downloadCodeBtn" class="text-green-300 hover:text-white transition duration-300 flex items-center bg-gray-800 px-3 py-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="rounded-lg max-h-[500px] overflow-auto"><code id="generatedCode" class="language-html"></code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder Gemini API Key - replace with your own
+        const GEMINI_API_KEY = 'AIzaSyDZm9VpvHeGrS5YSYvZqTaL3q7tiXyH9dc';
+
+        // Enhanced game generation prompt
+        function createDetailedPrompt(gamePrompt, complexity, style) {
+            const complexityInstructions = {
+                basic: 'Implement a game with straightforward mechanics, minimal state management, and simple interactions.',
+                intermediate: 'Create a game with moderate complexity, including multiple game states, basic scoring, and more sophisticated player interactions.',
+                advanced: 'Develop a complex game with advanced mechanics, multiple levels, intricate state management, and sophisticated gameplay elements.'
+            };
+
+            const styleInstructions = {
+                pixel: 'Use a classic pixel art aesthetic with retro-inspired graphics and limited color palette.',
+                modern: 'Design a clean, minimalist interface with smooth, contemporary animations and subtle color transitions.',
+                colorful: 'Create vibrant, high-contrast visuals with playful animations and engaging color schemes.'
+            };
+
+            return `Generate a complete, self-contained HTML5 game with these specifications:
+
+ABSOLUTE REQUIREMENTS:
+- ENTIRE game must be in ONE HTML file
+- NO external dependencies
+- MUST run immediately in browser
+- FULLY SELF-EXECUTABLE
+- Cross-browser compatible
+- Mobile-responsive
+- Performance optimized
+
+GAME CONTEXT:
+${gamePrompt}
+
+COMPLEXITY STRATEGY: 
+${complexityInstructions[complexity]}
+
+VISUAL DESIGN:
+${styleInstructions[style]}
+
+IMPLEMENTATION GUIDELINES:
+- Pure JavaScript implementation
+- Efficient, readable code
+- Error-resistant structure
+- Responsive design
+- Minimal global variable usage
+- Use modern ES6+ features
+- Include basic error handling
+- Prioritize user experience
+
+CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`;
+        }
+
+        // Utility function to handle API errors
+        function handleApiError(error) {
+            console.error('Game Generation Error:', error);
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.createElement('div');
+            errorMessage.innerHTML = `
+                <div class="bg-red-600 text-white p-4 rounded-lg mt-4">
+                    <h3 class="font-bold mb-2">Game Generation Failed</h3>
+                    <p>Possible reasons:</p>
+                    <ul class="list-disc pl-5">
+                        <li>Invalid API Key</li>
+                        <li>Network connectivity issues</li>
+                        <li>API service temporarily unavailable</li>
+                    </ul>
+                    <small class="mt-2 block">${error.message}</small>
+                </div>
+            `;
+            loadingSpinner.innerHTML = '';
+            loadingSpinner.appendChild(errorMessage);
+        }
+
+        // Safe HTML sanitization to prevent XSS
+        function sanitizeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Game generation event listener
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const gamePrompt = document.getElementById('gamePrompt').value;
+            const complexityLevel = document.getElementById('complexityLevel').value;
+            const gameStyle = document.getElementById('gameStyle').value;
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const previewContainer = document.getElementById('previewContainer');
+            const codeContainer = document.getElementById('codeContainer');
+            const gamePreview = document.getElementById('gamePreview');
+            const generatedCodeElement = document.getElementById('generatedCode');
+            const deleteGameBtn = document.getElementById('deleteGameBtn');
+
+            // Input validation
+            if (!gamePrompt.trim()) {
+                alert('Please describe your game concept!');
+                return;
+            }
+
+            // Reset UI
+            loadingSpinner.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+            codeContainer.classList.add('hidden');
+            gamePreview.innerHTML = '';
+
+            try {
+                const detailedPrompt = createDetailedPrompt(gamePrompt, complexityLevel, gameStyle);
+                
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': GEMINI_API_KEY
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: detailedPrompt
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const gameCode = data.candidates[0].content.parts[0].text
+                    .replace(/```html/g, '')
+                    .replace(/```/g, '')
+                    .trim();
+
+                // Beautify HTML for readability
+                const beautifiedCode = html_beautify(gameCode, {
+                    indent_size: 2,
+                    wrap_line_length: 80
+                });
+
+                // Create game iframe
+                const gameFrame = document.createElement('iframe');
+                gameFrame.id = 'gameFrame';
+                gameFrame.srcdoc = gameCode;
+                gameFrame.style.width = '100%';
+                gameFrame.style.height = '100%';
+                gameFrame.style.border = 'none';
+                gameFrame.style.position = 'absolute';
+                gameFrame.style.top = '0';
+                gameFrame.style.left = '0';
+
+                gamePreview.innerHTML = '';
+                gamePreview.appendChild(gameFrame);
+
+                // Syntax highlighting and code display
+                generatedCodeElement.textContent = beautifiedCode;
+                Prism.highlightElement(generatedCodeElement);
+
+                // Update UI
+                loadingSpinner.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                codeContainer.classList.remove('hidden');
+                deleteGameBtn.classList.remove('hidden');
+
+            } catch (error) {
+                handleApiError(error);
+            }
+        });
+
+        // Delete game functionality
+        document.getElementById('deleteGameBtn').addEventListener('click', () => {
+            const gamePreview = document.getElementById('gamePreview');
+            const previewContainer = document.getElementById('previewContainer');
+            const codeContainer = document.getElementById('codeContainer');
+            const deleteGameBtn = document.getElementById('deleteGameBtn');
+
+            gamePreview.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xl">
+                    Game will appear here
+                </div>
+            `;
+            previewContainer.classList.add('hidden');
+            codeContainer.classList.add('hidden');
+            deleteGameBtn.classList.add('hidden');
+        });
+
+        // Fullscreen game preview
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            const gameFrame = document.getElementById('gameFrame');
+            
+            if (gameFrame) {
+                if (gameFrame.requestFullscreen) {
+                    gameFrame.requestFullscreen();
+                } else if (gameFrame.mozRequestFullScreen) {
+                    gameFrame.mozRequestFullScreen();
+                } else if (gameFrame.webkitRequestFullscreen) {
+                    gameFrame.webkitRequestFullscreen();
+                } else if (gameFrame.msRequestFullscreen) {
+                    gameFrame.msRequestFullscreen();
+                }
+            }
+        });
+
+        // Reload game functionality
+        document.getElementById('reloadGameBtn').addEventListener('click', () => {
+            const gameFrame = document.getElementById('gameFrame');
+            if (gameFrame) {
+                gameFrame.contentWindow.location.reload();
+            }
+        });
+
+        // Copy code to clipboard
+        document.getElementById('copyCodeBtn').addEventListener('click', () => {
+            const generatedCodeElement = document.getElementById('generatedCode');
+            const copyBtn = document.getElementById('copyCodeBtn');
+            
+            navigator.clipboard.writeText(generatedCodeElement.textContent).then(() => {
+                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                `;
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Code
+                    `;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code:', err);
+                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Copy Failed
+                `;
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy Code
+                    `;
+                }, 2000);
+            });
+        });
+
+        // Download game code
+        document.getElementById('downloadCodeBtn').addEventListener('click', () => {
+            const generatedCodeElement = document.getElementById('generatedCode');
+            const gameCode = generatedCodeElement.textContent;
+            const blob = new Blob([gameCode], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'generated_game.html';
+            link.click();
+        });
+    </script>
+</body>
+</html>
