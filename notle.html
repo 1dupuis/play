@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Wordle</title>
+  <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+        color: #333;
+        transition: background-color 0.3s ease;
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+        text-align: center;
+        color: #2c3e50;
+    }
+    
+    .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        width: min(90vw, 500px);
+        border-radius: 10px;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .game-container:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    .guess-grid {
+        display: grid;
+        grid-template-rows: repeat(5, 1fr);
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    
+    .guess-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+    }
+    
+    .guess-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #ddd;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 5px;
+        user-select: none;
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        aspect-ratio: 1/1;
+    }
+    
+    .correct {
+        background-color: #6aaa64;
+        color: white;
+        border-color: #6aaa64;
+    }
+    
+    .present {
+        background-color: #c9b458;
+        color: white;
+        border-color: #c9b458;
+    }
+    
+    .absent {
+        background-color: #787c7e;
+        color: white;
+        border-color: #787c7e;
+    }
+    
+    .input-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .input-container input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1.2rem;
+        text-align: center;
+        text-transform: uppercase;
+        max-width: 60px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .input-container input:focus {
+        outline: none;
+        border-color: #4caf50;
+    }
+    
+    .input-container button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .input-container button:hover {
+        background-color: #45a049;
+    }
+    
+    .play-button-container {
+        margin-bottom: 20px;
+    }
+    
+    .play-button-container button {
+        padding: 10px 20px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .play-button-container button:hover {
+        background-color: #0b7dda;
+    }
+    
+    .message {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        min-height: 1.2rem;
+        color: #e74c3c;
+        transition: color 0.3s ease;
+    }
+    
+    .indicator {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        min-height: 1rem;
+        font-style: italic;
+        color: #3498db;
+        transition: color 0.3s ease;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        border-radius: 10px;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+    
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .modal-content h2 {
+        margin-bottom: 10px;
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        outline: none;
+    }
+    
+    @media (max-width: 600px) {
+        .guess-grid {
+            grid-template-rows: repeat(5, 40px);
+            gap: 5px;
+        }
+    
+        .guess-cell {
+            font-size: 1.2rem;
+        }
+    
+        .input-container input {
+            font-size: 1rem;
+            max-width: 50px;
+        }
+    
+        .input-container button {
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+    
+        .play-button-container button {
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+    
+        .message {
+            font-size: 1rem;
+        }
+    
+        .modal-content {
+            margin: 30% auto;
+        }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Music Wordle</h1>
+  <div class="game-container">
+    <div class="play-button-container">
+      <button id="playNotes" aria-label="Play target notes">Play Notes</button>
+    </div>
+    <div class="guess-grid" id="guessGrid" aria-live="polite">
+    </div>
+    <div class="input-container">
+      <input type="text" id="noteInput" maxlength="5" placeholder="Word"
+        aria-label="Enter your word guess">
+      <button id="submitGuess" aria-label="Submit your guess">Submit</button>
+    </div>
+    <p class="indicator" id="indicator" aria-live="polite"></p>
+    <p class="message" id="message" role="alert"></p>
+  </div>
+  <div id="modal" class="modal" aria-modal="true" role="dialog">
+    <div class="modal-content">
+      <span class="close" aria-label="Close Modal">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalMessage"></p>
+    </div>
+  </div>
+  <script>
+    const notes = ["A", "B", "C", "D", "E", "F", "G"];
+    const words = [
+        "ABBAC", "CABBA", "BADGE", "DECAF", "FACED", "BEGAD", "CAGED", "DEBAG", "FADGE"
+    ];
+    
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let targetWord = "";
+    let currentGuess = 0;
+    const maxGuesses = 5;
+    const gridSize = 5;
+    const guessGrid = document.getElementById('guessGrid');
+    const messageDisplay = document.getElementById('message');
+    const noteInput = document.getElementById('noteInput');
+    const submitButton = document.getElementById('submitGuess');
+    const playButton = document.getElementById('playNotes');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const closeButton = document.querySelector('.close');
+    const indicatorDisplay = document.getElementById('indicator');
+    const frequencyMap = {
+        "A": 440.00,
+        "B": 493.88,
+        "C": 261.63,
+        "D": 293.66,
+        "E": 329.63,
+        "F": 349.23,
+        "G": 392.00,
+    };
+    
+    function getNoteFromLetter(letter) {
+        const letterCode = letter.toUpperCase().charCodeAt(0);
+        if (letterCode >= 65 && letterCode <= 71) {
+            return String.fromCharCode(letterCode);
+        }
+        return null;
+    }
+    
+    
+    function generateTargetWord() {
+        targetWord = words[Math.floor(Math.random() * words.length)];
+    }
+    
+    
+    function playNotesFromWord(word) {
+        let startTime = audioContext.currentTime;
+        for (let i = 0; i < word.length; i++) {
+            const note = getNoteFromLetter(word[i]);
+            if (note) {
+                const frequency = frequencyMap[note];
+                if (frequency) {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = frequency;
+                    gainNode.gain.value = 0.3;
+                    oscillator.start(startTime);
+                    oscillator.stop(startTime + 0.4);
+                    startTime += 0.5;
+                }
+            } else {
+                showMessage('Invalid note to play.');
+            }
+        }
+    }
+    
+    function createGuessRow() {
+        const row = document.createElement('div');
+        row.classList.add('guess-row');
+    
+        for (let i = 0; i < gridSize; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('guess-cell');
+            cell.setAttribute('aria-label', `Guess ${i + 1}: , Result: Unknown`);
+            row.appendChild(cell);
+        }
+        guessGrid.appendChild(row);
+        return row;
+    }
+    
+    function checkGuess(guess, row) {
+        const cells = Array.from(row.children);
+        let allCorrect = true;
+        let indicatorText = '';
+        if (guess.length !== gridSize) {
+            showMessage('Please enter exactly 5 letters.');
+            return;
+        }
+    
+        for (let i = 0; i < gridSize; i++) {
+            const cell = cells[i];
+            let resultLabel = 'Incorrect';
+            const guessLetter = guess[i].toUpperCase();
+    
+            if (guessLetter === targetWord[i].toUpperCase()) {
+                cell.classList.add('correct');
+                resultLabel = 'Correct';
+            } else if (targetWord.toUpperCase().includes(guessLetter)) {
+                cell.classList.add('present');
+                resultLabel = 'Present';
+                indicatorText = 'Check position of letters.';
+                allCorrect = false;
+            } else {
+                cell.classList.add('absent');
+                allCorrect = false;
+            }
+    
+            cell.textContent = guessLetter;
+            cell.setAttribute('aria-label', `Guess ${i + 1}: ${guessLetter}, Result: ${resultLabel}`);
+        }
+        indicatorDisplay.textContent = indicatorText;
+    
+        if (allCorrect) {
+            showModal('Congratulations!', 'You guessed the word!');
+            endGame();
+        } else {
+            currentGuess++;
+            if (currentGuess >= maxGuesses) {
+                showModal("Game Over", "The correct word was: " + targetWord.toUpperCase());
+                endGame();
+            }
+        }
+    }
+    
+    function showMessage(message) {
+        messageDisplay.textContent = message;
+    }
+    
+    function showModal(title, message) {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+        modal.focus();
+    }
+    
+    function closeModal() {
+        modal.style.display = "none";
+    }
+    
+    function endGame() {
+        submitButton.disabled = true;
+        noteInput.disabled = true;
+    }
+    
+    function startGame() {
+        generateTargetWord();
+        guessGrid.innerHTML = "";
+        currentGuess = 0;
+        submitButton.disabled = false;
+        noteInput.disabled = false;
+        messageDisplay.textContent = "";
+        indicatorDisplay.textContent = "";
+        for (let i = 0; i < maxGuesses; i++) {
+            createGuessRow();
+        }
+    }
+    
+    
+    submitButton.addEventListener('click', () => {
+        const guess = noteInput.value.trim().toUpperCase();
+    
+        if (guess.length === 0) {
+            showMessage("Please enter 5 letters.");
+        }
+        else {
+            const row = guessGrid.children[currentGuess];
+            if (row) {
+                checkGuess(guess, row);
+                noteInput.value = "";
+            } else {
+                showMessage('Game Over.');
+            }
+        }
+    });
+    
+    playButton.addEventListener('click', () => {
+        playNotesFromWord(targetWord);
+    });
+    
+    closeButton.addEventListener('click', closeModal);
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    window.addEventListener('keydown', function (event) {
+        if (event.key === "Escape" && modal.style.display === "block") {
+            closeModal();
+        }
+    });
+    startGame();
+  </script>
+</body>
+
+</html>
