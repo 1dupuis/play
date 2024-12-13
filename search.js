@@ -25,7 +25,8 @@ const config = {
                {
                    name: 'Music Games',
                    items: [
-                       { name: '✨ ScaleUp', url: '/scaleup', description: 'Music scales game' }
+                       { name: '✨ Notle', url: '/notle', description: 'Music Wordle' },
+                       { name: 'ScaleUp', url: '/scaleup', description: 'Music scales game' }
                    ]
                },
                {
