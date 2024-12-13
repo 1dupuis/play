@@ -13,52 +13,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body class="bg-gradient-to-br from-gray-900 to-indigo-900 min-h-screen flex flex-col antialiased text-gray-100">
+    
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="bg-gray-800 shadow-2xl rounded-3xl overflow-hidden border-4 border-indigo-600">
-            <div class="bg-gradient-to-r from-indigo-700 to-purple-600 text-white py-8 px-10">
+        <div class="bg-gray-900/60 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden border-2 border-indigo-600/30 relative">
+            <!-- Subtle Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 opacity-50 pointer-events-none"></div>
+            
+            <div class="relative z-10 bg-gradient-to-r from-indigo-700/80 to-purple-600/80 text-white py-8 px-10">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-5xl font-extrabold tracking-tight flex items-center">
-                            <i class="fas fa-gamepad mr-4"></i>GameGenie
-                            <span class="ml-4 bg-purple-500 text-sm px-3 py-1 rounded-full">AI-Powered</span>
+                        <h1 class="text-5xl font-extrabold tracking-tight flex items-center space-x-4">
+                            <i class="fas fa-gamepad text-indigo-300"></i>
+                            <span>GameGenie</span>
+                            <span class="text-sm bg-purple-600/70 px-3 py-1 rounded-full border border-white/20">AI-Powered</span>
                         </h1>
-                        <p class="mt-3 text-indigo-100 text-xl">Unleash Your Game Development Creativity</p>
+                        <p class="mt-3 text-indigo-100 text-xl opacity-80">Unleash Your Game Development Creativity</p>
                     </div>
                     <div class="hidden md:block">
-                        <div class="bg-white/10 rounded-full p-4">
-                            <i class="fas fa-laptop-code text-4xl text-white"></i>
+                        <div class="bg-white/10 rounded-full p-4 border border-white/20 backdrop-blur-sm">
+                            <i class="fas fa-laptop-code text-4xl text-white/80"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-8 bg-gray-900">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-6">
+            <div class="p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2 space-y-6">
                         <div>
-                            <label for="gamePrompt" class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-lightbulb mr-2"></i>Game Concept
+                            <label for="gamePrompt" class="block text-sm font-medium text-gray-300 mb-2 flex items-center">
+                                <i class="fas fa-lightbulb mr-2 text-indigo-400"></i>
+                                Game Concept
                             </label>
                             <textarea 
                                 id="gamePrompt" 
                                 rows="4" 
-                                class="w-full rounded-lg bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
-                                placeholder="Describe your dream game! Examples:
+                                class="w-full rounded-xl bg-gray-800/60 border border-gray-700/50 text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 backdrop-blur-sm"
+                                placeholder="Describe your dream game! 
 • Retro pixel art Snake game
 • Physics-based puzzle platformer
-• Space invaders with unique mechanics
-• Interactive memory challenge"
+• Space invaders with unique mechanics"
                             ></textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">
-                                    <i class="fas fa-cogs mr-2"></i>Game Complexity
+                                <label class="block text-sm font-medium text-gray-300 mb-2 flex items-center">
+                                    <i class="fas fa-cogs mr-2 text-indigo-400"></i>
+                                    Game Complexity
                                 </label>
                                 <select 
                                     id="complexityLevel" 
-                                    class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    class="w-full rounded-xl bg-gray-800/60 border border-gray-700/50 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                                 >
                                     <option value="basic">Basic</option>
                                     <option value="intermediate" selected>Intermediate</option>
@@ -66,12 +72,13 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">
-                                    <i class="fas fa-palette mr-2"></i>Game Style
+                                <label class="block text-sm font-medium text-gray-300 mb-2 flex items-center">
+                                    <i class="fas fa-palette mr-2 text-indigo-400"></i>
+                                    Game Style
                                 </label>
                                 <select 
                                     id="gameStyle" 
-                                    class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    class="w-full rounded-xl bg-gray-800/60 border border-gray-700/50 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                                 >
                                     <option value="minimal">Minimal</option>
                                     <option value="professional" selected>Professional</option>
@@ -82,35 +89,50 @@
                     </div>
 
                     <div>
-                        <div class="bg-gray-800 rounded-lg p-4 h-full border border-gray-700">
-                            <h3 class="text-xl font-semibold text-white mb-3">
-                                <i class="fas fa-rocket mr-2"></i>Game Generation Tips
+                        <div class="bg-gray-800/50 rounded-xl p-5 h-full border border-gray-700/30 backdrop-blur-sm">
+                            <h3 class="text-xl font-semibold text-white mb-3 flex items-center">
+                                <i class="fas fa-rocket mr-3 text-indigo-400"></i>Game Generation Tips
                             </h3>
                             <ul class="space-y-2 text-sm text-gray-300">
-                                <li><i class="fas fa-check-circle mr-2 text-green-500"></i>Be specific about game mechanics</li>
-                                <li><i class="fas fa-check-circle mr-2 text-green-500"></i>Describe core gameplay loop</li>
-                                <li><i class="fas fa-check-circle mr-2 text-green-500"></i>Mention any unique twists</li>
-                                <li><i class="fas fa-check-circle mr-2 text-green-500"></i>Consider player interactions</li>
-                                <li><i class="fas fa-check-circle mr-2 text-green-500"></i>Think about visual style</li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                                    Be specific about game mechanics
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                                    Describe core gameplay loop
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                                    Mention unique twists
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                                    Consider player interactions
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                                    Think about visual style
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-6 flex space-x-4">
+                <div class="flex space-x-4">
                     <button 
                         id="generateBtn" 
-                        class="flex-1 bg-indigo-600 text-white py-4 px-6 rounded-lg hover:bg-indigo-700 transition duration-300 font-semibold flex items-center justify-center space-x-3 transform hover:scale-105"
+                        class="flex-1 bg-indigo-600/80 text-white py-4 px-6 rounded-xl hover:bg-indigo-700/90 transition duration-300 font-semibold flex items-center justify-center space-x-3 transform hover:scale-[1.02] border border-white/20"
                     >
                         <i class="fas fa-magic mr-2"></i>
-                        <span>Generate Game</span>
+                        Generate Game
                     </button>
                     <button 
                         id="deleteGameBtn" 
-                        class="bg-red-600 text-white py-4 px-6 rounded-lg hover:bg-red-700 transition duration-300 font-semibold flex items-center justify-center space-x-3 hidden transform hover:scale-105"
+                        class="bg-red-600/80 text-white py-4 px-6 rounded-xl hover:bg-red-700/90 transition duration-300 font-semibold flex items-center justify-center space-x-3 hidden transform hover:scale-[1.02] border border-white/20"
                     >
                         <i class="fas fa-trash-alt mr-2"></i>
-                        <span>Delete Game</span>
+                        Delete Game
                     </button>
                 </div>
 
@@ -163,18 +185,20 @@
             </div>
         </div>
         <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-300 mb-2">
-                <i class="fas fa-robot mr-2"></i>Gemini Model (Newest to Oldest)
+            <label class="block text-sm font-medium text-gray-300 mb-2 flex items-center">
+                <i class="fas fa-robot mr-2 text-indigo-400"></i>
+                Gemini Model (Newest to Oldest)
             </label>
             <select 
                 id="geminiModel" 
-                class="w-full rounded-lg bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                class="w-full rounded-xl bg-gray-800/60 border border-gray-700/50 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
             >
                 <option value="gemini-2.0-flash-exp" selected>Gemini 2.0 Flash (Experimental)</option>
                 <option value="gemini-exp-1206">Gemini Experimental (1206)</option>
                 <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
             </select>
         </div>
+    </div>
     </div>
 
     <script>
