@@ -507,6 +507,7 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             }
         
             const data = await response.json();
+            console.warn(data)
             const selectedModel = data.candidates[0].content.parts[0].text.trim();
         
             // Validate the selected model is in our allowed list
@@ -535,6 +536,10 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                 'gemini-2.0-flash-exp': 'Gemini 2.0 Flash Experimental',
                 'gemini-1.5-flash': 'Gemini 1.5 Flash',
                 'gemini-exp-1206': 'Gemini Experimental 1206',
+                'gemini-exp-1121': 'Gemini Experimental 1121',
+                'gemini-1.5-pro': 'Gemini 1.5 Pro',
+                'gemini-1.5-flash-8b': 'Gemini 1.5 Flash 8b',
+                'learnlm-1.5-pro-experimental': 'LLM 1.5 Pro Experimental',
                 'auto': 'Automatic Model Selection'
             };
         
@@ -563,8 +568,12 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             
             const modelRanking = [
                 'gemini-2.0-flash-exp',
+                'gemini-exp-1206',
+                'gemini-exp-1121',
+                'learnlm-1.5-pro-experimental',
+                'gemini-1.5-pro',
                 'gemini-1.5-flash',
-                'gemini-exp-1206'
+                'gemini-1.5-flash-8b',
             ];
         
             if (geminiModel === 'auto') {
