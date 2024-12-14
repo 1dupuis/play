@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameGenie</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
@@ -599,12 +599,28 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             } catch (error) {
                 console.error('Profanity check failed:', error);
             }
+            
+            // Timer variables
+            let startTime, timerInterval;
+        
+            const startTimer = (message) => {
+                startTime = performance.now();
+                timerInterval = setInterval(() => {
+                    const elapsedTime = ((performance.now() - startTime) / 1000).toFixed(1);
+                    loadingSpinner.querySelector('p').textContent = `${message} (${elapsedTime}s)`;
+                }, 100);
+            };
+        
+            const stopTimer = () => {
+                clearInterval(timerInterval);
+            };
         
             // Reset UI
             loadingSpinner.classList.remove('hidden');
             previewContainer.classList.add('hidden');
             codeContainer.classList.add('hidden');
             gamePreview.innerHTML = '';
+            deleteGameBtn.classList.add('hidden');
             
             const modelRanking = [
                 'gemini-2.0-flash-exp',
@@ -633,9 +649,11 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             }
         
             // Update loading text with specific model name
-            loadingSpinner.querySelector('p').textContent = `${modelNames[geminiModel]} is generating your game...`;
+            //loadingSpinner.querySelector('p').textContent = `${modelNames[geminiModel]} is generating your game...`;
         
             try {
+              
+                startTimer(`${modelNames[geminiModel] || 'Gemini'} is generating your game...`);
                 const detailedPrompt = createDetailedPrompt(gamePrompt, complexityLevel, gameStyle);
                 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`, {
@@ -664,13 +682,22 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                     .trim();
         
                 // Update loading text for refinement
-                loadingSpinner.querySelector('p').textContent = `${modelNames[geminiModel]} is refining your game...`;
+                //loadingSpinner.querySelector('p').textContent = `${modelNames[geminiModel]} is refining your game...`;
+                
+                // Stop the generation timer
+                stopTimer();
+        
+                // Start the refining timer
+                startTimer(`${modelNames[geminiModel] || 'Gemini'} is refining your game...`);
                 const improvedGameCode = await improveGeneratedGame(gameCode, gamePrompt, complexityLevel, gameStyle, generationSpeed, geminiModel); // Pass geminiModel here!
                 
                 // Use improved code if successfully generated
                 if (improvedGameCode) {
                     gameCode = improvedGameCode;
                 }
+                
+                // Stop the generation timer
+                stopTimer();
         
                 // Beautify HTML for readability
                 const beautifiedCode = html_beautify(gameCode, {
