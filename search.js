@@ -147,11 +147,9 @@ class DupuisApp {
             'content': { tag: 'div', parent: 'body' },
             'categories': { tag: 'div', parent: 'body' },
             'menu-toggle': { tag: 'button', parent: 'body' },
-            'sidebar': { tag: 'div', parent: 'body' },
             'modal': { tag: 'div', parent: 'body' },
             'modal-body': { tag: 'div', parent: '#modal' },
             'theme-toggle': { tag: 'button', parent: 'body' },
-            'settings-button': { tag: 'button', parent: 'body' },
             'font-size': { tag: 'select', parent: '#modal-body' },
             'language': { tag: 'select', parent: '#modal-body' },
             'animations': { tag: 'input', parent: '#modal-body', attributes: { type: 'checkbox' } }
@@ -199,11 +197,9 @@ class DupuisApp {
         this.contentSection = document.getElementById('content');
         this.categoriesSection = document.getElementById('categories');
         this.menuToggle = document.getElementById('menu-toggle');
-        this.sidebarSection = document.getElementById('sidebar');
         this.modal = document.getElementById('modal');
         this.modalBody = document.getElementById('modal-body');
         this.themeToggle = document.getElementById('theme-toggle');
-        this.settingsButton = document.getElementById('settings-button');
         this.fontSizeSelect = document.getElementById('font-size');
         this.languageSelect = document.getElementById('language');
         this.animationsCheckbox = document.getElementById('animations');
@@ -305,13 +301,14 @@ class DupuisApp {
                 this.performSearch();
             }
         });
-
+        
         this.menuToggle.addEventListener('click', () => this.navLinks.classList.toggle('show'));
 
         window.addEventListener('resize', this.handleResize.bind(this));
 
         this.searchInput.setAttribute('placeholder', config.searchPlaceholder);
-
+        
+        this.navigateTo(`/games`);
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -324,8 +321,6 @@ class DupuisApp {
 
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
 
-        this.settingsButton.addEventListener('click', () => this.openSettings());
-
         // Add event delegation for dynamic content
         this.contentSection.addEventListener('click', (e) => {
             if (e.target.classList.contains('visit-button')) {
@@ -333,17 +328,6 @@ class DupuisApp {
                 const url = e.target.getAttribute('data-url');
                 if (url) {
                     window.location.href = url;
-                }
-            }
-        });
-
-        // Add event delegation for sidebar items
-        this.sidebarSection.addEventListener('click', (e) => {
-            if (e.target.classList.contains('sidebar-item')) {
-                e.preventDefault();
-                const url = e.target.getAttribute('href');
-                if (url) {
-                    this.navigateTo(url);
                 }
             }
         });
@@ -412,7 +396,6 @@ class DupuisApp {
 
     loadSubcategoryContent(subcategories) {
         this.generateSubcategories(subcategories);
-        this.updateActiveSidebarItem(this.currentCategory.name);
     }
 
     loadItemContent(items) {
@@ -638,7 +621,6 @@ class DupuisApp {
         `;
     
         this.updateContent(content);
-        this.updateActiveSidebarItem(categoryName);
     }
 
     loadItemContent(categoryName, item) {
@@ -697,58 +679,6 @@ class DupuisApp {
         }, 3000);
     }
 
-    generateSidebar() {
-        this.sidebarSection.innerHTML = ''; // Clear existing sidebar content
-        const sidebarContent = config.categories.map(category => `
-            <div class="sidebar-category">
-                <h3>${category.name}</h3>
-                ${category.subcategories.map(subcategory => `
-                    <div class="sidebar-subcategory">
-                        <h4>${subcategory.name}</h4>
-                        ${subcategory.items.map(item => `
-                            <a href="${item.url}" class="sidebar-item" 
-                               data-category="${category.name}" 
-                               data-subcategory="${subcategory.name}"
-                               data-item="${item.name}">
-                                ${item.name}
-                            </a>
-                        `).join('')}
-                    </div>
-                `).join('')}
-            </div>
-        `).join('');
-    
-        this.sidebarSection.innerHTML = sidebarContent;
-    }
-
-    updateActiveSidebarItem(categoryName, subcategoryName = null, itemName = null) {
-        const sidebarItems = this.sidebarSection.querySelectorAll('.sidebar-item');
-        sidebarItems.forEach(item => {
-            item.classList.remove('active');
-            item.removeAttribute('aria-current');
-        });
-
-        if (subcategoryName) {
-            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"][data-subcategory="${subcategoryName}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                activeItem.setAttribute('aria-current', 'page');
-            }
-        } else if (itemName) {
-            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"][data-item="${itemName}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                activeItem.setAttribute('aria-current', 'page');
-            }
-        } else {
-            const activeItem = this.sidebarSection.querySelector(`.sidebar-item[data-category="${categoryName}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                activeItem.setAttribute('aria-current', 'page');
-            }
-        }
-    }
-
     openModal(content) {
         this.modalBody.innerHTML = content;
         this.modal.style.display = 'block';
@@ -798,126 +728,6 @@ class DupuisApp {
         }
     }
 
-    loadCurrentSettings() {
-        const fontSize = localStorage.getItem('fontSize') || 'medium';
-        const language = localStorage.getItem('language') || 'en';
-        const animations = localStorage.getItem('animations') !== 'false';
-
-        if (this.fontSizeSelect) this.fontSizeSelect.value = fontSize;
-        if (this.languageSelect) this.languageSelect.value = language;
-        if (this.animationsCheckbox) this.animationsCheckbox.checked = animations;
-
-        this.applySettings(fontSize, language, animations);
-    }
-
-    applySettings(fontSize, language, animations) {
-        // Apply font size
-        document.body.classList.remove('font-small', 'font-medium', 'font-large');
-        document.body.classList.add(`font-${fontSize}`);
-
-        // Apply language
-        document.documentElement.lang = language;
-        this.translateUI(language);
-
-        // Apply animations setting
-        document.body.classList.toggle('no-animations', !animations);
-
-        // Update the config object with new settings
-        config.fontSize = fontSize;
-        config.language = language;
-        config.animations = animations;
-
-        // Refresh the UI to reflect the new settings
-        this.refreshUI();
-    }
-
-    openSettings() {
-        const settingsContent = `
-            <h2>Settings</h2>
-            <div class="settings-option">
-                <label for="font-size">Font Size:</label>
-                <select id="font-size">
-                    <option value="small">Small</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="large">Large</option>
-                </select>
-            </div>
-            <div class="settings-option">
-                <label for="language">Language:</label>
-                <select id="language">
-                    <option value="en" selected>English</option>
-                    <option value="fr">Français</option>
-                    <option value="es">Español</option>
-                </select>
-            </div>
-            <div class="settings-option">
-                <label for="animations">Animations:</label>
-                <input type="checkbox" id="animations" checked>
-            </div>
-            <button id="save-settings">Save Settings</button>
-        `;
-        this.openModal(settingsContent);
-
-        // Re-initialize elements after modal content is set
-        this.fontSizeSelect = document.getElementById('font-size');
-        this.languageSelect = document.getElementById('language');
-        this.animationsCheckbox = document.getElementById('animations');
-
-        const saveButton = document.getElementById('save-settings');
-        if (saveButton) {
-            saveButton.addEventListener('click', () => this.saveSettings());
-        }
-
-        // Load current settings
-        this.loadCurrentSettings();
-    }
-
-    saveSettings() {
-        const fontSize = this.fontSizeSelect ? this.fontSizeSelect.value : 'medium';
-        const language = this.languageSelect ? this.languageSelect.value : 'en';
-        const animations = this.animationsCheckbox ? this.animationsCheckbox.checked : true;
-
-        localStorage.setItem('fontSize', fontSize);
-        localStorage.setItem('language', language);
-        localStorage.setItem('animations', animations);
-
-        this.applySettings(fontSize, language, animations);
-        this.closeModal();
-        this.showNotification('Settings saved successfully!');
-    }
-
-    translateUI(language) {
-        // In a real application, this method would use a translation library
-        // or fetch translations from a server. For this example, we'll use a simple object.
-        const translations = {
-            en: {
-                search: 'Search',
-                settings: 'Settings',
-                theme: 'Theme',
-            },
-            fr: {
-                search: 'Rechercher',
-                settings: 'Paramètres',
-                theme: 'Thème',
-            },
-            es: {
-                search: 'Buscar',
-                settings: 'Ajustes',
-                theme: 'Tema',
-            }
-        };
-
-        const currentTranslations = translations[language] || translations.en;
-
-        // Update UI elements with translated text
-        this.searchButton.textContent = currentTranslations.search;
-        this.settingsButton.textContent = currentTranslations.settings;
-        this.themeToggle.setAttribute('aria-label', currentTranslations.theme);
-
-        // Translate category and item names
-        this.translateCategories(currentTranslations);
-    }
-
     translateCategories(translations) {
         config.categories.forEach(category => {
             if (translations[category.name]) {
@@ -938,9 +748,7 @@ class DupuisApp {
     }
 
     refreshUI() {
-        // Regenerate categories and sidebar with updated content
         this.generateCategories();
-        this.generateSidebar();
 
         // Refresh the current page content
         this.handleRouteChange();
@@ -1004,22 +812,6 @@ class DupuisApp {
                 this.closeModal();
             }
         });
-
-        // Add keyboard navigation for sidebar items
-        this.sidebarSection.addEventListener('keydown', (e) => {
-            if (e.target.classList.contains('sidebar-item')) {
-                const items = Array.from(this.sidebarSection.querySelectorAll('.sidebar-item'));
-                const currentIndex = items.indexOf(e.target);
-                
-                if (e.key === 'ArrowDown' && currentIndex < items.length - 1) {
-                    e.preventDefault();
-                    items[currentIndex + 1].focus();
-                } else if (e.key === 'ArrowUp' && currentIndex > 0) {
-                    e.preventDefault();
-                    items[currentIndex - 1].focus();
-                }
-            }
-        });
     }
 
     init() {
@@ -1027,9 +819,7 @@ class DupuisApp {
         this.setupEventListeners();
         this.setupRouter();
         this.setupEasterEgg();
-        this.generateSidebar();
         this.loadThemePreference();
-        this.loadCurrentSettings();
         this.setupLazyLoading();
         this.enhanceAccessibility();
         this.setupKeyboardNavigation();
