@@ -32,7 +32,8 @@ const config = {
                {
                    name: 'Other Games',
                    items: [
-                       { name: 'Ascend', url: '/ascend', description: 'Platformer game' }
+                       { name: 'Ascend', url: '/ascend', description: 'Platformer game' },
+                       { name: 'Climate Change', url: '/climate-change', description: 'Science climate change visualization' }
                    ]
                }
            ]
