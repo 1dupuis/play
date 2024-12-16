@@ -6,9 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
         errorDetails.innerHTML = `<p>The URL that caused this error was: <strong>${window.location.href}</strong></p>`;
     }
 
-    // Reload button functionality
+    // Change reload button functionality to go to home
     const reloadBtn = document.getElementById("reload-btn");
     reloadBtn.addEventListener("click", () => {
-        window.location.reload();
+        // Redirect to the homepage
+        window.location.href = '/';
     });
 });
