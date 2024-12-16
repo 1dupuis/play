@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Change Interactive Visualization</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a1a;
+            --bg-darker: #050510;
+            --panel-bg: rgba(20, 20, 30, 0.7);
+            --text-light: #e0e0ff;
+            --text-muted: #a0a0c0;
+            --accent-blue: #2255AA;
+            --accent-green: #22AA55;
+            --accent-red: #AA2255;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-darker);
+        }
+
+        body {
+            font-family: 'Inter', 'Arial', sans-serif;
+            background: radial-gradient(circle at center, var(--bg-dark), var(--bg-darker));
+            color: var(--text-light);
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 100%;
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 10;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            transform: rotate(90deg);
+        }
+
+        .metric-section {
+            margin-bottom: 20px;
+            background: rgba(30, 40, 60, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .metric-section h2 {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 5px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .metric-item:hover {
+            background-color: rgba(50, 60, 80, 0.5);
+        }
+
+        .metric-item span:first-child {
+            color: var(--text-muted);
+        }
+
+        .metric-item span:last-child {
+            font-weight: bold;
+            color: var(--text-light);
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .btn {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-green);
+            transform: scale(1.05);
+        }
+
+        .btn.danger {
+            background-color: var(--accent-red);
+        }
+
+        .btn.danger:hover {
+            background-color: var(--accent-blue);
+        }
+
+        #prediction-panel {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <button class="sidebar-toggle" id="sidebar-toggle">📊</button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="metric-section">
+            <h2>Global Climate Metrics</h2>
+            <div class="metric-item" id="metric-temperature">
+                <span>Global Temperature</span>
+                <span>-</span>
+            </div>
+            <div class="metric-item" id="metric-co2">
+                <span>CO2 Concentration</span>
+                <span>-</span>
+            </div>
+            <div class="metric-item" id="metric-ice-coverage">
+                <span>Ice Sheet Coverage</span>
+                <span>-</span>
+            </div>
+            <div class="metric-item" id="metric-sea-level">
+                <span>Sea Level Rise</span>
+                <span>-</span>
+            </div>
+            <div class="metric-item" id="metric-ozone">
+                <span>Ozone Layer Health</span>
+                <span>-</span>
+            </div>
+        </div>
+
+        <div class="metric-section" id="prediction-panel">
+            <h2>Climate Change Projection</h2>
+            <p id="prediction-text">Awaiting simulation data...</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="toggle-day-night" class="btn">🌓 Day/Night</button>
+        <button id="reset-climate" class="btn danger">🔁 Reset</button>
+    </div>
+
+    <script>
+        class ClimateVisualizer {
+            constructor() {
+                this.initializeDOM();
+                this.setupCanvas();
+                this.initializeObjects();
+                this.setupEventListeners();
+                this.animate();
+            }
+
+            initializeDOM() {
+                this.sidebarToggle = document.getElementById('sidebar-toggle');
+                this.sidebar = document.getElementById('sidebar');
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+            }
+
+            setupCanvas() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+            }
+
+            initializeObjects() {
+                this.sun = {
+                    x: this.width / 2,
+                    y: this.height / 5,
+                    radius: 80,
+                    color: '#ffcc00',
+                    intensity: 0.5,
+                    pulseDirection: 1
+                };
+
+                this.earth = {
+                    x: this.width / 2,
+                    y: this.height * 0.75,
+                    radius: 100,
+                    tilt: -23.5 * Math.PI / 180,
+                    rotation: 0,
+                    metrics: {
+                        temperature: 15,
+                        iceCoverage: 50,
+                        seaLevel: 0,
+                        co2: 415,
+                        ozoneHealth: 70
+                    }
+                };
+
+                this.rays = [];
+                this.isDay = true;
+                this.daytime = 0.5;
+                this.setupRays();
+            }
+
+            setupEventListeners() {
+                window.addEventListener('resize', this.handleResize.bind(this));
+                this.sidebarToggle.addEventListener('click', this.toggleSidebar.bind(this));
+                
+                document.getElementById('toggle-day-night').addEventListener('click', () => {
+                    this.isDay = !this.isDay;
+                });
+
+                document.getElementById('reset-climate').addEventListener('click', () => {
+                    this.resetClimate();
+                });
+            }
+
+            toggleSidebar() {
+                this.sidebar.classList.toggle('open');
+            }
+
+            handleResize() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.setupCanvas();
+                this.repositionObjects();
+            }
+
+            repositionObjects() {
+                this.sun.x = this.width / 2;
+                this.earth.x = this.width / 2;
+                this.sun.y = this.height / 5;
+                this.earth.y = this.height * 0.75;
+                this.setupRays();
+            }
+
+            setupRays() {
+                this.rays = Array.from({length: 200}, () => {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = this.sun.radius + 10 + Math.random() * 300;
+                    return {
+                        angle,
+                        startX: this.sun.x + Math.cos(angle) * this.sun.radius,
+                        startY: this.sun.y + Math.sin(angle) * this.sun.radius,
+                        endX: this.sun.x + Math.cos(angle) * distance,
+                        endY: this.sun.y + Math.sin(angle) * distance,
+                        opacity: Math.random(),
+                        speed: 0.5 + Math.random() * 1.5
+                    };
+                });
+            }
+
+            drawSun() {
+                // Sun pulsing effect
+                this.sun.radius += 0.5 * this.sun.pulseDirection;
+                if (this.sun.radius > 90 || this.sun.radius < 70) {
+                    this.sun.pulseDirection *= -1;
+                }
+
+                const sunGradient = this.ctx.createRadialGradient(
+                    this.sun.x, this.sun.y, this.sun.radius / 3, 
+                    this.sun.x, this.sun.y, this.sun.radius
+                );
+                sunGradient.addColorStop(0, 'rgba(255,255,200,0.9)');
+                sunGradient.addColorStop(1, 'rgba(255,200,50,0.6)');
+                
+                this.ctx.fillStyle = sunGradient;
+                this.ctx.beginPath();
+                this.ctx.arc(this.sun.x, this.sun.y, this.sun.radius, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                this.drawRays();
+            }
+
+            drawRays() {
+                this.rays.forEach(ray => {
+                    // Animated ray movement
+                    ray.startX += Math.cos(ray.angle) * ray.speed;
+                    ray.startY += Math.sin(ray.angle) * ray.speed;
+                    ray.endX += Math.cos(ray.angle) * ray.speed;
+                    ray.endY += Math.sin(ray.angle) * ray.speed;
+
+                    this.ctx.strokeStyle = `rgba(255, 255, 200, ${ray.opacity * this.daytime * 0.2})`;
+                    this.ctx.lineWidth = 1;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(ray.startX, ray.startY);
+                    this.ctx.lineTo(ray.endX, ray.endY);
+                    this.ctx.stroke();
+                });
+            }
+
+            drawEarth() {
+                this.ctx.save();
+                this.ctx.translate(this.earth.x, this.earth.y);
+                this.ctx.rotate(this.earth.rotation);
+                this.ctx.rotate(this.earth.tilt);
+
+                const earthGradient = this.ctx.createRadialGradient(
+                    -this.earth.radius/3, -this.earth.radius/3, 0, 
+                    0, 0, this.earth.radius
+                );
+                earthGradient.addColorStop(0, '#2255AA');
+                earthGradient.addColorStop(0.7, '#113388');
+                earthGradient.addColorStop(1, '#0a2255');
+
+                this.ctx.fillStyle = earthGradient;
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, this.earth.radius, 0, Math.PI * 2);
+                this.ctx.fill();
+
+                // Enhanced shadow effect
+                this.ctx.beginPath();
+                this.ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                this.ctx.ellipse(
+                    this.earth.radius/4, 
+                    this.earth.radius/4, 
+                    this.earth.radius, 
+                    this.earth.radius/1.5, 
+                    Math.PI/4, 
+                    0, Math.PI * 2
+                );
+                this.ctx.fill();
+
+                this.drawIceCaps();
+                this.ctx.restore();
+            }
+
+            drawIceCaps() {
+                const iceFade = 1 - this.earth.metrics.iceCoverage / 100;
+                this.ctx.fillStyle = `rgba(230,230,255, ${iceFade})`;
+                
+                // North and South pole ice caps with more natural shape
+                const capRadius = this.earth.radius * 0.3;
+                const capOffset = this.earth.radius * 0.8;
+
+                this.ctx.beginPath();
+                this.ctx.ellipse(
+                    0, 
+                    -capOffset, 
+                    capRadius * 1.2, 
+                    capRadius * 0.8, 
+                    Math.PI / 4, 
+                    0, 
+                    Math.PI * 2
+                );
+                this.ctx.fill();
+
+                this.ctx.beginPath();
+                this.ctx.ellipse(
+                    0, 
+                    capOffset, 
+                    capRadius * 1.2, 
+                    capRadius * 0.8, 
+                    Math.PI / 4, 
+                    0, 
+                    Math.PI * 2
+                );
+                this.ctx.fill();
+            }
+
+            updateClimateMetrics() {
+                const metrics = this.earth.metrics;
+                
+                // Day/night cycle mechanics
+                if (this.isDay) {
+                    this.daytime = Math.min(1, this.daytime + 0.005);
+                } else {
+                    this.daytime = Math.max(0.2, this.daytime - 0.005);
+                }
+
+                // More nuanced climate change progression
+                metrics.temperature += this.isDay ? 0.0005 : 0.0002;
+                metrics.ozoneHealth -= 0.01;
+                metrics.iceCoverage = Math.max(0, metrics.iceCoverage - 0.005);
+                metrics.seaLevel += 0.02;
+                // Continue climate metrics update
+                metrics.co2 = Math.min(600, metrics.co2 + 0.05);
+
+                // Earth rotation
+                this.earth.rotation += 0.002;
+
+                this.updateInfoPanel();
+                this.updateClimateProjection();
+            }
+
+            updateInfoPanel() {
+                const metrics = this.earth.metrics;
+                const formatMetric = (value, unit = '') => `${value.toFixed(1)}${unit}`;
+
+                this.updateMetric('metric-temperature', formatMetric(metrics.temperature, '°C'), 
+                    metrics.temperature > 30 ? 'text-red' : 'text-light');
+                this.updateMetric('metric-co2', formatMetric(metrics.co2, ' ppm'), 
+                    metrics.co2 > 550 ? 'text-red' : 'text-light');
+                this.updateMetric('metric-ice-coverage', formatMetric(metrics.iceCoverage, '%'), 
+                    metrics.iceCoverage < 20 ? 'text-red' : 'text-light');
+                this.updateMetric('metric-sea-level', formatMetric(metrics.seaLevel, ' mm'));
+                this.updateMetric('metric-ozone', formatMetric(metrics.ozoneHealth, '%'), 
+                    metrics.ozoneHealth < 30 ? 'text-red' : 'text-light');
+            }
+
+            updateMetric(elementId, value, extraClass = '') {
+                const element = document.getElementById(elementId).querySelector('span:last-child');
+                element.textContent = value;
+                element.className = extraClass;
+            }
+
+            updateClimateProjection() {
+                const metrics = this.earth.metrics;
+                const predictionText = document.getElementById('prediction-text');
+                
+                if (metrics.temperature > 35) {
+                    predictionText.textContent = "🚨 Extreme warming detected. Urgent global action required!";
+                    predictionText.style.color = 'var(--accent-red)';
+                } else if (metrics.temperature > 25) {
+                    predictionText.textContent = "🌡️ Significant temperature rise projected by 2100.";
+                    predictionText.style.color = 'var(--text-muted)';
+                } else if (metrics.co2 > 550) {
+                    predictionText.textContent = "⚠️ CO2 levels approaching critical thresholds.";
+                    predictionText.style.color = 'var(--text-muted)';
+                } else if (metrics.iceCoverage < 20) {
+                    predictionText.textContent = "🧊 Rapid ice sheet depletion detected.";
+                    predictionText.style.color = 'var(--accent-blue)';
+                } else {
+                    predictionText.textContent = "Current climate trends remain within moderate ranges.";
+                    predictionText.style.color = 'var(--text-muted)';
+                }
+            }
+
+            resetClimate() {
+                // Restore initial climate metrics
+                this.earth.metrics = {
+                    temperature: 15,
+                    iceCoverage: 50,
+                    seaLevel: 0,
+                    co2: 415,
+                    ozoneHealth: 70
+                };
+                this.isDay = true;
+                this.daytime = 0.5;
+                
+                // Update panels to reflect reset
+                this.updateInfoPanel();
+                this.updateClimateProjection();
+            }
+
+            animate() {
+                // Clear canvas with slight motion blur effect
+                this.ctx.globalAlpha = 0.1;
+                this.ctx.fillStyle = 'rgba(10, 10, 26, 0.1)';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+                this.ctx.globalAlpha = 1;
+
+                // Draw main elements
+                this.drawSun();
+                this.drawEarth();
+                
+                // Update climate metrics
+                this.updateClimateMetrics();
+                
+                // Continue animation loop
+                requestAnimationFrame(this.animate.bind(this));
+            }
+        }
+
+        // Initialize on page load with error handling
+        window.addEventListener('load', () => {
+            try {
+                const visualizer = new ClimateVisualizer();
+            } catch (error) {
+                console.error('Failed to initialize Climate Visualizer:', error);
+                document.body.innerHTML = `
+                    <div style="color: red; text-align: center; padding: 20px;">
+                        <h1>Visualization Error</h1>
+                        <p>Unable to load climate visualization. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
