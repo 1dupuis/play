@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -232,84 +230,40 @@
         const GEMINI_API_KEY = 'AIzaSyCd0okpIKnQ7rSe0fw-EuEuKKZwJdqNlKM';
         
         async function checkProfanity(text, options = {}) {
-            // Configuration with default and customizable options
+            // Simplified configuration
             const config = {
-                timeout: options.timeout || 5000, // 5-second timeout
-                alternativeProfanityServices: [
-                    'https://www.purgomalum.com/service/containsprofanity',
-                    'https://neutrinoapi.com/bad-word-filter'  // Backup service
-                ],
-                customProfanityList: [],
-                strictness: options.strictness || 'moderate'
+                timeout: options.timeout || 3000, // Reduced timeout to 3 seconds
+                serviceUrl: 'https://www.purgomalum.com/service/containsprofanity'
             };
         
             try {
+                // Create an abort controller to handle timeout
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), config.timeout);
         
-                const fetchOptions = {
-                    method: 'GET',
-                    signal: controller.signal,
-                    headers: {
-                        'User-Agent': 'GameGenie/1.0',
-                        'Accept': 'text/plain'
-                    }
-                };
-        
-                // Primary profanity service attempt
-                const primaryResponse = await fetch(
-                    `${config.alternativeProfanityServices[0]}?text=${encodeURIComponent(text)}`, 
-                    fetchOptions
-                );
-        
-                clearTimeout(timeoutId);
-        
-                if (!primaryResponse.ok) {
-                    console.warn('Primary profanity check service unavailable. Attempting backup.');
-                    return await checkBackupService(text, config);
-                }
-        
-                const result = await primaryResponse.text();
-                return result === 'true';
-        
-            } catch (error) {
-                console.error('Primary Profanity Check Error:', error);
-                
-                // Fallback to alternative service or local checks
-                if (error.name === 'AbortError') {
-                    console.warn('Profanity check timed out. Attempting backup service.');
-                    return await checkBackupService(text, config);
-                }
-        
-                return false; // Default to safe if all checks fail
-            }
-        }
-        
-        // Backup service check with enhanced error handling
-        async function checkBackupService(text, config) {
-            try {
-                const backupResponse = await fetch(
-                    `${config.alternativeProfanityServices[1]}?text=${encodeURIComponent(text)}`,
+                // Simplified fetch options
+                const response = await fetch(
+                    `${config.serviceUrl}?text=${encodeURIComponent(text)}`, 
                     {
                         method: 'GET',
+                        signal: controller.signal,
                         headers: {
-                            'User-Agent': 'GameGenie/1.0',
-                            'Accept': 'text/plain'
+                            'User-Agent': 'ContentFilter/1.0'
                         }
                     }
                 );
         
-                if (!backupResponse.ok) {
-                    console.warn('Backup profanity service also failed.');
-                    return false;
-                }
+                // Clear the timeout once the request completes
+                clearTimeout(timeoutId);
         
-                const result = await backupResponse.text();
+                // Check if the response indicates profanity
+                const result = await response.text();
                 return result === 'true';
         
             } catch (error) {
-                console.error('Backup Profanity Service Error:', error);
-                return false;
+                // More lenient error handling
+                console.warn('Profanity check failed:', error.message);
+                return false; // Assume content is safe on any error
             }
         }
 
@@ -487,42 +441,37 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
         
             // Advanced analysis to determine improvement approach
             const strategy = improvementStrategies[generationSpeed];
+
+            const improvementPrompt = `ADVANCED GAME CODE REFINEMENT:
         
-            const improvementPrompt = `Advanced Game Code Refinement:
+        IMPROVEMENT FOCUS:
+        ${strategy.improvements.map(i => `- ${i}`).join('\n')}
+        Depth Level: ${strategy.depth}
         
-        COMPREHENSIVE GAME CODE IMPROVEMENT:
-        - Generation Speed Strategy: ${strategy.depth}
-        - Focus Areas: ${strategy.focus.join(', ')}
-        
-        Game Concept Context:
+        GAME CONTEXT:
         Concept: ${gamePrompt}
         Complexity: ${complexity}
         Visual Style: ${gameStyle}
         
-        Improvement Instructions:
-        1. Analyze existing code structure and performance
-        2. Apply ${strategy.depth.toLowerCase()} code refinement
-        3. Target improvement focus areas: ${strategy.focus.join(', ')}
+        COMPREHENSIVE IMPROVEMENT GUIDELINES:
+        1. Preserve core game mechanics
+        2. Implement robust error handling
+        3. Optimize performance
+        4. Enhance code readability
+        5. Add comprehensive comments
+        6. Ensure cross-browser compatibility
+        7. Improve accessibility features
         
-        IMPROVEMENT CRITERIA:
-        - Preserve original game logic and core mechanics
-        - Optimize code efficiency
-        - Enhance cross-browser compatibility
-        - Implement robust error handling
-        - Improve code readability and maintainability
-        - Add comprehensive comments explaining complex logic
-        
-        Existing Code:
+        EXISTING CODE:
         \`\`\`html
         ${gameCode}
         \`\`\`
         
-        Critical Requirements:
-        - Return ONLY improved HTML game code
-        - Ensure full self-containment
-        - Maintain original game's core functionality
-        - No external dependencies
-        `;
+        CRITICAL INSTRUCTIONS:
+        - Return ONLY refined HTML game code
+        - Maintain original functionality
+        - No external dependencies allowed
+        - Focus on quality and performance`;
         
             try {
                 const response = await fetch(
@@ -538,8 +487,9 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                                 parts: [{ text: improvementPrompt }]
                             }],
                             generationConfig: {
-                                temperature: 0.3,  // More deterministic
+                                temperature: 0.3,
                                 maxOutputTokens: 4096,
+                                topK: 1,
                                 stopSequences: ['```']
                             }
                         })
@@ -556,21 +506,30 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
                     .replace(/```/g, '')
                     .trim();
         
-                // Validate improved code
-                if (!improvedCode || improvedCode.length < gameCode.length / 2) {
-                    console.warn('Improvement generation produced insufficient code. Falling back to original.');
+                // Enhanced validation
+                const codeValidationChecks = [
+                    () => improvedCode.length > gameCode.length / 2,
+                    () => improvedCode.includes('<script>'),
+                    () => improvedCode.includes('function'),
+                    () => !improvedCode.includes('/* ERROR */')
+                ];
+        
+                const validationPassed = codeValidationChecks.every(check => check());
+        
+                if (!validationPassed) {
+                    console.warn('Improvement generation failed validation checks.');
                     return gameCode;
                 }
         
                 return improvedCode;
         
             } catch (error) {
-                console.error('Game Improvement Comprehensive Error:', {
+                console.error('Comprehensive Game Improvement Error:', {
                     message: error.message,
                     context: { complexity, gameStyle, generationSpeed }
                 });
         
-                return gameCode; // Fallback to original code if improvement fails
+                return gameCode;
             }
         }
         
