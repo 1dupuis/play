@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="404.css">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
     <script src="access.js" defer></script>
+    <script src="addelement.js" defer></script>
     <script src="theme.js" defer></script>
 </head>
 <body>
@@ -15,8 +16,15 @@
         <p>Oops! The page you’re looking for doesn’t exist.</p>
         <p>Return to the <a href="/">search</a> or check the URL for mistakes.</p>
         <div id="error-details"></div>
-        <button id="reload-btn">Reload Page</button>
+        <button id="reload-btn">Go to Home</button>
     </div>
     <script src="404.js"></script>
+    <script>
+        // Select the button by its ID
+        document.getElementById('reload-btn').addEventListener('click', function() {
+            // Redirect to the home page
+            window.location.href = '/';
+        });
+    </script>
 </body>
 </html>
