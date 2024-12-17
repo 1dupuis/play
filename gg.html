@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameGenie</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
@@ -226,41 +226,37 @@
         // Placeholder Gemini API Key - replace with your own
         const GEMINI_API_KEY = 'AIzaSyCd0okpIKnQ7rSe0fw-EuEuKKZwJdqNlKM';
         
-        async function checkProfanity(text, options = {}) {
-            // Simplified configuration
-            const config = {
-                timeout: options.timeout || 3000, // Reduced timeout to 3 seconds
-                serviceUrl: 'https://www.purgomalum.com/service/containsprofanity'
-            };
-        
+        async function checkProfanity(text) {
+            const PROFANITY_API_ENDPOINT = 'https://www.purgomalum.com/service/containsprofanity';
+            
             try {
-                // Create an abort controller to handle timeout
+                // Implement more robust error handling and timeout
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), config.timeout);
-        
-                // Simplified fetch options
-                const response = await fetch(
-                    `${config.serviceUrl}?text=${encodeURIComponent(text)}`, 
-                    {
-                        method: 'GET',
-                        signal: controller.signal,
-                        headers: {
-                            'User-Agent': 'ContentFilter/1.0'
-                        }
-                    }
-                );
-        
-                // Clear the timeout once the request completes
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5-second timeout
+                
+                const response = await fetch(`${PROFANITY_API_ENDPOINT}?text=${encodeURIComponent(text)}`, {
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                
                 clearTimeout(timeoutId);
-        
-                // Check if the response indicates profanity
+                
+                if (!response.ok) {
+                    console.warn('Profanity check service unavailable. Proceeding with generation.');
+                    return false;
+                }
+                
                 const result = await response.text();
                 return result === 'true';
-        
             } catch (error) {
-                // More lenient error handling
-                console.warn('Profanity check failed:', error.message);
-                return false; // Assume content is safe on any error
+                console.error('Profanity check error:', error);
+                
+                // More detailed error handling
+                if (error.name === 'AbortError') {
+                    console.warn('Profanity check timed out. Proceeding with generation.');
+                }
+                
+                return false; // Default to safe if API fails
             }
         }
 
@@ -410,133 +406,58 @@ CRITICAL: Produce RAW, EXECUTABLE CODE without any additional explanatory text.`
             
             return sanitizedContent;
         }
+        
+        // Add this function to the existing script, just before the 'Game generation event listener'
 
         async function improveGeneratedGame(gameCode, gamePrompt, complexity, gameStyle, generationSpeed, geminiModel) {
-            // Comprehensive improvement strategy with detailed context
-            const improvementStrategies = {
-                'very-slow': {
-                    focus: ['Performance', 'Security', 'Code Quality', 'Accessibility'],
-                    depth: 'Ultra-Comprehensive'
-                },
-                'slow': {
-                    focus: ['Performance', 'Security', 'Code Readability'],
-                    depth: 'Thorough'
-                },
-                'normal': {
-                    focus: ['Core Performance', 'Basic Security'],
-                    depth: 'Balanced'
-                },
-                'fast': {
-                    focus: ['Quick Optimizations'],
-                    depth: 'Surface Level'
-                },
-                'very-fast': {
-                    focus: ['Minimal Improvements'],
-                    depth: 'Lightweight'
-                }
-            };
+            const improvementPrompt = `Improve the following HTML game code based on these criteria:
+            Game Concept: ${gamePrompt}
+            Complexity: ${complexity}
+            Style: ${gameStyle}
+            Generation Speed: ${generationSpeed}
         
-            // Advanced analysis to determine improvement approach
-            const strategy = improvementStrategies[generationSpeed];
-
-            const improvementPrompt = `ADVANCED GAME CODE REFINEMENT:
+            Code:
+            \`\`\`html
+            ${gameCode}
+            \`\`\`
         
-        IMPROVEMENT FOCUS:
-        ${strategy.improvements.map(i => `- ${i}`).join('\n')}
-        Depth Level: ${strategy.depth}
+            Focus on:
+            - Fixing any bugs or errors.
+            - Improving performance and efficiency.
+            - Enhancing user experience.
+            - Adding comments for clarity.
         
-        GAME CONTEXT:
-        Concept: ${gamePrompt}
-        Complexity: ${complexity}
-        Visual Style: ${gameStyle}
-        
-        COMPREHENSIVE IMPROVEMENT GUIDELINES:
-        1. Preserve core game mechanics
-        2. Implement robust error handling
-        3. Optimize performance
-        4. Enhance code readability
-        5. Add comprehensive comments
-        6. Ensure cross-browser compatibility
-        7. Improve accessibility features
-        
-        EXISTING CODE:
-        \`\`\`html
-        ${gameCode}
-        \`\`\`
-        
-        CRITICAL INSTRUCTIONS:
-        - Return ONLY refined HTML game code
-        - Maintain original functionality
-        - No external dependencies allowed
-        - Focus on quality and performance`;
+            Return ONLY the improved HTML code.`;
         
             try {
-                const response = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`, 
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-goog-api-key': GEMINI_API_KEY
-                        },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: improvementPrompt }]
-                            }],
-                            generationConfig: {
-                                temperature: 0.3,
-                                maxOutputTokens: 4096,
-                                topK: 1,
-                                stopSequences: ['```']
-                            }
-                        })
-                    }
-                );
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`, { // Use the passed-in geminiModel
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': GEMINI_API_KEY
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: improvementPrompt
+                            }]
+                        }]
+                    })
+                });
         
                 if (!response.ok) {
-                    throw new Error(`Improvement Generation Error: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
         
                 const data = await response.json();
-                const improvedCode = data.candidates[0].content.parts[0].text
+                return data.candidates[0].content.parts[0].text
                     .replace(/```html/g, '')
                     .replace(/```/g, '')
                     .trim();
-        
-                // Enhanced validation
-                const codeValidationChecks = [
-                    () => improvedCode.length > gameCode.length / 2,
-                    () => improvedCode.includes('<script>'),
-                    () => improvedCode.includes('function'),
-                    () => !improvedCode.includes('/* ERROR */')
-                ];
-        
-                const validationPassed = codeValidationChecks.every(check => check());
-        
-                if (!validationPassed) {
-                    console.warn('Improvement generation failed validation checks.');
-                    return gameCode;
-                }
-        
-                return improvedCode;
-        
             } catch (error) {
-                console.error('Comprehensive Game Improvement Error:', {
-                    message: error.message,
-                    context: { complexity, gameStyle, generationSpeed }
-                });
-        
-                return gameCode;
+                console.error('Game Improvement Error:', error);
+                return null; // Return null to indicate failure
             }
-        }
-        
-        // Optional: Add type checking and validation helpers
-        function validateGameCode(code) {
-            // Implement HTML and JavaScript validation logic
-            const hasScriptTag = /<script>.*<\/script>/si.test(code);
-            const containsGameLogic = /function\s+\w+\s*\(/.test(code);
-            
-            return hasScriptTag && containsGameLogic;
         }
         
         async function selectModelAutomatically(gamePrompt, complexity, style, generationSpeed, modelRanking) {
