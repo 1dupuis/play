@@ -119,7 +119,7 @@ const config = {
             showForever: true
         },
         {
-            message: "❇️ Resources --> GameGenie (Create Games From AI!)",
+            message: "❇️ Create ANY game/tool by using GameGenie! [Resources > GameGenie]",
             showForever: true
         },
         {
