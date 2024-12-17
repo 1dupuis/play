@@ -3,62 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Learn French with Style</title>
-    <link rel="stylesheet" href="search.css">
+    <title>dupuis.lol - Learn French Interactively</title>
+    <link rel="stylesheet" href="verify.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
-    <script src="search.js" defer></script>
+    <script src="verify.js" defer></script>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="/" aria-label="Home">
-                    <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-icon.png" alt="dupuis.lol Logo">
-                </a>
+    <div class="background-animation"></div>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png" alt="dupuis.lol logo" class="logo">
+                <h1 class="site-title">dupuis.lol</h1>
             </div>
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search dupuis.lol..." aria-label="Search">
-                <button id="search-button" aria-label="Perform search"><i class="fas fa-search"></i></button>
+            <div class="subtitle">
+                <span class="subtitle-prefix">Make French</span>
+                <span id="typing-text" class="subtitle-dynamic"></span>
             </div>
-            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
-                <i class="fas fa-bars"></i>
-            </button>
-        </nav>
-    </header>
-    <main>
-        <div class="main-content">
-            <section id="categories">
-                <!-- Categories will be dynamically generated here -->
-            </section>
-            <section id="content">
-                <!-- Main content will be dynamically loaded here -->
-            </section>
-        </div>
-    </main>
-    <footer>
-        <p>&copy; 2024 dupuis.lol | 
-          <a href="https://stats.uptimerobot.com/EFEhlYMyoR" target="_blank" rel="noopener noreferrer">Uptime Status</a> | 
-          <a href="https://policies.dupuis.lol/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service</a>
-        </p>
-    </footer>
-    <div id="modal" class="modal" aria-hidden="true">
-        <div class="modal-content">
-            <button class="close" aria-label="Close modal">&times;</button>
-            <div id="modal-body"></div>
-        </div>
+        </header>
+        <main>
+            <div id="verification-container" class="form-container">
+                <h2>Verify Account</h2>
+                <form id="verification-form">
+                    <div class="input-group">
+                        <input type="password" id="verification-input" required placeholder=" ">
+                        <label for="verification-input">Enter the password</label>
+                    </div>
+                    <button type="submit" id="verify-button">Verify</button>
+                </form>
+            </div>
+            <div id="auth-container" class="form-container" style="display: none;">
+                <h2 id="auth-title">Sign Up</h2>
+                <form id="auth-form">
+                    <div class="input-group">
+                        <input type="text" id="username-input" required placeholder=" ">
+                        <label for="username-input">Username</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="password-input" required placeholder=" ">
+                        <label for="password-input">Password</label>
+                    </div>
+                    <button type="submit" id="auth-button">Sign Up</button>
+                </form>
+                <p id="auth-switch">Already have an account? <a href="#" id="switch-link">Log In</a></p>
+            </div>
+            <p id="message" class="message"></p>
+            <div id="loading-indicator" class="loading">
+                <div class="spinner"></div>
+                <span>Processing...</span>
+            </div>
+        </main>
+        <footer>
+            <p>&copy; 2024 dupuis.lol. All rights reserved.</p>
+        </footer>
     </div>
-    <div id="theme-toggle" class="theme-toggle">
-        <button id="light-theme" aria-label="Switch to light theme"><i class="fas fa-sun"></i></button>
-        <button id="dark-theme" aria-label="Switch to dark theme"><i class="fas fa-moon"></i></button>
-    </div>
-    
-    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-
-    <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
 </body>
 </html>
