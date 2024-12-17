@@ -115,6 +115,10 @@ const config = {
     ],
     announcements: [
         {
+            message: "⛔️ We're currently experiencing issues with the site.",
+            showForever: true
+        },
+        {
             message: "❇️ Resources --> GameGenie (Create Games From AI!)",
             showForever: true
         },
