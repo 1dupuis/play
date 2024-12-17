@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Climate Change Interactive Visualization</title>
+    <title>Climate Change Interactive Simulator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0a0a1a;
             --bg-darker: #050510;
-            --panel-bg: rgba(20, 20, 30, 0.8);
+            --panel-bg: rgba(20, 20, 30, 0.9);
             --text-light: #e0e0ff;
             --text-muted: #a0a0c0;
             --accent-blue: #2255AA;
             --accent-green: #22AA55;
             --accent-red: #AA2255;
             --text-danger: #ff4444;
+            --interactive-hover: rgba(50, 80, 120, 0.5);
         }
 
         * {
@@ -53,7 +54,7 @@
             position: fixed;
             top: 0;
             right: 0;
-            width: 340px;
+            width: 400px;
             height: 100%;
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
@@ -62,7 +63,7 @@
             z-index: 10;
             transform: translateX(100%);
             transition: transform 0.4s ease-in-out;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
         }
 
         .sidebar.open {
@@ -85,7 +86,7 @@
             cursor: pointer;
             z-index: 20;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         .sidebar-toggle:hover {
@@ -94,10 +95,10 @@
 
         .metric-section {
             margin-bottom: 25px;
-            background: rgba(30, 40, 60, 0.6);
+            background: rgba(30, 40, 60, 0.7);
             border-radius: 12px;
             padding: 20px;
-            border: 1px solid rgba(50, 80, 120, 0.3);
+            border: 1px solid rgba(50, 80, 120, 0.5);
         }
 
         .metric-section h2 {
@@ -107,6 +108,43 @@
             border-bottom: 2px solid var(--accent-blue);
             padding-bottom: 8px;
             font-weight: 600;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .slider-container label {
+            flex: 1;
+            margin-right: 10px;
+            color: var(--text-muted);
+        }
+
+        .slider {
+            flex: 2;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: var(--accent-blue);
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            border-radius: 5px;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--text-light);
+            cursor: pointer;
+            border-radius: 50%;
         }
 
         .metric-item {
@@ -120,7 +158,7 @@
         }
 
         .metric-item:hover {
-            background-color: rgba(50, 60, 80, 0.6);
+            background-color: var(--interactive-hover);
             transform: translateX(5px);
         }
 
@@ -134,7 +172,11 @@
             color: var(--text-light);
         }
 
-        .metric-item .text-red {
+        .metric-item .text-warning {
+            color: orange;
+        }
+
+        .metric-item .text-danger {
             color: var(--text-danger);
         }
 
@@ -159,13 +201,13 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
 
         .btn:hover {
             background-color: var(--accent-green);
             transform: scale(1.05);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.25);
         }
 
         .btn.danger {
@@ -178,8 +220,12 @@
 
         #prediction-panel {
             text-align: center;
-            font-style: italic;
             color: var(--text-muted);
+        }
+
+        #prediction-text {
+            font-style: italic;
+            margin-top: 10px;
         }
 
         @media (max-width: 768px) {
@@ -210,9 +256,25 @@
         <canvas id="canvas" aria-label="Climate Change Visualization"></canvas>
     </div>
 
-    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Metrics Sidebar">📊</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Climate Control Panel">🌍</button>
 
-    <div class="sidebar" id="sidebar" role="complementary" aria-label="Climate Metrics Panel">
+    <div class="sidebar" id="sidebar" role="complementary" aria-label="Climate Simulation Controls">
+        <div class="metric-section">
+            <h2>Climate Parameters</h2>
+            <div class="slider-container">
+                <label for="co2-slider">CO2 Emissions</label>
+                <input type="range" min="300" max="800" value="415" class="slider" id="co2-slider">
+            </div>
+            <div class="slider-container">
+                <label for="temp-slider">Global Temperature</label>
+                <input type="range" min="10" max="40" value="15" class="slider" id="temp-slider">
+            </div>
+            <div class="slider-container">
+                <label for="ice-slider">Ice Coverage</label>
+                <input type="range" min="0" max="100" value="50" class="slider" id="ice-slider">
+            </div>
+        </div>
+
         <div class="metric-section">
             <h2>Global Climate Metrics</h2>
             <div class="metric-item" id="metric-temperature">
@@ -238,7 +300,7 @@
         </div>
 
         <div class="metric-section" id="prediction-panel">
-            <h2>Climate Change Projection</h2>
+            <h2>Climate Change Impact Projection</h2>
             <p id="prediction-text" aria-live="polite">Awaiting simulation data...</p>
         </div>
     </div>
@@ -264,10 +326,14 @@
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d', { alpha: false });
                 this.ctx.imageSmoothingEnabled = true;
+
+                // New slider elements
+                this.co2Slider = document.getElementById('co2-slider');
+                this.tempSlider = document.getElementById('temp-slider');
+                this.iceSlider = document.getElementById('ice-slider');
             }
 
             setupCanvas() {
-                // Handle high DPI displays
                 const dpr = window.devicePixelRatio || 1;
                 this.width = window.innerWidth;
                 this.height = window.innerHeight;
@@ -327,6 +393,19 @@
                 document.getElementById('reset-climate').addEventListener('click', () => {
                     this.resetClimate();
                 });
+
+                // New slider event listeners
+                this.co2Slider.addEventListener('input', (e) => {
+                    this.earth.metrics.co2 = parseFloat(e.target.value);
+                });
+
+                this.tempSlider.addEventListener('input', (e) => {
+                    this.earth.metrics.temperature = parseFloat(e.target.value);
+                });
+
+                this.iceSlider.addEventListener('input', (e) => {
+                    this.earth.metrics.iceCoverage = parseFloat(e.target.value);
+                });
             }
 
             debounce(func, delay) {
@@ -360,9 +439,9 @@
             }
 
             setupRays() {
-                this.rays = Array.from({length: 200}, () => {
+                this.rays = Array.from({length: 250}, () => {
                     const angle = Math.random() * Math.PI * 2;
-                    const distance = this.sun.radius + 10 + Math.random() * 300;
+                    const distance = this.sun.radius + 10 + Math.random() * 350;
                     return {
                         angle,
                         startX: this.sun.x + Math.cos(angle) * this.sun.radius,
@@ -376,7 +455,7 @@
             }
 
             drawSun() {
-                // Enhanced sun pulsing with smoother transition
+                // Enhanced sun with more realistic pulsing
                 this.sun.radius += 0.3 * this.sun.pulseDirection;
                 if (this.sun.radius > 90 || this.sun.radius < 70) {
                     this.sun.pulseDirection *= -1;
@@ -399,13 +478,14 @@
 
             drawRays() {
                 this.rays.forEach(ray => {
-                    ray.startX += Math.cos(ray.angle) * ray.speed;
-                    ray.startY += Math.sin(ray.angle) * ray.speed;
-                    ray.endX += Math.cos(ray.angle) * ray.speed;
-                    ray.endY += Math.sin(ray.angle) * ray.speed;
+                    // More dynamic ray movement and opacity
+                    ray.startX += Math.cos(ray.angle) * ray.speed * this.daytime;
+                    ray.startY += Math.sin(ray.angle) * ray.speed * this.daytime;
+                    ray.endX += Math.cos(ray.angle) * ray.speed * this.daytime;
+                    ray.endY += Math.sin(ray.angle) * ray.speed * this.daytime;
 
-                    this.ctx.strokeStyle = `rgba(255, 255, 200, ${ray.opacity * this.daytime * 0.2})`;
-                    this.ctx.lineWidth = 1;
+                    this.ctx.strokeStyle = `rgba(255, 255, 200, ${ray.opacity * this.daytime * 0.25})`;
+                    this.ctx.lineWidth = 1.5;
                     this.ctx.beginPath();
                     this.ctx.moveTo(ray.startX, ray.startY);
                     this.ctx.lineTo(ray.endX, ray.endY);
@@ -419,23 +499,23 @@
                 this.ctx.rotate(this.earth.rotation);
                 this.ctx.rotate(this.earth.tilt);
 
+                // More sophisticated earth gradient
                 const earthGradient = this.ctx.createRadialGradient(
                     -this.earth.radius/3, -this.earth.radius/3, 0, 
                     0, 0, this.earth.radius
                 );
                 earthGradient.addColorStop(0, '#2255AA');
-                earthGradient.addColorStop(0.7, '#113388');
+                earthGradient.addColorStop(0.5, '#113388');
                 earthGradient.addColorStop(1, '#0a2255');
 
                 this.ctx.fillStyle = earthGradient;
                 this.ctx.beginPath();
-
                 this.ctx.arc(0, 0, this.earth.radius, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                // Enhanced shadow effect with more nuanced depth
+                // Enhanced 3D shadow effect
                 this.ctx.beginPath();
-                this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                this.ctx.fillStyle = 'rgba(0,0,0,0.4)';
                 this.ctx.ellipse(
                     this.earth.radius/4, 
                     this.earth.radius/4, 
@@ -452,32 +532,33 @@
 
             drawIceCaps() {
                 const iceFade = 1 - this.earth.metrics.iceCoverage / 100;
-                this.ctx.fillStyle = `rgba(230,230,255, ${iceFade})`;
                 
-                // More organic, variable ice cap rendering
-                const capRadius = this.earth.radius * 0.3;
-                const capOffset = this.earth.radius * 0.8;
+                // More nuanced, dynamic ice cap rendering
+                const capRadius = this.earth.radius * 0.35;
+                const capOffset = this.earth.radius * 0.85;
 
-                // North pole cap with variable shape based on ice coverage
+                this.ctx.fillStyle = `rgba(230,230,255, ${iceFade * 0.8})`;
+                
+                // North pole cap
                 this.ctx.beginPath();
                 this.ctx.ellipse(
                     0, 
                     -capOffset, 
-                    capRadius * (1.2 - iceFade), 
-                    capRadius * (0.8 - iceFade * 0.5), 
+                    capRadius * (1.3 - iceFade), 
+                    capRadius * (0.7 - iceFade * 0.5), 
                     Math.PI / 4, 
                     0, 
                     Math.PI * 2
                 );
                 this.ctx.fill();
 
-                // South pole cap with similar variable rendering
+                // South pole cap
                 this.ctx.beginPath();
                 this.ctx.ellipse(
                     0, 
                     capOffset, 
-                    capRadius * (1.2 - iceFade), 
-                    capRadius * (0.8 - iceFade * 0.5), 
+                    capRadius * (1.3 - iceFade), 
+                    capRadius * (0.7 - iceFade * 0.5), 
                     Math.PI / 4, 
                     0, 
                     Math.PI * 2
@@ -488,17 +569,26 @@
             updateClimateMetrics() {
                 const metrics = this.earth.metrics;
                 
-                // More sophisticated day/night cycle mechanics
+                // More sophisticated day/night and climate change mechanics
                 this.daytime = this.isDay 
                     ? Math.min(1, this.daytime + 0.005)
                     : Math.max(0.2, this.daytime - 0.005);
 
-                // Enhanced climate change progression with more realistic rates
-                metrics.temperature += this.isDay ? 0.0008 : 0.0003;
-                metrics.ozoneHealth = Math.max(0, metrics.ozoneHealth - 0.02);
-                metrics.iceCoverage = Math.max(0, metrics.iceCoverage - 0.01);
-                metrics.seaLevel += 0.03;
-                metrics.co2 = Math.min(650, metrics.co2 + 0.1);
+                // Controlled, more realistic climate progression
+                const co2Impact = (metrics.co2 - 415) / 100;
+                metrics.temperature += this.isDay 
+                    ? (0.0008 + co2Impact * 0.002) 
+                    : (0.0003 + co2Impact * 0.001);
+                
+                metrics.ozoneHealth = Math.max(0, metrics.ozoneHealth - 0.01 * co2Impact);
+                metrics.iceCoverage = Math.max(0, metrics.iceCoverage - 0.005 * co2Impact);
+                metrics.seaLevel += 0.02 * co2Impact;
+
+                // Ensure metrics stay within reasonable ranges
+                metrics.temperature = Math.min(Math.max(metrics.temperature, 10), 40);
+                metrics.co2 = Math.min(Math.max(metrics.co2, 300), 800);
+                metrics.iceCoverage = Math.min(Math.max(metrics.iceCoverage, 0), 100);
+                metrics.ozoneHealth = Math.min(Math.max(metrics.ozoneHealth, 0), 100);
 
                 // Earth rotation with slight variation
                 this.earth.rotation += 0.0025;
@@ -511,24 +601,24 @@
                 const metrics = this.earth.metrics;
                 const formatMetric = (value, unit = '') => `${value.toFixed(1)}${unit}`;
 
-                // Color-coded metric updates with more granular thresholds
+                // More granular color-coding of metrics
                 this.updateMetric('metric-temperature', formatMetric(metrics.temperature, '°C'), 
-                    metrics.temperature > 35 ? 'text-red' : 
-                    metrics.temperature > 30 ? 'text-muted' : '');
+                    metrics.temperature > 35 ? 'text-danger' : 
+                    metrics.temperature > 30 ? 'text-warning' : '');
                 
                 this.updateMetric('metric-co2', formatMetric(metrics.co2, ' ppm'), 
-                    metrics.co2 > 550 ? 'text-red' : 
-                    metrics.co2 > 450 ? 'text-muted' : '');
+                    metrics.co2 > 550 ? 'text-danger' : 
+                    metrics.co2 > 450 ? 'text-warning' : '');
                 
                 this.updateMetric('metric-ice-coverage', formatMetric(metrics.iceCoverage, '%'), 
-                    metrics.iceCoverage < 20 ? 'text-red' : 
-                    metrics.iceCoverage < 40 ? 'text-muted' : '');
+                    metrics.iceCoverage < 20 ? 'text-danger' : 
+                    metrics.iceCoverage < 40 ? 'text-warning' : '');
                 
                 this.updateMetric('metric-sea-level', formatMetric(metrics.seaLevel, ' mm'));
                 
                 this.updateMetric('metric-ozone', formatMetric(metrics.ozoneHealth, '%'), 
-                    metrics.ozoneHealth < 30 ? 'text-red' : 
-                    metrics.ozoneHealth < 50 ? 'text-muted' : '');
+                    metrics.ozoneHealth < 30 ? 'text-danger' : 
+                    metrics.ozoneHealth < 50 ? 'text-warning' : '');
             }
 
             updateMetric(elementId, value, extraClass = '') {
@@ -541,24 +631,24 @@
                 const metrics = this.earth.metrics;
                 const predictionText = document.getElementById('prediction-text');
                 
-                let message = "Current climate trends remain within moderate ranges.";
+                let message = "Climate trends remain within moderate ranges.";
                 let color = 'var(--text-muted)';
 
                 if (metrics.temperature > 35) {
-                    message = "🚨 Extreme warming detected. Urgent global action required!";
-                    color = 'var(--accent-red)';
-                } else if (metrics.temperature > 25) {
-                    message = "🌡️ Significant temperature rise projected by 2100.";
-                    color = 'var(--text-muted)';
+                    message = "🚨 CRITICAL: Extreme global warming detected! Catastrophic risks imminent.";
+                    color = 'var(--text-danger)';
+                } else if (metrics.temperature > 30) {
+                    message = "⚠️ Significant temperature rise. Urgent global action required.";
+                    color = 'orange';
                 } else if (metrics.co2 > 550) {
-                    message = "⚠️ CO2 levels approaching critical thresholds.";
-                    color = 'var(--text-muted)';
+                    message = "📈 CO2 levels approaching critical environmental thresholds.";
+                    color = 'var(--accent-red)';
                 } else if (metrics.iceCoverage < 20) {
-                    message = "🧊 Rapid ice sheet depletion detected.";
+                    message = "🧊 Rapid polar ice depletion. Ecosystem collapse risk increasing.";
                     color = 'var(--accent-blue)';
                 } else if (metrics.ozoneHealth < 30) {
-                    message = "🌫️ Ozone layer critically damaged.";
-                    color = 'var(--accent-red)';
+                    message = "🌫️ Severe ozone layer damage. Increased UV radiation risks.";
+                    color = 'var(--text-danger)';
                 }
 
                 predictionText.textContent = message;
@@ -574,6 +664,12 @@
                     co2: 415 + (Math.random() * 10 - 5),
                     ozoneHealth: 70 + (Math.random() * 10 - 5)
                 };
+
+                // Reset sliders to match initial metrics
+                this.co2Slider.value = this.earth.metrics.co2;
+                this.tempSlider.value = this.earth.metrics.temperature;
+                this.iceSlider.value = this.earth.metrics.iceCoverage;
+
                 this.isDay = true;
                 this.daytime = 0.5;
                 
@@ -583,7 +679,7 @@
             }
 
             animate() {
-                // Clear canvas with subtle motion blur
+                // Subtle motion blur effect
                 this.ctx.globalAlpha = 0.1;
                 this.ctx.fillStyle = 'rgba(10, 10, 26, 0.1)';
                 this.ctx.fillRect(0, 0, this.width, this.height);
@@ -601,17 +697,21 @@
             }
         }
 
-        // Robust initialization with error handling
+        // Robust initialization with comprehensive error handling
         window.addEventListener('load', () => {
             try {
                 const visualizer = new ClimateVisualizer();
+                
+                // Optional: Add console log for educational tracking
+                console.log('Climate Change Simulator Initialized');
+                console.log('Interact with sliders to explore climate change impacts');
             } catch (error) {
-                console.error('Failed to initialize Climate Visualizer:', error);
+                console.error('Climate Visualization Initialization Error:', error);
                 document.body.innerHTML = `
                     <div style="color: red; text-align: center; padding: 20px; font-family: Arial, sans-serif;">
-                        <h1>Visualization Error</h1>
-                        <p>Unable to load climate visualization. Please refresh the page.</p>
-                        <small>Error details: ${error.message}</small>
+                        <h1>Simulation Error</h1>
+                        <p>Unable to load climate change visualization. Please check browser compatibility.</p>
+                        <small>Technical details: ${error.message}</small>
                     </div>
                 `;
             }
