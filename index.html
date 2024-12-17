@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dupuis.lol - Learn French Interactively</title>
-    <link rel="stylesheet" href="verify.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="verify2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="verify.js" defer></script>
-</head>
-<body>
-    <div class="background-animation"></div>
+    <script type="module" src="https://dupuis.lol/verify2-oa.js" defer></script>
+    
+    <div id="particles-js"></div>
     <div class="container">
         <header>
             <div class="logo-container">
@@ -23,30 +22,28 @@
             </div>
         </header>
         <main>
-            <div id="verification-container" class="form-container">
-                <h2>Verify Account</h2>
-                <form id="verification-form">
-                    <div class="input-group">
-                        <input type="password" id="verification-input" required placeholder=" ">
-                        <label for="verification-input">Enter the password</label>
-                    </div>
-                    <button type="submit" id="verify-button">Verify</button>
-                </form>
-            </div>
-            <div id="auth-container" class="form-container" style="display: none;">
-                <h2 id="auth-title">Sign Up</h2>
+            <div id="auth-container" class="form-container">
+                <h2 id="auth-title">Log In</h2>
                 <form id="auth-form">
                     <div class="input-group">
-                        <input type="text" id="username-input" required placeholder=" ">
-                        <label for="username-input">Username</label>
+                        <input type="email" id="email-input" required placeholder=" ">
+                        <label for="email-input">Email</label>
                     </div>
                     <div class="input-group">
                         <input type="password" id="password-input" required placeholder=" ">
                         <label for="password-input">Password</label>
                     </div>
-                    <button type="submit" id="auth-button">Sign Up</button>
+                    <button type="submit" id="auth-button">Log In</button>
                 </form>
-                <p id="auth-switch">Already have an account? <a href="#" id="switch-link">Log In</a></p>
+                <button id="google-sign-in" class="google-btn">
+                    <img src="https://raw.githubusercontent.com/1dupuis/play/main/google-icon2.png" alt="Google icon" class="google-icon">
+                    Sign in with Google
+                </button>
+                <button id="apple-sign-in" class="apple-btn">
+                    Sign in with Apple
+                </button>
+                <p id="auth-switch">Don't have an account? <a href="#" id="switch-link">Sign Up</a></p>
+                <a href="#" id="forgot-password-link">Forgot Password?</a>
             </div>
             <p id="message" class="message"></p>
             <div id="loading-indicator" class="loading">
@@ -58,5 +55,15 @@
             <p>&copy; 2024 dupuis.lol. All rights reserved.</p>
         </footer>
     </div>
+    
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+
+    <!-- Particles.js for background animation -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </body>
 </html>
