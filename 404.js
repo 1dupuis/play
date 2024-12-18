@@ -8,5 +8,5 @@ document.addEventListener("DOMContentLoaded", () => {
     const reloadBtn = document.getElementById("reload-btn");
     reloadBtn.addEventListener("click", () => {
         window.location.href = '/';
-    });
+    });//h
 });
