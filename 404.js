@@ -9,4 +9,4 @@ document.addEventListener("DOMContentLoaded", () => {
     reloadBtn.addEventListener("click", () => {
         window.location.href = '/';
     });
-//});
+});
