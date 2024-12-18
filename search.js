@@ -104,6 +104,7 @@ const config = {
                {
                    name: 'Other Tools',
                    items: [
+                       { name: 'gg Beta', url: '/gg-beta.html', description: 'The beta version of dupuis.lol gg' },
                        { name: 'Old Homepage', url: '/homepage', description: 'Access the previous version of the website' },
                        { name: 'Contact', url: '/contact', description: 'Get in touch with the dupuis.lol team' },
                        { name: 'Videos', url: '/videos', description: 'Tutorials and tech talks' },
