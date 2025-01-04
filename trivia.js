@@ -1,3 +1,4 @@
+/* trivia.js */
 const TriviaGame = (function() {
     // Private variables with default values
     let currentQuestionIndex = 0;
@@ -7,19 +8,17 @@ const TriviaGame = (function() {
     let gameDifficulty = 'medium';
     let gameCategory = '9';
     let timeLeft = 0;
-    let timer;
+    let timer = null;
     let streak = 0;
     let highestStreak = 0;
     let isLoading = false;
-    
-    const TIMER_DURATION = 20;
-    const MAX_LEADERBOARD_ENTRIES = 10;
-    const STREAK_BONUS = 5;
-    const TIME_BONUS_THRESHOLD = 10;
-    const TIME_BONUS_POINTS = 2;
 
-    // DOM elements cache
-    const elements = {};
+    // Configurable constants
+    const TIMER_DURATION = 20;
+    const TIME_BONUS_THRESHOLD = 10;  // Additional points if answered before this threshold
+    const TIME_BONUS_POINTS = 2;
+    const STREAK_BONUS = 5;          // Additional points if streak >= 3
+    const MAX_LEADERBOARD_ENTRIES = 10;
 
     // Keyboard shortcuts configuration
     const keyboardShortcuts = {
@@ -83,7 +82,12 @@ const TriviaGame = (function() {
         }
     };
 
-    // Utility Functions
+    // Cached DOM elements (will be filled in init())
+    const elements = {};
+
+    /**
+     * ------------- Utility Functions -------------
+     */
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -105,469 +109,11 @@ const TriviaGame = (function() {
                 return await response.json();
             } catch (error) {
                 lastError = error;
+                // Exponential backoff
                 await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
             }
         }
         throw lastError;
-    }
-
-    function showLoadingState(loading) {
-        isLoading = loading;
-        if (elements.startGame) {
-            elements.startGame.disabled = loading;
-            elements.startGame.innerHTML = loading ? 
-                `<i class="fas fa-spinner fa-spin"></i> ${getLocalizedString('loading')}` : 
-                getLocalizedString('startGame');
-        }
-    }
-
-    async function fetchTriviaQuestions() {
-        showLoadingState(true);
-        try {
-            const apiUrl = gameLanguage === 'fr'
-                ? 'https://quizzapi.jomoreschi.fr/api/v1/quiz?limit=10'
-                : `https://opentdb.com/api.php?amount=10&category=${gameCategory}&difficulty=${gameDifficulty}&type=multiple`;
-
-            const data = await fetchWithRetry(apiUrl);
-            
-            if (gameLanguage === 'fr') {
-                if (!Array.isArray(data.quizzes) || data.quizzes.length === 0) {
-                    throw new Error('No questions received from French API');
-                }
-                triviaQuestions = processFrenchQuestions(data.quizzes);
-            } else {
-                if (data.response_code !== 0 || !Array.isArray(data.results)) {
-                    throw new Error('Failed to fetch questions from English API');
-                }
-                triviaQuestions = processEnglishQuestions(data.results);
-            }
-
-            startGame();
-        } catch (error) {
-            console.error('Error fetching trivia questions:', error);
-            showModal(
-                getLocalizedString('errorFetchingQuestions'),
-                error.message,
-                getLocalizedString('retry'),
-                fetchTriviaQuestions
-            );
-        } finally {
-            showLoadingState(false);
-        }
-    }
-
-    function processFrenchQuestions(questions) {
-        return questions.map(item => ({
-            question: decodeHTML(item.question),
-            answers: shuffleArray([item.answer, ...item.badAnswers]),
-            correctAnswer: item.answer
-        }));
-    }
-
-    function processEnglishQuestions(questions) {
-        return questions.map(question => ({
-            question: decodeHTML(question.question),
-            answers: shuffleArray([...question.incorrect_answers, question.correct_answer]),
-            correctAnswer: question.correct_answer
-        }));
-    }
-
-    function shuffleArray(array) {
-        const newArray = [...array];
-        for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
-    }
-
-    function startGame() {
-        currentQuestionIndex = 0;
-        score = 0;
-        streak = 0;
-        highestStreak = 0;
-        updateScore();
-        loadQuestion();
-        showSection('trivia-center');
-        setupKeyboardShortcuts();
-    }
-
-    function setupKeyboardShortcuts() {
-        document.addEventListener('keydown', handleKeyPress);
-    }
-
-    function handleKeyPress(event) {
-        if (isLoading) return;
-        
-        const key = event.key.toLowerCase();
-        if (keyboardShortcuts.hasOwnProperty(key)) {
-            event.preventDefault();
-            const action = keyboardShortcuts[key];
-            
-            if (typeof action === 'number') {
-                const buttons = elements.answers?.getElementsByTagName('button');
-                if (buttons && buttons[action] && !buttons[action].disabled) {
-                    buttons[action].click();
-                }
-            } else if (action === 'nextQuestion' && !elements.nextQuestion?.classList.contains('hidden')) {
-                elements.nextQuestion.click();
-            }
-        }
-    }
-
-    function loadQuestion() {
-        if (currentQuestionIndex >= triviaQuestions.length) {
-            endGame();
-            return;
-        }
-    
-        const question = triviaQuestions[currentQuestionIndex];
-        
-        if (elements.question) {
-            elements.question.innerHTML = decodeHTML(question.question);
-        }
-    
-        if (elements.answers) {
-            elements.answers.innerHTML = '';
-            question.answers.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.innerHTML = `${index + 1}. ${decodeHTML(answer)}`;
-                button.addEventListener('click', () => checkAnswer(answer));
-                button.setAttribute('data-key', index + 1);
-                elements.answers.appendChild(button);
-            });
-        }
-    
-        elements.nextQuestion?.classList.add('hidden');
-        if (elements.feedback) {
-            elements.feedback.textContent = '';
-            elements.feedback.className = 'feedback';
-        }
-    
-        updateProgress();
-        startTimer();
-    }
-
-    function checkAnswer(selectedAnswer) {
-        if (isLoading) return;
-        
-        clearInterval(timer);
-        const question = triviaQuestions[currentQuestionIndex];
-        const isCorrect = selectedAnswer === question.correctAnswer;
-        const buttons = elements.answers.getElementsByTagName('button');
-    
-        Array.from(buttons).forEach(button => {
-            button.disabled = true;
-            if (button.textContent.slice(3) === question.correctAnswer) {
-                button.classList.add('correct');
-            } else if (button.textContent.slice(3) === selectedAnswer) {
-                button.classList.add(isCorrect ? 'correct' : 'incorrect');
-            }
-        });
-    
-        let bonusPoints = 0;
-        let feedbackMessage = '';
-    
-        if (isCorrect) {
-            streak++;
-            highestStreak = Math.max(highestStreak, streak);
-            score++;
-    
-            // Time bonus
-            if (timeLeft > TIME_BONUS_THRESHOLD) {
-                bonusPoints += TIME_BONUS_POINTS;
-                feedbackMessage += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}\n`;
-            }
-    
-            // Streak bonus
-            if (streak >= 3) {
-                bonusPoints += STREAK_BONUS;
-                feedbackMessage += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}\n`;
-            }
-    
-            score += bonusPoints;
-            feedbackMessage = `${getLocalizedString('correct')}\n${feedbackMessage}
-                             ${getLocalizedString('currentStreak')}: ${streak}`;
-            elements.feedback.className = 'feedback correct';
-        } else {
-            streak = 0;
-            feedbackMessage = `${getLocalizedString('incorrect')}: ${decodeHTML(question.correctAnswer)}`;
-            elements.feedback.className = 'feedback incorrect';
-        }
-    
-        elements.feedback.innerHTML = feedbackMessage;
-        updateScore();
-    
-        // Show appropriate button based on question number
-        if (elements.nextQuestion) {
-            elements.nextQuestion.classList.remove('hidden');
-            // Change button text on last question
-            if (currentQuestionIndex === triviaQuestions.length - 1) {
-                elements.nextQuestion.textContent = getLocalizedString('finalScore');
-            } else {
-                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
-            }
-        }
-    }
-
-    function updateScore() {
-        if (elements.currentScore) {
-            elements.currentScore.innerHTML = `${score} <small>(${getLocalizedString('highestStreak')}: ${highestStreak})</small>`;
-        }
-    }
-
-    function updateProgress() {
-        const progressPercentage = ((currentQuestionIndex + 1) / triviaQuestions.length) * 100;
-        if (elements.progress) {
-            elements.progress.style.width = `${progressPercentage}%`;
-        }
-        if (elements.questionNumber) {
-            elements.questionNumber.textContent = `Question ${currentQuestionIndex + 1}/${triviaQuestions.length}`;
-        }
-    }
-
-    function startTimer() {
-        clearInterval(timer);
-        timeLeft = TIMER_DURATION;
-        updateTimerDisplay();
-        
-        timer = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay();
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                checkAnswer(null);
-            }
-        }, 1000);
-    }
-
-    function updateTimerDisplay() {
-        if (elements.timeLeft) {
-            const timerClass = timeLeft > TIME_BONUS_THRESHOLD ? 'timer-bonus' : '';
-            elements.timeLeft.className = timerClass;
-            elements.timeLeft.textContent = `${timeLeft}s${timeLeft > TIME_BONUS_THRESHOLD ? ' (Bonus!)' : ''}`;
-        }
-    }
-
-    function endGame() {
-        // Clear any existing timers and disable answer buttons
-        clearInterval(timer);
-        if (elements.answers) {
-            const buttons = elements.answers.getElementsByTagName('button');
-            Array.from(buttons).forEach(button => {
-                button.disabled = true;
-            });
-        }
-        
-        // Hide next question button and update UI elements
-        if (elements.nextQuestion) {
-            elements.nextQuestion.classList.add('hidden');
-        }
-        
-        // Calculate final statistics
-        const correctAnswers = Math.floor(score - (score % 1)); // Handle any potential decimal scores
-        const totalQuestions = triviaQuestions.length;
-        const percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(1);
-        
-        const finalMessage = `
-            ${getLocalizedString('finalScore')}: ${correctAnswers}/${totalQuestions} (${percentageScore}%)
-            ${getLocalizedString('highestStreak')}: ${highestStreak}
-            ${getLocalizedString('bonusPoints')}: ${score - correctAnswers}
-        `.trim();
-    
-        // Show the game over modal
-        showModal(
-            getLocalizedString('gameOver'),
-            finalMessage,
-            getLocalizedString('playAgain'),
-            () => {
-                promptForLeaderboard(score);
-            }
-        );
-    
-        // Save current game stats
-        try {
-            const gameStats = {
-                score: score,
-                highestStreak: highestStreak,
-                totalQuestions: totalQuestions,
-                language: gameLanguage,
-                difficulty: gameDifficulty,
-                date: new Date().toISOString()
-            };
-            localStorage.setItem('lastGameStats', JSON.stringify(gameStats));
-        } catch (error) {
-            console.error('Error saving game stats:', error);
-        }
-    }
-
-    function promptForLeaderboard(finalScore) {
-        // Close the current modal first
-        closeModal();
-        
-        // Create and show a custom prompt for name entry
-        const promptHTML = `
-            <div class="leaderboard-prompt">
-                <h3>${getLocalizedString('enterName')}</h3>
-                <input type="text" id="player-name-input" maxlength="20" placeholder="Your name">
-                <div class="button-group">
-                    <button id="submit-score" class="primary-button">${getLocalizedString('close')}</button>
-                    <button id="skip-leaderboard" class="secondary-button">${getLocalizedString('playAgain')}</button>
-                </div>
-            </div>
-        `;
-        
-        showModal(
-            getLocalizedString('enterName'),
-            promptHTML,
-            null,
-            null
-        );
-    
-        // Get the newly created elements
-        const nameInput = document.getElementById('player-name-input');
-        const submitButton = document.getElementById('submit-score');
-        const skipButton = document.getElementById('skip-leaderboard');
-    
-        if (nameInput && submitButton && skipButton) {
-            // Focus the input field
-            nameInput.focus();
-    
-            // Handle submit button click
-            submitButton.onclick = () => {
-                const playerName = nameInput.value.trim();
-                if (playerName) {
-                    updateLeaderboard(playerName, finalScore);
-                }
-                startNewGame();
-            };
-    
-            // Handle skip button click
-            skipButton.onclick = () => {
-                startNewGame();
-            };
-    
-            // Handle enter key in input
-            nameInput.onkeypress = (e) => {
-                if (e.key === 'Enter') {
-                    submitButton.click();
-                }
-            };
-        }
-    }
-
-    function startNewGame() {
-        // Reset game state
-        currentQuestionIndex = 0;
-        score = 0;
-        streak = 0;
-        highestStreak = 0;
-        
-        // Clear any existing timers
-        clearInterval(timer);
-        
-        // Clear the modal
-        closeModal();
-        
-        // Update UI elements
-        updateScore();
-        if (elements.feedback) {
-            elements.feedback.textContent = '';
-            elements.feedback.className = 'feedback';
-        }
-        
-        // Start new game
-        fetchTriviaQuestions();
-    }
-
-    function updateLeaderboard(playerName, finalScore) {
-        try {
-            // Get existing leaderboard or create new one
-            let leaderboard = [];
-            try {
-                leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            } catch (e) {
-                console.error('Error parsing leaderboard:', e);
-                leaderboard = [];
-            }
-    
-            // Create new entry
-            const newEntry = {
-                name: escapeHTML(playerName.substring(0, 20)), // Limit name length and escape HTML
-                score: Number(finalScore.toFixed(1)), // Ensure score is a number with max 1 decimal
-                language: gameLanguage,
-                difficulty: gameDifficulty,
-                highestStreak: highestStreak,
-                date: new Date().toISOString()
-            };
-    
-            // Add new entry and sort
-            leaderboard.push(newEntry);
-            leaderboard.sort((a, b) => b.score - a.score);
-    
-            // Keep only top entries
-            leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES);
-    
-            // Save to localStorage
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    
-            // Update displayed leaderboard
-            displayLeaderboard();
-    
-        } catch (error) {
-            console.error('Error updating leaderboard:', error);
-            showModal(
-                'Error',
-                'There was an error saving your score. Please try again.',
-                'OK',
-                closeModal
-            );
-        }
-    }
-
-    function displayLeaderboard() {
-        if (!elements.leaderboardBody) return;
-
-        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-        elements.leaderboardBody.innerHTML = '';
-        
-        leaderboard.forEach((entry, index) => {
-            const row = document.createElement('tr');
-            const date = new Date(entry.date);
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${escapeHTML(entry.name)}</td>
-                <td>${entry.score}</td>
-                <td>${entry.language.toUpperCase()}</td>
-                <td>${entry.difficulty}</td>
-                <td>${entry.highestStreak || 0}</td>
-                <td>${date.toLocaleDateString()}</td>
-            `;
-            elements.leaderboardBody.appendChild(row);
-        });
-    }
-
-    function showModal(title, message, actionText, actionCallback) {
-        elements.modalTitle.textContent = title;
-        elements.modalMessage.textContent = message;
-        elements.modal.style.display = 'block';
-
-        if (actionText && actionCallback) {
-            elements.modalAction.textContent = actionText;
-            elements.modalAction.classList.remove('hidden');
-            elements.modalAction.onclick = () => {
-                closeModal();
-                actionCallback();
-            };
-        } else {
-            elements.modalAction.classList.add('hidden');
-        }
-
-        elements.modalClose.onclick = closeModal;
-    }
-
-    function closeModal() {
-        elements.modal.style.display = 'none';
     }
 
     function decodeHTML(html) {
@@ -586,19 +132,485 @@ const TriviaGame = (function() {
         return localizations[gameLanguage]?.[key] || key;
     }
 
+    /**
+     * ------------- Main Trivia Logic -------------
+     */
+    function showLoadingState(loading) {
+        isLoading = loading;
+        if (elements.startGame) {
+            elements.startGame.disabled = loading;
+            elements.startGame.textContent = loading
+                ? `${getLocalizedString('loading')}...`
+                : getLocalizedString('startGame');
+        }
+    }
+
+    async function fetchTriviaQuestions() {
+        showLoadingState(true);
+        try {
+            const apiUrl =
+                gameLanguage === 'fr'
+                    ? 'https://quizzapi.jomoreschi.fr/api/v1/quiz?limit=10'
+                    : `https://opentdb.com/api.php?amount=10&category=${gameCategory}&difficulty=${gameDifficulty}&type=multiple`;
+
+            const data = await fetchWithRetry(apiUrl);
+
+            if (gameLanguage === 'fr') {
+                if (!Array.isArray(data.quizzes) || data.quizzes.length === 0) {
+                    throw new Error('No questions received from French API');
+                }
+                triviaQuestions = data.quizzes.map(q => ({
+                    question: decodeHTML(q.question),
+                    answers: shuffleArray([q.answer, ...q.badAnswers]),
+                    correctAnswer: q.answer
+                }));
+            } else {
+                if (data.response_code !== 0 || !Array.isArray(data.results)) {
+                    throw new Error('Failed to fetch questions from English API');
+                }
+                triviaQuestions = data.results.map(q => ({
+                    question: decodeHTML(q.question),
+                    answers: shuffleArray([...q.incorrect_answers, q.correct_answer]),
+                    correctAnswer: q.correct_answer
+                }));
+            }
+
+            startGame();
+        } catch (error) {
+            console.error('Error fetching trivia questions:', error);
+            showModal(
+                getLocalizedString('errorFetchingQuestions'),
+                error.message,
+                getLocalizedString('retry'),
+                fetchTriviaQuestions
+            );
+        } finally {
+            showLoadingState(false);
+        }
+    }
+
+    function shuffleArray(array) {
+        const newArr = [...array];
+        for (let i = newArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+        }
+        return newArr;
+    }
+
+    function startGame() {
+        // Reset game variables
+        currentQuestionIndex = 0;
+        score = 0;
+        streak = 0;
+        highestStreak = 0;
+
+        // Update scoreboard and load first question
+        updateScoreDisplay();
+        loadQuestion();
+
+        // Show the trivia section
+        showSection('trivia-center');
+
+        // Setup keyboard shortcuts for answering
+        setupKeyboardShortcuts();
+    }
+
+    function loadQuestion() {
+        // If we've reached or passed the last question, end the game
+        if (currentQuestionIndex >= triviaQuestions.length) {
+            endGame();
+            return;
+        }
+
+        const questionObj = triviaQuestions[currentQuestionIndex];
+        if (elements.questionNumber) {
+            elements.questionNumber.textContent = `Question ${currentQuestionIndex + 1}/${triviaQuestions.length}`;
+        }
+        if (elements.question) {
+            elements.question.textContent = decodeHTML(questionObj.question);
+        }
+        if (elements.answers) {
+            elements.answers.innerHTML = '';
+            questionObj.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = `${index + 1}. ${decodeHTML(answer)}`;
+                btn.addEventListener('click', () => checkAnswer(answer));
+                elements.answers.appendChild(btn);
+            });
+        }
+        if (elements.feedback) {
+            elements.feedback.textContent = '';
+        }
+
+        // Hide the Next/Final Score button until user answers
+        if (elements.nextQuestion) {
+            elements.nextQuestion.classList.add('hidden');
+        }
+
+        // Update progress and start the question timer
+        updateProgressBar();
+        startTimer();
+    }
+
+    function checkAnswer(selectedAnswer) {
+        clearInterval(timer);
+
+        const questionObj = triviaQuestions[currentQuestionIndex];
+        const isCorrect = (selectedAnswer === questionObj.correctAnswer);
+
+        // Disable all answer buttons and highlight correct/incorrect
+        const answerButtons = elements.answers.querySelectorAll('button');
+        answerButtons.forEach(btn => {
+            btn.disabled = true;
+            const buttonText = btn.textContent.slice(3); // remove "1. " from display
+            if (buttonText === questionObj.correctAnswer) {
+                btn.classList.add('correct');
+            } else if (buttonText === selectedAnswer) {
+                btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+            }
+        });
+
+        let bonusPoints = 0;
+        let feedbackMsg = '';
+
+        if (isCorrect) {
+            streak++;
+            highestStreak = Math.max(highestStreak, streak);
+            score++;
+
+            // Time bonus
+            if (timeLeft > TIME_BONUS_THRESHOLD) {
+                bonusPoints += TIME_BONUS_POINTS;
+                feedbackMsg += `${getLocalizedString('timeBonus')}: +${TIME_BONUS_POINTS}<br>`;
+            }
+            // Streak bonus
+            if (streak >= 3) {
+                bonusPoints += STREAK_BONUS;
+                feedbackMsg += `${getLocalizedString('streakBonus')}: +${STREAK_BONUS}<br>`;
+            }
+
+            score += bonusPoints;
+            feedbackMsg = `${getLocalizedString('correct')}<br>${feedbackMsg}${getLocalizedString('currentStreak')}: ${streak}`;
+
+            // Optional: confetti if correct
+            /*
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            */
+        } else {
+            // Wrong answer => streak resets
+            streak = 0;
+            feedbackMsg = `${getLocalizedString('incorrect')}: ${decodeHTML(questionObj.correctAnswer)}`;
+        }
+
+        if (elements.feedback) {
+            elements.feedback.innerHTML = feedbackMsg;
+        }
+
+        updateScoreDisplay();
+
+        // Show the Next Question or Final Score button
+        if (elements.nextQuestion) {
+            elements.nextQuestion.classList.remove('hidden');
+            if (currentQuestionIndex === triviaQuestions.length - 1) {
+                // Last question => "final score" text
+                elements.nextQuestion.textContent = getLocalizedString('finalScore');
+            } else {
+                elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
+            }
+        }
+    }
+
+    function updateScoreDisplay() {
+        if (elements.currentScore) {
+            elements.currentScore.textContent = score;
+        }
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timeLeft = TIMER_DURATION;
+        updateTimerDisplay();
+
+        timer = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                // Time's up => count as incorrect if not already answered
+                checkAnswer(null);
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        if (elements.timeLeft) {
+            elements.timeLeft.textContent = `${timeLeft}s`;
+        }
+    }
+
+    function updateProgressBar() {
+        if (!elements.progress) return;
+        const progressPercent = ((currentQuestionIndex + 1) / triviaQuestions.length) * 100;
+        elements.progress.style.width = `${progressPercent}%`;
+    }
+
+    /**
+     * Ends the game after the final question is answered or skipped.
+     */
+    function endGame() {
+        clearInterval(timer);
+
+        // Disable leftover answer buttons
+        const answerButtons = elements.answers.querySelectorAll('button');
+        answerButtons.forEach(btn => (btn.disabled = true));
+
+        // Hide "Next Question" if visible
+        if (elements.nextQuestion) {
+            elements.nextQuestion.classList.add('hidden');
+        }
+
+        // Calculate final stats
+        const correctAnswers = Math.floor(score - (score % 1));
+        const totalQuestions = triviaQuestions.length;
+        const percentageScore = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+        const bonusPoints = (score - correctAnswers).toFixed(1); // any fractional points
+
+        // Show final results in the modal
+        const finalMsg = `
+            ${getLocalizedString('finalScore')}: ${correctAnswers}/${totalQuestions} (${percentageScore}%)
+            <br>${getLocalizedString('highestStreak')}: ${highestStreak}
+            <br>${getLocalizedString('bonusPoints')}: ${bonusPoints}
+        `.trim();
+        
+        showModal(
+            getLocalizedString('gameOver'),
+            finalMsg,
+            getLocalizedString('playAgain'),
+            () => promptForName(score)
+        );
+
+        // Try saving game stats
+        try {
+            const stats = {
+                score,
+                highestStreak,
+                totalQuestions,
+                language: gameLanguage,
+                difficulty: gameDifficulty,
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('lastGameStats', JSON.stringify(stats));
+        } catch (err) {
+            console.warn('Could not save game stats:', err);
+        }
+    }
+
+    /**
+     * Prompt user for name to store in the leaderboard.
+     */
+    function promptForName(finalScore) {
+        // Close the final results modal
+        closeModal();
+
+        // Create the name-prompt structure
+        const promptHTML = `
+            <div style="padding: 10px;">
+                <h3>${getLocalizedString('enterName')}</h3>
+                <input type="text" id="player-name-input" maxlength="20" placeholder="Your name" style="width: 90%; padding: 8px; margin: 10px 0;">
+                <div>
+                    <button id="submit-name" class="primary-button">${getLocalizedString('close')}</button>
+                    <button id="skip-name" class="secondary-button">${getLocalizedString('playAgain')}</button>
+                </div>
+            </div>
+        `;
+
+        // Show new modal for name entry
+        showModal(
+            getLocalizedString('enterName'),
+            promptHTML,
+            null,
+            null
+        );
+
+        // Wire up the new elements
+        const nameInput = document.getElementById('player-name-input');
+        const submitBtn = document.getElementById('submit-name');
+        const skipBtn = document.getElementById('skip-name');
+
+        if (nameInput) nameInput.focus();
+
+        if (submitBtn) {
+            submitBtn.onclick = () => {
+                const nameVal = nameInput.value.trim();
+                if (nameVal) {
+                    updateLeaderboard(nameVal, finalScore);
+                }
+                startNewGame();
+            };
+        }
+        if (skipBtn) {
+            skipBtn.onclick = () => {
+                startNewGame();
+            };
+        }
+        if (nameInput) {
+            nameInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+        }
+    }
+
+    /**
+     * Starts a new game after user finishes or skips the name prompt.
+     */
+    function startNewGame() {
+        closeModal();
+        currentQuestionIndex = 0;
+        score = 0;
+        streak = 0;
+        highestStreak = 0;
+        clearInterval(timer);
+
+        // Fetch new question set
+        fetchTriviaQuestions();
+    }
+
+    /**
+     * ------------- Leaderboard Logic -------------
+     */
+    function updateLeaderboard(playerName, finalScore) {
+        try {
+            let leaderboard = [];
+            try {
+                leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            } catch (err) {
+                console.warn('Leaderboard parse error:', err);
+                leaderboard = [];
+            }
+
+            const newEntry = {
+                name: escapeHTML(playerName.substring(0, 20)),
+                score: Number(finalScore.toFixed(1)),
+                language: gameLanguage,
+                difficulty: gameDifficulty,
+                highestStreak,
+                date: new Date().toISOString()
+            };
+
+            leaderboard.push(newEntry);
+            // Sort descending by score
+            leaderboard.sort((a, b) => b.score - a.score);
+            // Keep top N
+            leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_ENTRIES);
+
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            displayLeaderboard(newEntry);
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
+            showModal(
+                'Error',
+                'There was an error saving your score. Please try again.',
+                'OK',
+                closeModal
+            );
+        }
+    }
+
+    function displayLeaderboard(latestEntry = null) {
+        if (!elements.leaderboardBody) return;
+
+        // Clear any "disabled" message or handle it as you wish
+        // For now, removing references to "Temporarily Disabled" since we want it working.
+
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        elements.leaderboardBody.innerHTML = '';
+
+        leaderboard.forEach((entry, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${escapeHTML(entry.name)}</td>
+                <td>${entry.score}</td>
+                <td>${entry.language.toUpperCase()}</td>
+                <td>${entry.difficulty}</td>
+            `;
+            // Optionally, add a Highest Streak column:
+            // <td>${entry.highestStreak || 0}</td>
+
+            // Highlight if this is the newly added entry
+            if (
+                latestEntry &&
+                entry.name === latestEntry.name &&
+                entry.score === latestEntry.score &&
+                entry.date === latestEntry.date
+            ) {
+                row.style.backgroundColor = '#ffefc5'; // highlight color
+            }
+            elements.leaderboardBody.appendChild(row);
+        });
+    }
+
+    /**
+     * ------------- Modal Logic -------------
+     */
+    function showModal(title, message, actionText, actionCallback) {
+        if (elements.modalTitle) {
+            elements.modalTitle.textContent = title;
+        }
+        if (elements.modalMessage) {
+            // For safety, allow innerHTML only if we trust the content
+            elements.modalMessage.innerHTML = message || '';
+        }
+        if (elements.modal) {
+            elements.modal.style.display = 'block';
+        }
+
+        if (actionText && actionCallback) {
+            elements.modalAction.textContent = actionText;
+            elements.modalAction.classList.remove('hidden');
+            elements.modalAction.onclick = () => {
+                closeModal();
+                actionCallback();
+            };
+        } else {
+            elements.modalAction.classList.add('hidden');
+        }
+
+        if (elements.modalClose) {
+            elements.modalClose.onclick = closeModal;
+        }
+    }
+
+    function closeModal() {
+        if (elements.modal) {
+            elements.modal.style.display = 'none';
+        }
+    }
+
+    /**
+     * ------------- Navigation & UI -------------
+     */
     function setupNavigation() {
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', (e) => {
+        const navLinks = document.querySelectorAll('header nav ul li a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
                 e.preventDefault();
-                const targetId = e.target.getAttribute('href').slice(1);
+                const targetId = link.getAttribute('href').replace('#', '');
                 showSection(targetId);
             });
         });
 
-        // Add keyboard navigation
+        // Optional: Ctrl+1 => Home, Ctrl+2 => Trivia, Ctrl+3 => Leaderboard
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.altKey) {
-                const num = parseInt(e.key);
+                const num = parseInt(e.key, 10);
                 if (num >= 1 && num <= 3) {
                     e.preventDefault();
                     const sections = ['home', 'trivia-center', 'leaderboard'];
@@ -609,47 +621,61 @@ const TriviaGame = (function() {
     }
 
     function showSection(sectionId) {
+        // If user navigates away from Trivia, pause timer
         if (timer && sectionId !== 'trivia-center') {
             clearInterval(timer);
         }
 
-        document.querySelectorAll('main > section').forEach(section => {
-            section.classList.toggle('hidden-section', section.id !== sectionId);
-            section.classList.toggle('active-section', section.id === sectionId);
+        // Hide all sections
+        const sections = document.querySelectorAll('main > section');
+        sections.forEach(sec => {
+            if (sec.id === sectionId) {
+                sec.classList.remove('hidden-section');
+                sec.classList.add('active-section');
+            } else {
+                sec.classList.add('hidden-section');
+                sec.classList.remove('active-section');
+            }
         });
 
-        document.querySelectorAll('nav a').forEach(link => {
+        // Update nav link active states
+        const navLinks = document.querySelectorAll('header nav ul li a');
+        navLinks.forEach(link => {
             link.classList.toggle('active', link.getAttribute('href') === `#${sectionId}`);
         });
 
-        // Save last active section to localStorage
+        // Remember last active section
         localStorage.setItem('lastActiveSection', sectionId);
     }
 
-    function updateUI() {
-        if (elements.startGame) {
-            elements.startGame.textContent = getLocalizedString('startGame');
-        }
-        if (elements.nextQuestion) {
-            elements.nextQuestion.textContent = getLocalizedString('nextQuestion');
-        }
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', handleKeyPress);
+    }
 
-        const isFrench = gameLanguage === 'fr';
-        if (elements.gameDifficulty?.parentElement) {
-            elements.gameDifficulty.parentElement.style.display = isFrench ? 'none' : '';
-        }
-        if (elements.gameCategory?.parentElement) {
-            elements.gameCategory.parentElement.style.display = isFrench ? 'none' : '';
-        }
+    function handleKeyPress(event) {
+        if (isLoading) return;
 
-        // Update keyboard shortcut hints
-        document.querySelectorAll('[data-key]').forEach(element => {
-            const key = element.dataset.key;
-            const hint = document.createElement('small');
-            hint.className = 'keyboard-hint';
-            hint.textContent = `(${getLocalizedString('pressKey').replace('{key}', key)})`;
-            element.appendChild(hint);
-        });
+        const key = event.key.toLowerCase();
+        if (keyboardShortcuts.hasOwnProperty(key)) {
+            event.preventDefault();
+            const action = keyboardShortcuts[key];
+
+            if (typeof action === 'number') {
+                // It's an answer index
+                const buttons = elements.answers.querySelectorAll('button');
+                if (buttons[action] && !buttons[action].disabled) {
+                    buttons[action].click();
+                }
+            } else if (action === 'nextQuestion' && !elements.nextQuestion.classList.contains('hidden')) {
+                // If on the last question => endGame, else move to next question
+                if (currentQuestionIndex >= triviaQuestions.length - 1) {
+                    endGame();
+                } else {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }
+            }
+        }
     }
 
     function saveGameState() {
@@ -657,88 +683,100 @@ const TriviaGame = (function() {
             gameLanguage,
             gameDifficulty,
             gameCategory,
-            highestStreak: localStorage.getItem('highestStreak') || 0
         };
-        localStorage.setItem('gameSettings', JSON.stringify(gameState));
+        localStorage.setItem('triviaGameSettings', JSON.stringify(gameState));
     }
 
     function loadGameState() {
         try {
-            const savedState = JSON.parse(localStorage.getItem('gameSettings'));
-            if (savedState) {
-                gameLanguage = savedState.gameLanguage || 'en';
-                gameDifficulty = savedState.gameDifficulty || 'medium';
-                gameCategory = savedState.gameCategory || '9';
-                highestStreak = parseInt(savedState.highestStreak) || 0;
-
-                // Update select elements
-                if (elements.gameLanguage) elements.gameLanguage.value = gameLanguage;
-                if (elements.gameDifficulty) elements.gameDifficulty.value = gameDifficulty;
-                if (elements.gameCategory) elements.gameCategory.value = gameCategory;
+            const saved = JSON.parse(localStorage.getItem('triviaGameSettings'));
+            if (saved) {
+                gameLanguage = saved.gameLanguage || 'en';
+                gameDifficulty = saved.gameDifficulty || 'medium';
+                gameCategory = saved.gameCategory || '9';
             }
-        } catch (error) {
-            console.error('Error loading game state:', error);
+        } catch (err) {
+            console.warn('Could not parse saved game settings:', err);
         }
     }
 
+    /**
+     * ------------- Initialization -------------
+     */
     function init() {
-        // Initialize elements object with all required DOM elements
-        [
-            'gameLanguage', 'gameDifficulty', 'gameCategory', 'startGame', 'questionNumber',
-            'currentScore', 'progress', 'question', 'answers', 'feedback', 'timeLeft',
-            'nextQuestion', 'leaderboardBody', 'modal', 'modalTitle', 'modalMessage',
-            'modalClose', 'modalAction'
-        ].forEach(id => {
-            const domId = id.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
-            elements[id] = document.getElementById(domId);
-        });
+        // Map element references
+        elements.startGame = document.getElementById('start-game');
+        elements.questionNumber = document.getElementById('question-number');
+        elements.currentScore = document.getElementById('current-score');
+        elements.progress = document.getElementById('progress');
+        elements.question = document.getElementById('question');
+        elements.answers = document.getElementById('answers');
+        elements.feedback = document.getElementById('feedback');
+        elements.timeLeft = document.getElementById('time-left');
+        elements.nextQuestion = document.getElementById('next-question');
+        elements.leaderboardBody = document.getElementById('leaderboard-body');
+        elements.modal = document.getElementById('modal');
+        elements.modalTitle = document.getElementById('modal-title');
+        elements.modalMessage = document.getElementById('modal-message');
+        elements.modalClose = document.getElementById('modal-close');
+        elements.modalAction = document.getElementById('modal-action');
 
-        // Set up event listeners with error handling
-        const addSafeEventListener = (element, event, handler) => {
-            if (element) {
-                element.addEventListener(event, (...args) => {
+        // Game settings inputs
+        const langSelect = document.getElementById('game-language');
+        const diffSelect = document.getElementById('game-difficulty');
+        const catSelect = document.getElementById('game-category');
+
+        // Safe event listener helper
+        const safeAddEventListener = (elem, event, handler) => {
+            if (elem) {
+                elem.addEventListener(event, (...args) => {
                     try {
                         handler(...args);
-                    } catch (error) {
-                        console.error(`Error in ${event} handler:`, error);
+                    } catch (err) {
+                        console.error(`Error in ${event} handler:`, err);
                     }
                 });
             }
         };
 
-        // Debounced save function
-        const debouncedSave = debounce(saveGameState, 500);
-
-        // Set up main event listeners
-        addSafeEventListener(elements.startGame, 'click', fetchTriviaQuestions);
-        addSafeEventListener(elements.nextQuestion, 'click', () => {
-            currentQuestionIndex++;
-            loadQuestion();
+        // Link button actions
+        safeAddEventListener(elements.startGame, 'click', fetchTriviaQuestions);
+        safeAddEventListener(elements.nextQuestion, 'click', () => {
+            // If on the last question => endGame, else move to next question
+            if (currentQuestionIndex >= triviaQuestions.length - 1) {
+                endGame();
+            } else {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
         });
-        addSafeEventListener(elements.modalClose, 'click', closeModal);
-        
-        // Add change listeners with automatic saving
-        addSafeEventListener(elements.gameLanguage, 'change', e => {
+        safeAddEventListener(elements.modalClose, 'click', closeModal);
+
+        // Drop-down changes
+        safeAddEventListener(langSelect, 'change', e => {
             gameLanguage = e.target.value;
-            updateUI();
-            debouncedSave();
+            saveGameState();
         });
-        
-        addSafeEventListener(elements.gameDifficulty, 'change', e => {
+        safeAddEventListener(diffSelect, 'change', e => {
             gameDifficulty = e.target.value;
-            debouncedSave();
+            saveGameState();
         });
-        
-        addSafeEventListener(elements.gameCategory, 'change', e => {
+        safeAddEventListener(catSelect, 'change', e => {
             gameCategory = e.target.value;
-            debouncedSave();
+            saveGameState();
         });
 
-        // Initialize the game
+        // Load and apply previous game settings (if any)
         loadGameState();
-        displayLeaderboard();
+        if (langSelect) langSelect.value = gameLanguage;
+        if (diffSelect) diffSelect.value = gameDifficulty;
+        if (catSelect) catSelect.value = gameCategory;
+
+        // Init nav
         setupNavigation();
-        updateUI();
+
+        // Display existing leaderboard (if any)
+        displayLeaderboard();
 
         // Restore last active section or default to home
         const lastSection = localStorage.getItem('lastActiveSection') || 'home';
@@ -751,17 +789,18 @@ const TriviaGame = (function() {
             }
         });
 
-        // Handle visibility change
+        // Page visibility => pause/resume game timer
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && timer) {
                 clearInterval(timer);
-            } else if (!document.hidden && elements.timeLeft && timeLeft > 0) {
+            } else if (!document.hidden && elements.timeLeft && timeLeft > 0 && currentQuestionIndex < triviaQuestions.length) {
                 startTimer();
             }
         });
 
-        // Clean up on page unload
+        // Cleanup on unload
         window.addEventListener('beforeunload', () => {
+            // Save final state
             saveGameState();
             if (timer) {
                 clearInterval(timer);
@@ -773,5 +812,5 @@ const TriviaGame = (function() {
     return { init };
 })();
 
-// Initialize the game when the page loads
+// Initialize on page load
 window.addEventListener('load', TriviaGame.init);
