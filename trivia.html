@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dupuis.lol - Multilingual Trivia</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/kTc8y+f+Is5m56e3OJhMwNnXgwl5Ezlt0DHN6oFobzp0OKJHIjtn4U0Npy7UwDZawVY+gW4ZK8UrA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Link to your external CSS -->
     <link rel="stylesheet" href="trivia.css">
+    <!-- Link to your external JS files -->
     <script src="trivia.js" defer></script>
     <script src="access.js" defer></script>
     <script src="addelement.js" defer></script>
@@ -24,6 +27,7 @@
     </header>
 
     <main>
+        <!-- Home Section -->
         <section id="home" class="active-section">
             <h2>Welcome to Trivia Center</h2>
             <div id="language-selector">
@@ -37,14 +41,14 @@
                 <label for="game-difficulty">Difficulty:</label>
                 <select id="game-difficulty">
                     <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
+                    <option value="medium" selected>Medium</option>
                     <option value="hard">Hard</option>
                 </select>
             </div>
             <div id="category-selector">
                 <label for="game-category">Category:</label>
                 <select id="game-category">
-                    <option value="9">General Knowledge</option>
+                    <option value="9" selected>General Knowledge</option>
                     <option value="10">Entertainment: Books</option>
                     <option value="11">Entertainment: Films</option>
                     <option value="12">Entertainment: Music</option>
@@ -70,28 +74,30 @@
             <button id="start-game">Start Trivia</button>
         </section>
 
+        <!-- Trivia Center Section -->
         <section id="trivia-center" class="hidden-section">
             <h2>Trivia Center</h2>
             <div id="game-info">
-                <span id="question-number"></span>
+                <span id="question-number">Question 1/10</span>
                 <span id="score">Score: <span id="current-score">0</span></span>
             </div>
             <div id="progress-bar">
                 <div id="progress"></div>
             </div>
             <div id="question-container">
-                <p id="question"></p>
-                <div id="answers"></div>
+                <p id="question">Question will appear here...</p>
+                <div id="answers">
+                    <!-- Answer buttons will be dynamically inserted here -->
+                </div>
             </div>
             <div id="feedback"></div>
-            <div id="timer">Time: <span id="time-left"></span></div>
+            <div id="timer">Time: <span id="time-left">20s</span></div>
             <button id="next-question" class="hidden">Next Question</button>
         </section>
 
+        <!-- Leaderboard Section -->
         <section id="leaderboard" class="hidden-section">
-            <div id="game-info">
-                <span id="status" style="font-size: 24px; font-weight: bold; color: red;">Temporarily Disabled, Sorry!!</span>
-            </div>
+            <!-- Removed the Temporarily Disabled message -->
             <h2>Leaderboard</h2>
             <table id="leaderboard-table">
                 <thead>
@@ -103,8 +109,12 @@
                         <th>Difficulty</th>
                     </tr>
                 </thead>
-                <tbody id="leaderboard-body"></tbody>
+                <tbody id="leaderboard-body">
+                    <!-- Leaderboard entries will be dynamically inserted here -->
+                </tbody>
             </table>
+            <!-- Optional: Clear Leaderboard Button -->
+            <button id="clear-leaderboard">Clear Leaderboard</button> -->
         </section>
     </main>
 
@@ -112,11 +122,13 @@
         <p>&copy; 2024 Dupuis.lol. All rights reserved.</p>
     </footer>
 
+    <!-- Modal Structure -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h2 id="modal-title"></h2>
-            <p id="modal-message"></p>
-            <button id="modal-close">Close</button>
+            <span id="modal-close">&times;</span>
+            <h2 id="modal-title">Modal Title</h2>
+            <p id="modal-message">Modal Message</p>
+            <button id="modal-close-button">Close</button>
             <button id="modal-action" class="hidden">Action</button>
         </div>
     </div>
