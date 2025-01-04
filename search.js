@@ -86,6 +86,7 @@ const config = {
                 name: 'Classroom Resources',
                 items: [
                     { name: 'FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' }
+                    { name: 'dupuis TV', url: '/tv', description: 'Add a video, and questions to answer' }
                 ]
             },
             {
