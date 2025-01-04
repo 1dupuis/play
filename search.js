@@ -122,10 +122,6 @@ const config = {
     ],
     announcements: [
         {
-            message: "⛔️ We're currently experiencing issues with the site.",
-            showForever: true
-        },
-        {
             message: "❇️ Create ANY game/tool by using GameGenie! [Resources > GameGenie]",
             showForever: true
         },
