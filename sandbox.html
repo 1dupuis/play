@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Element Visualizer Pro - Big Update</title>
+  <!-- Make sure to use Font Awesome 6+ (Pro or Free) that supports these icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: linear-gradient(135deg, #151515 0%, #303030 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+    /* ----------------------------- TOP BAR ----------------------------- */
+    #topBar {
+      display: flex;
+      align-items: center;
+      background: #1f1f1f;
+      padding: 10px 20px;
+      gap: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      z-index: 2;
+      position: relative;
+    }
+    /* --------------------------- TOOLS PANEL --------------------------- */
+    #toolPanel {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      flex-wrap: wrap;
+      max-width: 60%;
+    }
+    #toolPanel::-webkit-scrollbar {
+      height: 8px;
+    }
+    #toolPanel::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+    .tool {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-color: #2c2c2c;
+      transition: border-color 0.2s, transform 0.15s, background-color 0.2s;
+      flex-shrink: 0;
+      z-index: 1; /* Ensure tools have a stacking context */
+    }
+    .tool:hover {
+      transform: scale(1.1);
+      border-color: #9e9e9e;
+      background-color: #3a3a3a;
+      z-index: 2; /* Hovered tool on top */
+    }
+    .tool.selected {
+      border-color: #ffffff;
+      background-color: #444444;
+    }
+    /* Tooltip for each tool (appears above the icon) */
+    .tool:hover::after {
+      content: attr(data-name);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+      z-index: 9999; /* Keep tooltip on top */
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    /* ------------------------ CONTROL BUTTONS -------------------------- */
+    #controlButtons {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+    }
+    button, .iconButton {
+      background: #333;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover, .iconButton:hover {
+      background: #555;
+    }
+    button:active, .iconButton:active {
+      transform: scale(0.95);
+    }
+    /* ------------------------ SETTINGS PANEL --------------------------- */
+    #settingsPanel {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      background: #242424;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+      z-index: 999; /* Keep settings on top */
+      width: 250px;
+    }
+    #settingsPanel h3 {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 18px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+      padding-bottom: 8px;
+    }
+    .setting {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .setting label {
+      font-size: 14px;
+    }
+    .setting input[type="range"] {
+      width: 100%;
+    }
+    .settingCheckbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    /* --------------------------- TOOLTIP DIV --------------------------- */
+    #tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      pointer-events: none;
+      font-size: 12px;
+      display: none;
+      z-index: 9999;
+      white-space: nowrap;
+    }
+    /* ------------------------- CANVAS & STATS -------------------------- */
+    #canvasContainer {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+    #canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    #statsPanel {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    #statsPanel span {
+      line-height: 1.4;
+    }
+    /* --------------------------- MEDIA QUERY --------------------------- */
+    @media (max-width: 768px) {
+      #toolPanel {
+        max-width: 100%;
+      }
+      #settingsPanel {
+        left: 10px;
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ======================== TOP BAR & TOOLS ======================== -->
+  <div id="topBar">
+    <div id="toolPanel">
+      <!-- Updated icons to valid Font Awesome 6 icons -->
+      <div class="tool selected" data-tool="sand"    data-name="Sand"    title="Sand"><i class="fas fa-grip-lines"></i></div>
+      <div class="tool"           data-tool="rock"    data-name="Rock"    title="Rock"><i class="fas fa-mountain"></i></div>
+      <div class="tool"           data-tool="lava"    data-name="Lava"    title="Lava"><i class="fas fa-fire"></i></div>
+      <div class="tool"           data-tool="carbon"  data-name="Carbon"  title="Carbon"><i class="fas fa-circle"></i></div>
+      <div class="tool"           data-tool="water"   data-name="Water"   title="Water"><i class="fas fa-water"></i></div>
+      <div class="tool"           data-tool="oil"     data-name="Oil"     title="Oil"><i class="fas fa-oil-can"></i></div>
+      <div class="tool"           data-tool="wood"    data-name="Wood"    title="Wood"><i class="fas fa-tree"></i></div>
+      <div class="tool"           data-tool="glass"   data-name="Glass"   title="Glass"><i class="fas fa-whiskey-glass"></i></div>
+      <div class="tool"           data-tool="ice"     data-name="Ice"     title="Ice"><i class="fas fa-snowflake"></i></div>
+      <div class="tool"           data-tool="steam"   data-name="Steam"   title="Steam"><i class="fas fa-smog"></i></div>
+      <div class="tool"           data-tool="metal"   data-name="Metal"   title="Metal"><i class="fas fa-industry"></i></div>
+      <div class="tool"           data-tool="dust"    data-name="Dust"    title="Dust"><i class="fas fa-wind"></i></div>
+      <div class="tool"           data-tool="plasma"  data-name="Plasma"  title="Plasma"><i class="fas fa-bolt"></i></div>
+      <div class="tool"           data-tool="mercury" data-name="Mercury" title="Mercury"><i class="fas fa-thermometer-half"></i></div>
+      <div class="tool"           data-tool="glue"    data-name="Glue"    title="Glue"><i class="fas fa-paste"></i></div>
+      <div class="tool"           data-tool="mud"     data-name="Mud"     title="Mud"><i class="fas fa-mug-hot"></i></div>
+      <div class="tool"           data-tool="smoke"   data-name="Smoke"   title="Smoke"><i class="fas fa-smog"></i></div>
+      <div class="tool"           data-tool="ash"     data-name="Ash"     title="Ash"><i class="fas fa-fire-extinguisher"></i></div>
+      <div class="tool"           data-tool="honey"   data-name="Honey"   title="Honey"><i class="fas fa-droplet"></i></div>
+      <div class="tool"           data-tool="foam"    data-name="Foam"    title="Foam"><i class="fas fa-cloud"></i></div>
+    </div>
+    <!-- ======================= CONTROL BUTTONS ======================= -->
+    <div id="controlButtons">
+      <button id="clearBtn"><i class="fas fa-trash-alt"></i> Clear</button>
+      <button id="saveBtn"><i class="fas fa-save"></i> Save</button>
+      <button id="loadBtn"><i class="fas fa-folder-open"></i> Load</button>
+      <button id="settingsBtn"><i class="fas fa-cog"></i> Settings</button>
+      <button id="pauseBtn"><i class="fas fa-pause"></i> Pause</button>
+    </div>
+  </div>
+  <!-- ====================== MAIN CANVAS AREA ========================= -->
+  <div id="canvasContainer">
+    <canvas id="canvas"></canvas>
+    <div id="statsPanel">
+      <span id="fpsStat">FPS: 0</span>
+      <span id="particleCountStat">Particles: 0</span>
+    </div>
+  </div>
+  <!-- ====================== SETTINGS PANEL =========================== -->
+  <div id="settingsPanel">
+    <h3>Simulation Settings</h3>
+    <div class="setting">
+      <label for="gravityRange">Gravity Strength: <span id="gravityValue">1</span></label>
+      <input type="range" id="gravityRange" min="0" max="5" step="0.1" value="1">
+    </div>
+    <div class="setting">
+      <label for="speedRange">Simulation Speed: <span id="speedValue">1</span>x</label>
+      <input type="range" id="speedRange" min="0.5" max="5" step="0.1" value="1">
+    </div>
+    <div class="setting">
+      <label for="elementSizeRange">Element Size: <span id="elementSizeValue">4</span>px</label>
+      <input type="range" id="elementSizeRange" min="2" max="8" step="1" value="4">
+    </div>
+    <div class="setting">
+      <label for="temperatureRange">Temperature Flux: <span id="temperatureValue">1</span></label>
+      <input type="range" id="temperatureRange" min="0" max="5" step="0.1" value="1">
+    </div>
+    <div class="setting">
+      <label for="windRange">Wind Force: <span id="windValue">0</span></label>
+      <input type="range" id="windRange" min="-2" max="2" step="0.1" value="0">
+    </div>
+    <div class="setting">
+      <label for="spawnRadiusRange">Spawn Radius: <span id="spawnRadiusValue">2</span></label>
+      <input type="range" id="spawnRadiusRange" min="1" max="5" step="1" value="2">
+    </div>
+    <div class="settingCheckbox">
+      <input type="checkbox" id="showGrid" checked>
+      <label for="showGrid">Show Grid</label>
+    </div>
+    <div class="settingCheckbox">
+      <input type="checkbox" id="randomSpawn">
+      <label for="randomSpawn">Random Mode</label>
+    </div>
+    <button id="closeSettingsBtn"><i class="fas fa-times"></i> Close</button>
+  </div>
+  <!-- ========================= GLOBAL TOOLTIP ======================== -->
+  <div id="tooltip"></div>
+  <!-- =========================== SCRIPT ============================= -->
+  <script>
+    /* ---------------------------------------------------------
+       ================  CANVAS & BASIC SETUP  =================
+       --------------------------------------------------------- */
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const tools = document.querySelectorAll('.tool');
+    const clearBtn = document.getElementById('clearBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
+    const tooltip = document.getElementById('tooltip');
+    const pauseBtn = document.getElementById('pauseBtn');
+
+    /* ---------------------- SETTINGS INPUTS ---------------------- */
+    const gravityRange = document.getElementById('gravityRange');
+    const gravityValue = document.getElementById('gravityValue');
+    const speedRange = document.getElementById('speedRange');
+    const speedValue = document.getElementById('speedValue');
+    const elementSizeRange = document.getElementById('elementSizeRange');
+    const elementSizeValue = document.getElementById('elementSizeValue');
+    const showGridCheckbox = document.getElementById('showGrid');
+    const temperatureRange = document.getElementById('temperatureRange');
+    const temperatureValue = document.getElementById('temperatureValue');
+    const randomSpawnCheckbox = document.getElementById('randomSpawn');
+    const windRange = document.getElementById('windRange');
+    const windValue = document.getElementById('windValue');
+    const spawnRadiusRange = document.getElementById('spawnRadiusRange');
+    const spawnRadiusValue = document.getElementById('spawnRadiusValue');
+
+    const fpsStat = document.getElementById('fpsStat');
+    const particleCountStat = document.getElementById('particleCountStat');
+
+    /* --------------------- GLOBAL SIM VARIABLES -------------------- */
+    let currentTool = 'sand';
+    let gravity = parseFloat(gravityRange.value);
+    let simulationSpeed = parseFloat(speedRange.value);
+    let cellSize = parseInt(elementSizeRange.value);
+    let showGrid = showGridCheckbox.checked;
+    let temperatureFlux = parseFloat(temperatureRange.value);
+    let randomSpawn = false;
+    let windForce = parseFloat(windRange.value);
+    let paused = false;
+    let spawnRadius = parseInt(spawnRadiusRange.value);
+
+    let cols = 0;
+    let rows = 0;
+    let grid = [];
+    let temperatureGrid = [];
+
+    let lastTime = 0;
+    let fps = 0;
+
+    /* ---------------------------------------------------------
+       ================  INITIALIZATION  ========================
+       --------------------------------------------------------- */
+    function initParticles() {
+      grid = new Array(cols * rows).fill(null);
+      temperatureGrid = new Array(cols * rows).fill(20);
+    }
+
+    function resize() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      cols = Math.floor(canvas.width / cellSize);
+      rows = Math.floor(canvas.height / cellSize);
+      initParticles();
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* ---------------------------------------------------------
+       ================  ELEMENT DEFINITIONS  ==================
+       --------------------------------------------------------- */
+    const elements = {
+      sand: {
+        name: 'Sand',
+        color: '#f4a460',
+        type: 'dynamic',
+        density: 1,
+        behavior: 'solid',
+        description: 'Granular material that falls under gravity.',
+        temperatureEffect: 0.01
+      },
+      rock: {
+        name: 'Rock',
+        color: '#808080',
+        type: 'static',
+        density: 3,
+        behavior: 'solid',
+        description: 'Solid and immovable.',
+        temperatureEffect: 0.005
+      },
+      lava: {
+        name: 'Lava',
+        color: '#ff4500',
+        type: 'dynamic',
+        density: 2,
+        behavior: 'liquid',
+        description: 'Molten rock that flows and can solidify.',
+        temperatureEffect: 0.5
+      },
+      carbon: {
+        name: 'Carbon',
+        color: '#000000',
+        type: 'dynamic',
+        density: 1.5,
+        behavior: 'solid',
+        description: 'Solid form of carbon.',
+        temperatureEffect: 0.01
+      },
+      water: {
+        name: 'Water',
+        color: '#1e90ff',
+        type: 'dynamic',
+        density: 1,
+        behavior: 'liquid',
+        description: 'Flows, can freeze or evaporate.',
+        temperatureEffect: 0.05
+      },
+      oil: {
+        name: 'Oil',
+        color: '#333333',
+        type: 'dynamic',
+        density: 0.9,
+        behavior: 'liquid',
+        description: 'Floats on water.',
+        temperatureEffect: 0.02
+      },
+      wood: {
+        name: 'Wood',
+        color: '#8b4513',
+        type: 'static',
+        density: 1.2,
+        behavior: 'solid',
+        description: 'Flammable organic solid.',
+        temperatureEffect: 0.02
+      },
+      glass: {
+        name: 'Glass',
+        color: '#add8e6',
+        type: 'static',
+        density: 2,
+        behavior: 'solid',
+        description: 'Brittle transparent solid.',
+        temperatureEffect: 0.005
+      },
+      ice: {
+        name: 'Ice',
+        color: '#00ffff',
+        type: 'dynamic',
+        density: 0.95,
+        behavior: 'liquid',
+        description: 'Frozen water.',
+        temperatureEffect: 0.1
+      },
+      steam: {
+        name: 'Steam',
+        color: '#f0f8ff',
+        type: 'gas',
+        density: 0.5,
+        behavior: 'gas',
+        description: 'Water in gas form.',
+        temperatureEffect: 0.2
+      },
+      metal: {
+        name: 'Metal',
+        color: '#b0c4de',
+        type: 'static',
+        density: 3.5,
+        behavior: 'solid',
+        description: 'Heavy, conductive solid.',
+        temperatureEffect: 0.01
+      },
+      dust: {
+        name: 'Dust',
+        color: '#d3d3d3',
+        type: 'dynamic',
+        density: 0.8,
+        behavior: 'solid',
+        description: 'Fine particles.',
+        temperatureEffect: 0.03
+      },
+      plasma: {
+        name: 'Plasma',
+        color: '#ff1493',
+        type: 'gas',
+        density: 0.3,
+        behavior: 'gas',
+        description: 'Ionized, highly energetic gas.',
+        temperatureEffect: 1
+      },
+      mercury: {
+        name: 'Mercury',
+        color: '#c0c0c0',
+        type: 'dynamic',
+        density: 1.7,
+        behavior: 'liquid',
+        description: 'Heavy liquid metal.',
+        temperatureEffect: 0.05
+      },
+      glue: {
+        name: 'Glue',
+        color: '#ffa500',
+        type: 'dynamic',
+        density: 1.1,
+        behavior: 'solid',
+        description: 'Sticky and adhesive.',
+        temperatureEffect: 0.01
+      },
+      mud: {
+        name: 'Mud',
+        color: '#654321',
+        type: 'dynamic',
+        density: 1.3,
+        behavior: 'liquid',
+        description: 'Semi-solid mix of earth and water.',
+        temperatureEffect: 0.03
+      },
+      smoke: {
+        name: 'Smoke',
+        color: '#708090',
+        type: 'gas',
+        density: 0.4,
+        behavior: 'gas',
+        description: 'Cloudy gaseous byproduct.',
+        temperatureEffect: 0.05
+      },
+      ash: {
+        name: 'Ash',
+        color: '#696969',
+        type: 'dynamic',
+        density: 0.7,
+        behavior: 'solid',
+        description: 'Residue of combustion.',
+        temperatureEffect: 0.02
+      },
+      honey: {
+        name: 'Honey',
+        color: '#ffc30b',
+        type: 'dynamic',
+        density: 1.4,
+        behavior: 'liquid',
+        description: 'Thick, sugary liquid.',
+        temperatureEffect: 0.02
+      },
+      foam: {
+        name: 'Foam',
+        color: '#ffffff',
+        type: 'gas',
+        density: 0.6,
+        behavior: 'gas',
+        description: 'Bubbly, airy substance.',
+        temperatureEffect: 0.05
+      }
+    };
+
+    /* ---------------------------------------------------------
+       ================   UI / BUTTON HANDLERS  =================
+       --------------------------------------------------------- */
+    tools.forEach(tool => {
+      tool.addEventListener('click', () => {
+        tools.forEach(t => t.classList.remove('selected'));
+        tool.classList.add('selected');
+        currentTool = tool.dataset.tool;
+      });
+    });
+
+    clearBtn.addEventListener('click', () => {
+      initParticles();
+    });
+
+    settingsBtn.addEventListener('click', () => {
+      settingsPanel.style.display = 'flex';
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsPanel.style.display = 'none';
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const data = { grid, cols, rows, cellSize, temperatureGrid };
+      localStorage.setItem('elementVisualizerSave', JSON.stringify(data));
+      alert('Simulation saved successfully!');
+    });
+
+    loadBtn.addEventListener('click', () => {
+      const data = JSON.parse(localStorage.getItem('elementVisualizerSave'));
+      if (data && data.grid && data.cols && data.rows && data.cellSize && data.temperatureGrid) {
+        if (data.cols === cols && data.rows === rows && data.cellSize === cellSize) {
+          grid = data.grid;
+          temperatureGrid = data.temperatureGrid;
+          alert('Simulation loaded successfully!');
+        } else {
+          alert('Saved simulation does not match current settings.');
+        }
+      } else {
+        alert('No saved simulation found.');
+      }
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      paused = !paused;
+      pauseBtn.innerHTML = paused
+        ? '<i class="fas fa-play"></i> Resume'
+        : '<i class="fas fa-pause"></i> Pause';
+    });
+
+    /* ---------------------- SETTINGS UPDATES ---------------------- */
+    gravityRange.addEventListener('input', () => {
+      gravity = parseFloat(gravityRange.value);
+      gravityValue.textContent = gravity;
+    });
+
+    speedRange.addEventListener('input', () => {
+      simulationSpeed = parseFloat(speedRange.value);
+      speedValue.textContent = simulationSpeed;
+    });
+
+    elementSizeRange.addEventListener('input', () => {
+      cellSize = parseInt(elementSizeRange.value);
+      elementSizeValue.textContent = cellSize;
+      resize();
+    });
+
+    temperatureRange.addEventListener('input', () => {
+      temperatureFlux = parseFloat(temperatureRange.value);
+      temperatureValue.textContent = temperatureFlux;
+    });
+
+    windRange.addEventListener('input', () => {
+      windForce = parseFloat(windRange.value);
+      windValue.textContent = windForce;
+    });
+
+    spawnRadiusRange.addEventListener('input', () => {
+      spawnRadius = parseInt(spawnRadiusRange.value);
+      spawnRadiusValue.textContent = spawnRadius;
+    });
+
+    showGridCheckbox.addEventListener('change', () => {
+      showGrid = showGridCheckbox.checked;
+    });
+
+    randomSpawnCheckbox.addEventListener('change', () => {
+      randomSpawn = randomSpawnCheckbox.checked;
+    });
+
+    /* ---------------------------------------------------------
+       ================   MOUSE & TOOLTIP  =====================
+       --------------------------------------------------------- */
+    let isMouseDown = false;
+    canvas.addEventListener('mousedown', e => {
+      isMouseDown = true;
+      paint(e);
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (isMouseDown) paint(e);
+      handleTooltip(e);
+    });
+    window.addEventListener('mouseup', () => {
+      isMouseDown = false;
+      tooltip.style.display = 'none';
+    });
+
+    function paint(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / cellSize);
+      const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+      for (let i = -spawnRadius; i <= spawnRadius; i++) {
+        for (let j = -spawnRadius; j <= spawnRadius; j++) {
+          const nx = x + i;
+          const ny = y + j;
+          if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) {
+            const dist = Math.sqrt(i*i + j*j);
+            if (dist <= spawnRadius) {
+              const index = ny * cols + nx;
+              if (randomSpawn) {
+                const keys = Object.keys(elements);
+                const randomElem = keys[Math.floor(Math.random() * keys.length)];
+                grid[index] = randomElem;
+              } else {
+                grid[index] = currentTool;
+              }
+              // Reset temperature to default
+              temperatureGrid[index] = 20;
+            }
+          }
+        }
+      }
+    }
+
+    // Show a tooltip for the cell under the cursor
+    function handleTooltip(e) {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / cellSize);
+      const y = Math.floor((e.clientY - rect.top) / cellSize);
+      if (x >= 0 && y >= 0 && x < cols && y < rows) {
+        const index = y * cols + x;
+        const cell = grid[index];
+        if (cell && elements[cell]) {
+          tooltip.style.left = `${e.clientX + 12}px`;
+          tooltip.style.top = `${e.clientY + 12}px`;
+          tooltip.innerHTML = `<strong>${elements[cell].name}</strong><br>${elements[cell].description}`;
+          tooltip.style.display = 'block';
+        } else {
+          tooltip.style.display = 'none';
+        }
+      } else {
+        tooltip.style.display = 'none';
+      }
+    }
+
+    /* ---------------------------------------------------------
+       ================   PHYSICS & HEAT   ======================
+       --------------------------------------------------------- */
+    function getNeighbors(x, y) {
+      // 4 orthogonal neighbors
+      const dirs = [
+        { x: x,     y: y + 1 }, // down
+        { x: x - 1, y: y },     // left
+        { x: x + 1, y: y },     // right
+        { x: x,     y: y - 1 }  // up
+      ];
+      return dirs.filter(d => d.x >= 0 && d.x < cols && d.y >= 0 && d.y < rows);
+    }
+
+    function transferHeat(x, y, index) {
+      const cell = grid[index];
+      if (!cell) return;
+      const element = elements[cell];
+      if (!element) return;
+
+      const currTemp = temperatureGrid[index];
+      const neighbors = getNeighbors(x, y);
+
+      // Simple conduction
+      for (let n of neighbors) {
+        const nIndex = n.y * cols + n.x;
+        if (grid[nIndex] && elements[grid[nIndex]]) {
+          const diff = (currTemp - temperatureGrid[nIndex]) * 0.05 * temperatureFlux;
+          temperatureGrid[index] -= diff;
+          temperatureGrid[nIndex] += diff;
+        }
+      }
+
+      // Certain elements add or reduce temperature
+      if (element.type !== 'static') {
+        temperatureGrid[index] += element.temperatureEffect * temperatureFlux;
+      }
+
+      // Simple transformations based on temperature
+      if (cell === 'lava' && currTemp < 25) {
+        // Lava cools into rock
+        grid[index] = 'rock';
+      }
+      if (cell === 'ice' && currTemp > 5) {
+        // Ice melts into water
+        grid[index] = 'water';
+      }
+      if (cell === 'water' && currTemp < 0) {
+        // Water freezes
+        grid[index] = 'ice';
+      }
+      if (cell === 'water' && currTemp > 100) {
+        // Water evaporates
+        grid[index] = 'steam';
+      }
+      if (cell === 'steam' && currTemp < 80) {
+        // Steam condenses back to water
+        grid[index] = 'water';
+      }
+      if (cell === 'wood' && currTemp > 250) {
+        // Wood combusts into ash
+        grid[index] = 'ash';
+      }
+      if (cell === 'plasma' && currTemp < 10) {
+        // Plasma cools into smoke
+        grid[index] = 'smoke';
+      }
+    }
+
+    /* ----------------------- UPDATE LOOP ----------------------- */
+    function update() {
+      const steps = Math.floor(simulationSpeed);
+      for (let s = 0; s < steps; s++) {
+        // Iterate bottom-up for gravity
+        for (let y = rows - 1; y >= 0; y--) {
+          for (let x = 0; x < cols; x++) {
+            const index = y * cols + x;
+            const cell = grid[index];
+            if (!cell) continue;
+
+            const element = elements[cell];
+            if (!element) continue;
+
+            if (element.type !== 'static') {
+              switch (element.behavior) {
+                case 'solid':
+                  // Solid but "dynamic" (like sand, dust) might fall
+                  moveSolid(x, y, element);
+                  break;
+                case 'liquid':
+                  moveLiquid(x, y, element);
+                  break;
+                case 'gas':
+                  moveGas(x, y, element);
+                  break;
+              }
+              applyWind(x, y, element);
+            }
+            handleInteractions(x, y, cell);
+          }
+        }
+        // Heat Transfer after movements
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const index = y * cols + x;
+            transferHeat(x, y, index);
+          }
+        }
+      }
+    }
+
+    /* -------------------- MOVEMENT FUNCTIONS -------------------- */
+    function moveSolid(x, y, element) {
+      // For "solid" dynamic elements like Sand, Dust
+      // they will attempt to fall straight down, or diagonally if blocked
+      const index = y * cols + x;
+      // Position below
+      const belowY = y + 1;
+      if (belowY >= rows) return; // edge
+
+      const belowIndex = belowY * cols + x;
+      // If below is empty, fall
+      if (!grid[belowIndex]) {
+        grid[belowIndex] = grid[index];
+        grid[index] = null;
+        temperatureGrid[belowIndex] = temperatureGrid[index];
+        temperatureGrid[index] = 20;
+      } else {
+        // Try diagonal
+        const leftIndex = belowY * cols + (x - 1);
+        const rightIndex = belowY * cols + (x + 1);
+        const canLeft = x - 1 >= 0 && !grid[leftIndex];
+        const canRight = x + 1 < cols && !grid[rightIndex];
+        // Randomize diagonal direction to look more natural
+        if (canLeft && canRight) {
+          if (Math.random() < 0.5) {
+            grid[leftIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[leftIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+          } else {
+            grid[rightIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[rightIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+          }
+        } else if (canLeft) {
+          grid[leftIndex] = grid[index];
+          grid[index] = null;
+          temperatureGrid[leftIndex] = temperatureGrid[index];
+          temperatureGrid[index] = 20;
+        } else if (canRight) {
+          grid[rightIndex] = grid[index];
+          grid[index] = null;
+          temperatureGrid[rightIndex] = temperatureGrid[index];
+          temperatureGrid[index] = 20;
+        }
+      }
+    }
+
+    function moveLiquid(x, y, element) {
+      // Liquids try to fall straight down, else diagonals, else slight horizontal
+      const index = y * cols + x;
+      // Straight down
+      const downY = y + 1;
+      if (downY < rows) {
+        const downIndex = downY * cols + x;
+        if (!grid[downIndex]) {
+          grid[downIndex] = grid[index];
+          grid[index] = null;
+          temperatureGrid[downIndex] = temperatureGrid[index];
+          temperatureGrid[index] = 20;
+          return;
+        }
+      }
+      // Try diagonal
+      const directions = Math.random() < 0.5 ? [-1, 1] : [1, -1];
+      for (let dir of directions) {
+        const nx = x + dir;
+        const ny = y + 1;
+        if (nx >= 0 && nx < cols && ny < rows) {
+          const nIndex = ny * cols + nx;
+          if (!grid[nIndex]) {
+            grid[nIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[nIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+            return;
+          }
+        }
+      }
+      // If no downward or diagonal, occasionally move sideways
+      if (Math.random() < 0.1) {
+        const sideDir = Math.random() < 0.5 ? -1 : 1;
+        const sx = x + sideDir;
+        if (sx >= 0 && sx < cols) {
+          const sideIndex = y * cols + sx;
+          if (!grid[sideIndex]) {
+            grid[sideIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[sideIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+          }
+        }
+      }
+    }
+
+    function moveGas(x, y, element) {
+      // Gases attempt to rise up, else diagonals, else wander sideways
+      const index = y * cols + x;
+      const upY = y - 1;
+      if (upY >= 0) {
+        const upIndex = upY * cols + x;
+        if (!grid[upIndex]) {
+          grid[upIndex] = grid[index];
+          grid[index] = null;
+          temperatureGrid[upIndex] = temperatureGrid[index];
+          temperatureGrid[index] = 20;
+          return;
+        }
+      }
+      // Try diagonal up
+      const directions = Math.random() < 0.5 ? [-1, 1] : [1, -1];
+      for (let dir of directions) {
+        const nx = x + dir;
+        const ny = y - 1;
+        if (nx >= 0 && nx < cols && ny >= 0) {
+          const nIndex = ny * cols + nx;
+          if (!grid[nIndex]) {
+            grid[nIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[nIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+            return;
+          }
+        }
+      }
+      // If can't go up, occasionally drift sideways
+      if (Math.random() < 0.1) {
+        const sideDir = Math.random() < 0.5 ? -1 : 1;
+        const sx = x + sideDir;
+        if (sx >= 0 && sx < cols) {
+          const sideIndex = y * cols + sx;
+          if (!grid[sideIndex]) {
+            grid[sideIndex] = grid[index];
+            grid[index] = null;
+            temperatureGrid[sideIndex] = temperatureGrid[index];
+            temperatureGrid[index] = 20;
+          }
+        }
+      }
+    }
+
+    function applyWind(x, y, element) {
+      if (windForce === 0) return;
+      const index = y * cols + x;
+      // Wind is horizontal movement
+      const windDir = windForce > 0 ? 1 : -1;
+      const nx = x + windDir;
+      if (nx >= 0 && nx < cols && Math.random() < Math.abs(windForce) * 0.01 && element.type !== 'static') {
+        const neighborIndex = y * cols + nx;
+        if (!grid[neighborIndex]) {
+          grid[neighborIndex] = grid[index];
+          grid[index] = null;
+          temperatureGrid[neighborIndex] = temperatureGrid[index];
+          temperatureGrid[index] = 20;
+        }
+      }
+    }
+
+    /* -------------------- INTERACTIONS -------------------- */
+    function handleInteractions(x, y, cell) {
+      const neighbors = getNeighbors(x, y);
+      for (let n of neighbors) {
+        const nIndex = n.y * cols + n.x;
+        const neighbor = grid[nIndex];
+        if (!neighbor) continue;
+
+        // Example interactions
+        if (cell === 'lava' && neighbor === 'sand') {
+          // Lava + sand -> glass
+          grid[nIndex] = 'glass';
+        }
+        if (cell === 'water' && neighbor === 'lava') {
+          // Water + lava -> glass
+          grid[nIndex] = 'glass';
+        }
+        if (cell === 'ice' && neighbor === 'plasma') {
+          // Plasma heats ice -> water
+          grid[y * cols + x] = 'water';
+        }
+        if (cell === 'mud' && neighbor === 'sand') {
+          // Sand mixing into mud
+          grid[nIndex] = 'mud';
+        }
+        if (cell === 'steam' && neighbor === 'metal') {
+          // Steam transfers heat to metal
+          temperatureGrid[nIndex] += 5;
+        }
+        if (cell === 'oil' && neighbor === 'water') {
+          // Water & oil sometimes swap
+          if (Math.random() < 0.01) {
+            grid[y * cols + x] = 'water';
+            grid[nIndex] = 'oil';
+          }
+        }
+        if (cell === 'wood' && neighbor === 'lava') {
+          // Wood near lava -> burn
+          grid[y * cols + x] = 'ash';
+        }
+        if (cell === 'plasma' && neighbor === 'smoke') {
+          // Plasma + smoke -> more plasma
+          grid[nIndex] = 'plasma';
+        }
+        if (cell === 'glue' && neighbor !== 'glue') {
+          // Glue can stick adjacent particles together (demo placeholder)
+          // Implementation up to you (e.g., disable movement)
+        }
+      }
+    }
+
+    /* ---------------------------------------------------------
+       ================   RENDERING   ==========================
+       --------------------------------------------------------- */
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imageData.data;
+
+      let particleCount = 0;
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const index = y * cols + x;
+          const cell = grid[index];
+          if (cell && elements[cell]) {
+            particleCount++;
+            const c = hexToRgb(elements[cell].color);
+            const temp = temperatureGrid[index];
+
+            let r = c.r;
+            let g = c.g;
+            let b = c.b;
+
+            // Very simple temperature-based color shift
+            if (temp > 50) {
+              r = Math.min(255, r + (temp - 50) * 2);
+              g = Math.max(0, g - (temp - 50));
+            }
+
+            // Draw each cellSize x cellSize block
+            for (let dy = 0; dy < cellSize; dy++) {
+              for (let dx = 0; dx < cellSize; dx++) {
+                const px = x * cellSize + dx;
+                const py = y * cellSize + dy;
+                if (px < canvas.width && py < canvas.height) {
+                  const idx = (py * canvas.width + px) * 4;
+                  data[idx]     = r;
+                  data[idx + 1] = g;
+                  data[idx + 2] = b;
+                  data[idx + 3] = 255;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // Optionally draw grid lines
+      if (showGrid) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= cols; x++) {
+          ctx.beginPath();
+          ctx.moveTo(x * cellSize, 0);
+          ctx.lineTo(x * cellSize, canvas.height);
+          ctx.stroke();
+        }
+        for (let y = 0; y <= rows; y++) {
+          ctx.beginPath();
+          ctx.moveTo(0, y * cellSize);
+          ctx.lineTo(canvas.width, y * cellSize);
+          ctx.stroke();
+        }
+      }
+
+      particleCountStat.textContent = 'Particles: ' + particleCount;
+    }
+
+    function hexToRgb(hex) {
+      const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+      let h = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+      });
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+      return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+          }
+        : { r: 0, g: 0, b: 0 };
+    }
+
+    /* ---------------------------------------------------------
+       ================   MAIN LOOP   ==========================
+       --------------------------------------------------------- */
+    function loop(timestamp) {
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      fps = Math.round(1000 / deltaTime);
+      fpsStat.textContent = 'FPS: ' + fps;
+
+      if (!paused) {
+        update();
+      }
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
