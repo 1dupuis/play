@@ -990,46 +990,166 @@
         const nIndex = n.y * cols + n.x;
         const neighbor = grid[nIndex];
         if (!neighbor) continue;
-
-        // Example interactions
-        if (cell === 'lava' && neighbor === 'sand') {
-          // Lava + sand -> glass
+    
+        // === PHYSICAL INTERACTIONS ===
+    
+        // Lava + Water -> Obsidian
+        if ((cell === 'lava' && neighbor === 'water') || (cell === 'water' && neighbor === 'lava')) {
+          grid[nIndex] = 'rock';
+          grid[y * cols + x] = 'steam';
+        }
+    
+        // Lava + Sand -> Glass
+        if ((cell === 'lava' && neighbor === 'sand') || (cell === 'sand' && neighbor === 'lava')) {
           grid[nIndex] = 'glass';
         }
-        if (cell === 'water' && neighbor === 'lava') {
-          // Water + lava -> glass
-          grid[nIndex] = 'glass';
-        }
-        if (cell === 'ice' && neighbor === 'plasma') {
-          // Plasma heats ice -> water
-          grid[y * cols + x] = 'water';
-        }
-        if (cell === 'mud' && neighbor === 'sand') {
-          // Sand mixing into mud
+    
+        // Water + Sand -> Mud
+        if ((cell === 'water' && neighbor === 'sand') || (cell === 'sand' && neighbor === 'water')) {
           grid[nIndex] = 'mud';
         }
-        if (cell === 'steam' && neighbor === 'metal') {
-          // Steam transfers heat to metal
-          temperatureGrid[nIndex] += 5;
+    
+        // Water + Lava -> Steam
+        if ((cell === 'water' && neighbor === 'lava') || (cell === 'lava' && neighbor === 'water')) {
+          grid[y * cols + x] = 'steam';
+          grid[nIndex] = 'rock';
         }
-        if (cell === 'oil' && neighbor === 'water') {
-          // Water & oil sometimes swap
-          if (Math.random() < 0.01) {
-            grid[y * cols + x] = 'water';
-            grid[nIndex] = 'oil';
-          }
+    
+        // Ice + Lava -> Water
+        if ((cell === 'ice' && neighbor === 'lava') || (cell === 'lava' && neighbor === 'ice')) {
+          grid[y * cols + x] = 'water';
         }
-        if (cell === 'wood' && neighbor === 'lava') {
-          // Wood near lava -> burn
+    
+        // Steam + Metal -> Warm Metal
+        if ((cell === 'steam' && neighbor === 'metal')) {
+          temperatureGrid[nIndex] += 10;
+        }
+    
+        // Water + Oil -> Oil floats on Water
+        if ((cell === 'water' && neighbor === 'oil')) {
+          grid[y * cols + x] = 'oil';
+          grid[nIndex] = 'water';
+        }
+    
+        // Wood + Lava -> Ash
+        if ((cell === 'wood' && neighbor === 'lava') || (cell === 'lava' && neighbor === 'wood')) {
           grid[y * cols + x] = 'ash';
         }
-        if (cell === 'plasma' && neighbor === 'smoke') {
-          // Plasma + smoke -> more plasma
+    
+        // Wood + Fire -> Ash
+        if ((cell === 'wood' && neighbor === 'plasma') || (cell === 'plasma' && neighbor === 'wood')) {
+          grid[y * cols + x] = 'ash';
+        }
+    
+        // Plasma + Smoke -> Plasma expands
+        if ((cell === 'plasma' && neighbor === 'smoke')) {
           grid[nIndex] = 'plasma';
         }
-        if (cell === 'glue' && neighbor !== 'glue') {
-          // Glue can stick adjacent particles together (demo placeholder)
-          // Implementation up to you (e.g., disable movement)
+    
+        // Ice + Fire -> Water
+        if ((cell === 'ice' && neighbor === 'plasma') || (cell === 'plasma' && neighbor === 'ice')) {
+          grid[y * cols + x] = 'water';
+        }
+    
+        // Glue + Any Dynamic Element -> Stick Together
+        if ((cell === 'glue' && elements[neighbor]?.type === 'dynamic')) {
+          grid[nIndex] = cell; // Neighbor becomes glue
+        }
+    
+        // Glue + Sand -> Hardened Glue
+        if ((cell === 'glue' && neighbor === 'sand')) {
+          grid[nIndex] = 'rock';
+        }
+    
+        // Oil + Fire -> Fire spreads
+        if ((cell === 'oil' && neighbor === 'plasma') || (cell === 'plasma' && neighbor === 'oil')) {
+          grid[y * cols + x] = 'plasma';
+        }
+    
+        // Mud + Heat -> Dry Mud (Rock)
+        if ((cell === 'mud' && neighbor === 'plasma')) {
+          grid[y * cols + x] = 'rock';
+        }
+    
+        // Water + Heat -> Steam
+        if ((cell === 'water' && neighbor === 'plasma')) {
+          grid[y * cols + x] = 'steam';
+        }
+    
+        // Ice + Steam -> Water
+        if ((cell === 'ice' && neighbor === 'steam')) {
+          grid[y * cols + x] = 'water';
+        }
+    
+        // Steam + Cold -> Water
+        if ((cell === 'steam' && neighbor === 'ice')) {
+          grid[y * cols + x] = 'water';
+        }
+    
+        // Dust + Water -> Mud
+        if ((cell === 'dust' && neighbor === 'water') || (cell === 'water' && neighbor === 'dust')) {
+          grid[nIndex] = 'mud';
+        }
+    
+        // Smoke + Wind -> Spread Smoke
+        if ((cell === 'smoke' && windForce !== 0)) {
+          const windDir = windForce > 0 ? 1 : -1;
+          const nx = x + windDir;
+          if (nx >= 0 && nx < cols) {
+            const windIndex = y * cols + nx;
+            if (!grid[windIndex]) {
+              grid[windIndex] = 'smoke';
+              grid[y * cols + x] = null;
+            }
+          }
+        }
+    
+        // Honey + Water -> Diluted Honey
+        if ((cell === 'honey' && neighbor === 'water') || (cell === 'water' && neighbor === 'honey')) {
+          grid[nIndex] = 'mud';
+        }
+    
+        // Foam + Lava -> Nothing (Foam evaporates)
+        if ((cell === 'foam' && neighbor === 'lava')) {
+          grid[y * cols + x] = null;
+        }
+    
+        // Metal + Plasma -> Hot Metal
+        if ((cell === 'metal' && neighbor === 'plasma')) {
+          temperatureGrid[y * cols + x] += 10;
+        }
+    
+        // Ash + Water -> Mud
+        if ((cell === 'ash' && neighbor === 'water') || (cell === 'water' && neighbor === 'ash')) {
+          grid[y * cols + x] = 'mud';
+        }
+    
+        // Smoke + Ice -> Frozen Smoke
+        if ((cell === 'smoke' && neighbor === 'ice')) {
+          grid[y * cols + x] = 'dust';
+        }
+    
+        // Mercury + Fire -> Vaporized Mercury
+        if ((cell === 'mercury' && neighbor === 'plasma')) {
+          grid[y * cols + x] = 'steam';
+        }
+    
+        // Honey + Lava -> Caramel
+        if ((cell === 'honey' && neighbor === 'lava')) {
+          grid[y * cols + x] = 'rock';
+        }
+    
+        // Ash + Wind -> Spread Ash
+        if ((cell === 'ash' && windForce !== 0)) {
+          const windDir = windForce > 0 ? 1 : -1;
+          const nx = x + windDir;
+          if (nx >= 0 && nx < cols) {
+            const windIndex = y * cols + nx;
+            if (!grid[windIndex]) {
+              grid[windIndex] = 'ash';
+              grid[y * cols + x] = null;
+            }
+          }
         }
       }
     }
@@ -1041,8 +1161,9 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const imageData = ctx.createImageData(canvas.width, canvas.height);
       const data = imageData.data;
-
+    
       let particleCount = 0;
+    
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           const index = y * cols + x;
@@ -1051,38 +1172,90 @@
             particleCount++;
             const c = hexToRgb(elements[cell].color);
             const temp = temperatureGrid[index];
-
+            const element = elements[cell];
+    
             let r = c.r;
             let g = c.g;
             let b = c.b;
-
-            // Very simple temperature-based color shift
+    
+            // === 1. Temperature Gradient ===
             if (temp > 50) {
-              r = Math.min(255, r + (temp - 50) * 2);
-              g = Math.max(0, g - (temp - 50));
+              r = Math.min(255, r + (temp - 50) * 3);
+              g = Math.max(0, g - (temp - 50) * 1.5);
+            } else if (temp < 10) {
+              b = Math.min(255, b + (10 - temp) * 5);
             }
-
-            // Draw each cellSize x cellSize block
+    
+            // === 2. Ambient Occlusion ===
+            let shadowFactor = 1.0;
+            let lightFactor = 1.0;
+    
+            const neighbors = getNeighbors(x, y);
+            for (let n of neighbors) {
+              const nIndex = n.y * cols + n.x;
+              if (!grid[nIndex]) {
+                lightFactor -= 0.1; // Less light if adjacent to empty space
+              } else {
+                shadowFactor -= 0.05; // Subtle shadow effect for density
+              }
+            }
+            shadowFactor = Math.max(0.7, shadowFactor);
+            lightFactor = Math.max(0.6, lightFactor);
+    
+            // Apply lighting and shadow
+            r = Math.min(255, r * lightFactor * shadowFactor);
+            g = Math.min(255, g * lightFactor * shadowFactor);
+            b = Math.min(255, b * lightFactor * shadowFactor);
+    
+            // === 3. Edge Softening with Alpha Blending ===
+            let alpha = 255 * (0.9 + Math.random() * 0.1); // Slight random noise for texture
+    
+            // === 4. Dynamic Element Glow ===
+            if (element.type === 'dynamic' && Math.random() < 0.05) {
+              r = Math.min(255, r + 10); // Add slight glow to dynamic particles
+              g = Math.min(255, g + 10);
+              alpha = 255; // Ensure dynamic particles remain solid
+            }
+    
+            // === 5. Cell Rendering with Optimized Loop ===
+            const baseX = x * cellSize;
+            const baseY = y * cellSize;
             for (let dy = 0; dy < cellSize; dy++) {
               for (let dx = 0; dx < cellSize; dx++) {
-                const px = x * cellSize + dx;
-                const py = y * cellSize + dy;
+                const px = baseX + dx;
+                const py = baseY + dy;
                 if (px < canvas.width && py < canvas.height) {
                   const idx = (py * canvas.width + px) * 4;
-                  data[idx]     = r;
-                  data[idx + 1] = g;
-                  data[idx + 2] = b;
-                  data[idx + 3] = 255;
+                  data[idx] = r;       // Red
+                  data[idx + 1] = g;   // Green
+                  data[idx + 2] = b;   // Blue
+                  data[idx + 3] = alpha; // Alpha
+                }
+              }
+            }
+    
+            // === 6. Subtle Particle Glow Effect (Optional Highlight) ===
+            if (element.type === 'dynamic' && Math.random() < 0.02) {
+              for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                  const px = baseX + dx;
+                  const py = baseY + dy;
+                  if (px >= 0 && py >= 0 && px < canvas.width && py < canvas.height) {
+                    const idx = (py * canvas.width + px) * 4;
+                    data[idx] = Math.min(255, data[idx] + 15);
+                    data[idx + 1] = Math.min(255, data[idx + 1] + 15);
+                    data[idx + 3] = 200; // Add slight glow
+                  }
                 }
               }
             }
           }
         }
       }
-
+    
       ctx.putImageData(imageData, 0, 0);
-
-      // Optionally draw grid lines
+    
+      // === 7. Enhanced Grid Overlay (Optional) ===
       if (showGrid) {
         ctx.strokeStyle = 'rgba(255,255,255,0.05)';
         ctx.lineWidth = 1;
@@ -1099,8 +1272,19 @@
           ctx.stroke();
         }
       }
-
-      particleCountStat.textContent = 'Particles: ' + particleCount;
+    
+      // === 8. Ambient Overlay for Depth ===
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+      // === 9. Visual Effects - Global Glow (Optional Aesthetic Touch) ===
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.05)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    
+      // === 10. Display Particle Count ===
+      particleCountStat.textContent = `Particles: ${particleCount}`;
     }
 
     function hexToRgb(hex) {
