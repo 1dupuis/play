@@ -313,6 +313,7 @@
                   type="text"
                   class="flex-1 border-gray-300 rounded-md shadow-sm ml-2 option-input dark:bg-gray-700 dark:text-gray-100"
                   placeholder="Option A"
+                  required
                 />
               </div>
               <div class="flex items-center">
@@ -322,6 +323,7 @@
                   type="text"
                   class="flex-1 border-gray-300 rounded-md shadow-sm ml-2 option-input dark:bg-gray-700 dark:text-gray-100"
                   placeholder="Option B"
+                  required
                 />
               </div>
               <div class="flex items-center">
@@ -346,7 +348,7 @@
           </div>
 
           <!-- Correct Answer -->
-          <div>
+          <div id="correctAnswerContainer">
             <label for="correctAnswer" class="block text-sm font-medium">
               Correct Answer
             </label>
@@ -357,7 +359,7 @@
               required
             />
             <p class="text-xs text-gray-500 mt-1">
-              For Multiple Choice, enter the option letter (e.g., A, B). Will auto-uppercase.
+              For Multiple Choice and True/False, select the correct option instead.
             </p>
           </div>
 
@@ -453,48 +455,51 @@
               required
             />
           </div>
-          <div class="flex flex-col space-y-2">
+          <div class="space-y-2">
             <label class="block text-sm font-medium">Options</label>
-            <input
-              type="text"
-              id="quickOptionA"
-              class="border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
-              placeholder="Option A"
-              required
-            />
-            <input
-              type="text"
-              id="quickOptionB"
-              class="border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
-              placeholder="Option B"
-              required
-            />
-            <input
-              type="text"
-              id="quickOptionC"
-              class="border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
-              placeholder="Option C"
-            />
-            <input
-              type="text"
-              id="quickOptionD"
-              class="border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
-              placeholder="Option D"
-            />
+            <div class="flex items-center">
+              <input type="radio" name="quickCorrectOption" value="A" class="mr-2" />
+              <input
+                type="text"
+                id="quickOptionA"
+                class="flex-1 border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
+                placeholder="Option A"
+                required
+              />
+            </div>
+            <div class="flex items-center">
+              <input type="radio" name="quickCorrectOption" value="B" class="mr-2" />
+              <input
+                type="text"
+                id="quickOptionB"
+                class="flex-1 border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
+                placeholder="Option B"
+                required
+              />
+            </div>
+            <div class="flex items-center">
+              <input type="radio" name="quickCorrectOption" value="C" class="mr-2" />
+              <input
+                type="text"
+                id="quickOptionC"
+                class="flex-1 border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
+                placeholder="Option C"
+              />
+            </div>
+            <div class="flex items-center">
+              <input type="radio" name="quickCorrectOption" value="D" class="mr-2" />
+              <input
+                type="text"
+                id="quickOptionD"
+                class="flex-1 border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-gray-100"
+                placeholder="Option D"
+              />
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium">
-              Correct Option (A, B, C, or D)
+              Timestamp (in seconds)
             </label>
-            <input
-              type="text"
-              id="quickCorrect"
-              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:text-gray-100"
-              required
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Timestamp (in seconds)</label>
             <input
               type="number"
               id="quickTimestamp"
@@ -661,6 +666,7 @@
 
     const questionType          = document.getElementById('questionType');
     const optionsContainer      = document.getElementById('optionsContainer');
+    const correctAnswerContainer= document.getElementById('correctAnswerContainer');
     const questionForm          = document.getElementById('questionForm');
     const quickAddForm          = document.getElementById('quickAddForm');
     const questionList          = document.getElementById('questionList');
@@ -812,6 +818,7 @@
     function handleQuestionTypeUI(type) {
       if (type === 'multiple_choice' || type === 'true_false') {
         optionsContainer.classList.remove('hidden');
+        correctAnswerContainer.classList.add('hidden');
         document.querySelectorAll('.option-input').forEach(input => (input.required = (type === 'multiple_choice')));
         if (type === 'true_false') {
           const optionInputs = document.querySelectorAll('.option-input');
@@ -822,6 +829,7 @@
         }
       } else {
         optionsContainer.classList.add('hidden');
+        correctAnswerContainer.classList.remove('hidden');
         document.querySelectorAll('.option-input').forEach(input => {
           input.required = false;
           input.value = '';
@@ -835,17 +843,11 @@
       const type          = questionType.value;
       const diff          = difficultySelect.value;
       const text          = document.getElementById('questionTextInput').value.trim();
-      let correctAnswer   = document.getElementById('correctAnswer').value.trim();
       const explanation   = document.getElementById('explanationInput').value.trim();
       let timestamp       = parseFloat(document.getElementById('timestamp').value);
       const editIndex     = editIndexInput.value;
       const timeLimit     = parseInt(questionTimerInput.value || '0', 10);
       const allowSkip     = allowSkipCheckbox.checked;
-
-      // Auto uppercase multiple-choice correct answers
-      if (type === 'multiple_choice' || type === 'true_false') {
-        correctAnswer = correctAnswer.toUpperCase();
-      }
 
       if (timestamp < 0) {
         alert('Timestamp cannot be negative.');
@@ -862,10 +864,27 @@
       }
 
       let options = [];
+      let correctAnswer = '';
       if (type === 'multiple_choice' || type === 'true_false') {
         options = Array.from(document.querySelectorAll('.option-input'))
           .map(input => input.value)
           .filter(val => val);
+        const selectedOption = document.querySelector('input[name="correctOption"]:checked');
+        if (selectedOption) {
+          correctAnswer = selectedOption.value;
+        } else {
+          alert('Please select the correct answer.');
+          return;
+        }
+      } else {
+        correctAnswer = document.getElementById('correctAnswer').value.trim();
+        if (!correctAnswer) {
+          alert('Please enter the correct answer.');
+          return;
+        }
+        if (type === 'multiple_choice' || type === 'true_false') {
+          correctAnswer = correctAnswer.toUpperCase();
+        }
       }
 
       const newQuestion = {
@@ -892,6 +911,7 @@
       saveQuestions();
       closeAddQuestionModal();
       renderAll();
+      alert('Question saved successfully!');
     });
 
     // QUICK ADD MCQ
@@ -903,10 +923,15 @@
       const optionB       = document.getElementById('quickOptionB').value.trim();
       const optionC       = document.getElementById('quickOptionC').value.trim();
       const optionD       = document.getElementById('quickOptionD').value.trim();
-      let correctOption   = document.getElementById('quickCorrect').value.trim();
+      let correctOption   = document.querySelector('input[name="quickCorrectOption"]:checked');
       let timestamp       = parseFloat(document.getElementById('quickTimestamp').value);
 
-      correctOption = correctOption.toUpperCase();
+      if (!correctOption) {
+        alert('Please select the correct option.');
+        return;
+      }
+      correctOption = correctOption.value.toUpperCase();
+
       if (!['A','B','C','D'].includes(correctOption)) {
         alert('Correct option must be A, B, C, or D.');
         return;
@@ -924,11 +949,17 @@
         }
       }
 
+      const options = [optionA, optionB, optionC, optionD].filter(o => o);
+      if (options.length < 2) {
+        alert('Please provide at least two options.');
+        return;
+      }
+
       const newMCQ = {
         type: 'multiple_choice',
         difficulty: '',
         text,
-        options: [optionA, optionB, optionC, optionD].filter(o => o), // remove empty if C or D is missing
+        options,
         correctAnswer: correctOption,
         explanation: '',
         timestamp,
@@ -943,6 +974,7 @@
       saveQuestions();
       closeQuickAddModal();
       renderAll();
+      alert('MCQ added successfully!');
     });
 
     // Render All UI Components
@@ -1083,7 +1115,6 @@
       questionType.value = question.type;
       difficultySelect.value = question.difficulty || '';
       document.getElementById('questionTextInput').value = question.text;
-      document.getElementById('correctAnswer').value = question.correctAnswer;
       document.getElementById('timestamp').value = question.timestamp;
       document.getElementById('explanationInput').value = question.explanation || '';
       questionTimerInput.value = question.timeLimit || 0;
@@ -1093,12 +1124,19 @@
 
       if (question.type === 'multiple_choice' || question.type === 'true_false') {
         const optionInputs = document.querySelectorAll('.option-input');
-        optionInputs.forEach((input) => (input.value = ''));
-        question.options.forEach((opt, idx) => {
-          if (idx < optionInputs.length) {
-            optionInputs[idx].value = opt;
+        optionInputs.forEach((input, idx) => {
+          if (idx < question.options.length) {
+            input.value = question.options[idx];
+          } else {
+            input.value = '';
           }
         });
+        const correctOptionRadio = document.querySelector(`input[name="correctOption"][value="${question.correctAnswer}"]`);
+        if (correctOptionRadio) {
+          correctOptionRadio.checked = true;
+        }
+      } else {
+        document.getElementById('correctAnswer').value = question.correctAnswer;
       }
       openAddQuestionModal();
     }
@@ -1175,17 +1213,13 @@
       explanationDiv.innerHTML   = '';
       skipBtn.classList.add('hidden');
 
-      if (question.allowSkip) {
-        skipBtn.classList.remove('hidden');
-      }
-
       // Build question form
       if (question.type === 'multiple_choice') {
         let opts = [...question.options];
         if (shuffleMultipleChoiceOptions) {
           shuffleArray(opts);
         }
-        opts.forEach((opt) => {
+        opts.forEach((opt, idx) => {
           const option = document.createElement('div');
           option.className = 'flex items-center mb-2';
           option.innerHTML = `
@@ -1230,7 +1264,7 @@
             feedback.innerHTML = `
               <span class="text-red-500 font-semibold">Time's up!</span>
               <br />
-              <span>Correct Answer: ${question.correctAnswer}</span>
+              <span>Correct Answer: ${getFormattedCorrectAnswer(question)}</span>
             `;
             incorrectAnswersCount++;
             question.answered = true;
@@ -1248,6 +1282,15 @@
       // Pause video
       videoPlayer.pause();
       activeQuestion.classList.remove('hidden');
+    }
+
+    // Get formatted correct answer based on question type
+    function getFormattedCorrectAnswer(question) {
+      if (question.type === 'multiple_choice' || question.type === 'true_false') {
+        const optionIndex = question.correctAnswer.charCodeAt(0) - 65;
+        return question.options[optionIndex] || question.correctAnswer;
+      }
+      return question.correctAnswer;
     }
 
     // Submit Answer
@@ -1302,7 +1345,7 @@
         feedback.innerHTML = `
           <span class="text-red-500 font-semibold">Incorrect!</span>
           <br />
-          <span>Correct Answer: ${question.correctAnswer}</span>
+          <span>Correct Answer: ${getFormattedCorrectAnswer(question)}</span>
         `;
         incorrectAnswersCount++;
         if (question.explanation) {
@@ -1343,7 +1386,7 @@
       const inputs = activeQuestion.querySelectorAll('input');
       inputs.forEach(input => input.disabled = true);
       submitAnswerBtn.disabled = true;
-      skipBtn.disabled = true;
+      skipBtn.disabled         = true;
     }
 
     // Close Question
@@ -1370,7 +1413,7 @@
         li.innerHTML = `
           <strong>Question ${idx+1}:</strong> ${q.text}
           <br />
-          <span class="text-xs text-gray-500">Answer: ${q.correctAnswer}</span>
+          <span class="text-xs text-gray-500">Answer: ${getFormattedCorrectAnswer(q)}</span>
           <br />
           ${
             q.answered
@@ -1399,6 +1442,7 @@
       modalTitle.innerHTML = '<i class="fas fa-question-circle"></i> Add New Question';
       questionForm.reset();
       optionsContainer.classList.add('hidden');
+      correctAnswerContainer.classList.remove('hidden');
       editIndexInput.value = '';
       toggleModal('addQuestionModal');
     }
@@ -1407,11 +1451,15 @@
       modalTitle.innerHTML = '<i class="fas fa-question-circle"></i> Add New Question';
       questionForm.reset();
       optionsContainer.classList.add('hidden');
+      correctAnswerContainer.classList.remove('hidden');
       editIndexInput.value = '';
     }
 
     function openQuickAddModal() {
       quickAddForm.reset();
+      // Reset radio buttons
+      const radios = quickAddForm.querySelectorAll('input[name="quickCorrectOption"]');
+      radios.forEach(radio => radio.checked = false);
       toggleModal('quickAddModal');
     }
     function closeQuickAddModal() {
@@ -1545,7 +1593,7 @@
         const optionD       = row[4].trim();
         let correctOption   = row[5].trim().toUpperCase();
         let timestamp       = parseFloat(row[6]);
-        
+
         if (!['A','B','C','D'].includes(correctOption)) {
           console.warn(`Line ${i+1}: Invalid correct option. Must be A,B,C,D.`);
           continue;
