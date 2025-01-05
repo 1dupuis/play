@@ -7,6 +7,12 @@ const config = {
            icon: 'fa-gamepad',
            subcategories: [
                {
+                   name: '✨ Featured',
+                   items: [
+                       { name: 'Sandbox', url: '/sandbox', description: 'Physics game that includes elements' },
+                   ]
+               },
+               {
                    name: 'French Games',
                    items: [
                        { name: 'Motle', url: '/motle', description: 'Guess the French word of the day' },
