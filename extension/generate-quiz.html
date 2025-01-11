@@ -3,67 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Quiz - dupuis.lol</title>
+    <title>Générateur de Quiz - dupuis.lol</title>
+    <!-- Google Fonts for Enhanced Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
+        /* Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5, #cfd9df);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.5s ease-in-out;
+        }
+
+        /* Container Styles */
+        .quiz-wrapper {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        /* Header Styles */
         h1 {
+            font-family: 'Roboto Slab', serif;
             color: #2c3e50;
             text-align: center;
+            margin-bottom: 30px;
+            font-size: 3rem;
+            position: relative;
+            z-index: 1;
         }
-        .quiz-container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        /* Decorative Underline */
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #3498db;
+            margin: 10px auto 0;
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
+
+        /* Quiz Container */
+        #quiz-container {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Question Card Styles */
         .question {
-            background-color: #ecf0f1;
-            border-radius: 4px;
-            padding: 15px;
+            background: #f9f9f9;
+            border-left: 6px solid #3498db;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .question-number {
+            font-weight: 700;
+            color: #2980b9;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
             margin-bottom: 20px;
+            line-height: 1.5;
         }
-        .question p {
-            margin-top: 0;
-        }
+
+        /* Answer Button Styles */
         .answer-btn {
-            background-color: #3498db;
+            background: #3498db;
             color: #fff;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 12px 25px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
         .answer-btn:hover {
-            background-color: #2980b9;
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
+
+        .answer-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+        }
+
+        /* Chevron Icon */
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        /* Answer Styles */
         .answer {
-            margin-top: 10px;
-            font-weight: bold;
+            margin-top: 15px;
+            font-weight: 700;
             color: #27ae60;
             display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.5s ease;
         }
+
+        .answer.show {
+            display: block;
+            max-height: 200px; /* Adjust as needed */
+            opacity: 1;
+        }
+
+        /* Error Message Styles */
         .error {
-            background-color: #e74c3c;
+            background: #e74c3c;
             color: #fff;
-            padding: 10px;
-            border-radius: 4px;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            font-weight: 700;
+            animation: shake 0.5s;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* Responsive Design Enhancements */
+        @media (max-width: 768px) {
+            .quiz-wrapper {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .question {
+                padding: 20px;
+            }
+
+            .answer-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .answer-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Quiz Généré</h1>
-    <div id="quiz-container" class="quiz-container">
-        <p>Chargement du quiz...</p>
+    <div class="quiz-wrapper">
+        <h1>Quiz Généré</h1>
+        <div id="quiz-container">
+            <p>Chargement du quiz...</p>
+        </div>
     </div>
 
     <script>
@@ -74,45 +226,144 @@
 
             if (quizParam) {
                 try {
-                    const quizData = JSON.parse(decodeURIComponent(quizParam));
+                    const decodedQuiz = decodeURIComponent(quizParam);
+                    const quizData = JSON.parse(decodedQuiz);
+                    validateQuizData(quizData);
                     displayQuiz(quizData);
                 } catch (error) {
-                    console.error('Error parsing quiz data:', error);
+                    console.error('Erreur lors de l\'analyse des données du quiz:', error);
                     displayError('Impossible de charger les données du quiz. Veuillez réessayer.');
                 }
             } else {
                 displayError('Aucune donnée de quiz trouvée. Veuillez générer un quiz à partir d\'une page Wikipédia française.');
             }
 
+            /**
+             * Validates the structure of the quiz data.
+             * @param {Object} data - The quiz data to validate.
+             * @throws Will throw an error if the data structure is invalid.
+             */
+            function validateQuizData(data) {
+                if (!data.title || typeof data.title !== 'string') {
+                    throw new Error('Le titre du quiz est manquant ou invalide.');
+                }
+                if (!Array.isArray(data.questions) || data.questions.length === 0) {
+                    throw new Error('Le quiz doit contenir au moins une question.');
+                }
+                data.questions.forEach((q, index) => {
+                    if (typeof q.id === 'undefined' || typeof q.question !== 'string' || typeof q.answer !== 'string') {
+                        throw new Error(`La question à l'indice ${index + 1} est invalide.`);
+                    }
+                });
+            }
+
+            /**
+             * Displays the quiz on the page.
+             * @param {Object} data - The validated quiz data.
+             */
             function displayQuiz(data) {
-                quizContainer.innerHTML = `
-                    <h2>${data.title}</h2>
+                const sanitizedTitle = sanitizeHTML(data.title);
+                const quizHTML = `
+                    <h2>${sanitizedTitle}</h2>
                     ${data.questions.map((q, index) => `
                         <div class="question">
-                            <p>${index + 1}. ${q.question}</p>
-                            <button class="answer-btn" onclick="toggleAnswer(${q.id})">Afficher la réponse</button>
-                            <p class="answer" id="answer-${q.id}">Réponse: ${q.answer}</p>
+                            <div class="question-number">Question ${index + 1}:</div>
+                            <div class="question-text">${sanitizeHTML(q.question)}</div>
+                            <button class="answer-btn" aria-expanded="false" aria-controls="answer-${q.id}">
+                                <span>Afficher la réponse</span>
+                                <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </button>
+                            <div class="answer" id="answer-${q.id}">${sanitizeHTML(q.answer)}</div>
                         </div>
                     `).join('')}
                 `;
+                quizContainer.innerHTML = quizHTML;
+                // Fade in the quiz container after content is loaded
+                setTimeout(() => {
+                    quizContainer.style.opacity = '1';
+                }, 100);
+                attachEventListeners();
             }
 
+            /**
+             * Displays an error message on the page.
+             * @param {string} message - The error message to display.
+             */
             function displayError(message) {
-                quizContainer.innerHTML = `<p class="error">${message}</p>`;
+                quizContainer.innerHTML = `<div class="error">${sanitizeHTML(message)}</div>`;
+            }
+
+            /**
+             * Sanitizes a string to prevent XSS attacks by escaping HTML.
+             * @param {string} str - The string to sanitize.
+             * @returns {string} - The sanitized string.
+             */
+            function sanitizeHTML(str) {
+                const temp = document.createElement('div');
+                temp.textContent = str;
+                return temp.innerHTML;
+            }
+
+            /**
+             * Attaches event listeners to all answer buttons.
+             */
+            function attachEventListeners() {
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const answerId = button.getAttribute('aria-controls');
+                        const answerElement = document.getElementById(answerId);
+                        const isVisible = answerElement.classList.contains('show');
+
+                        if (isVisible) {
+                            hideAnswer(button, answerElement);
+                        } else {
+                            showAnswer(button, answerElement);
+                        }
+                    });
+                });
+            }
+
+            /**
+             * Shows the answer and updates the button state.
+             * @param {HTMLElement} button - The button that was clicked.
+             * @param {HTMLElement} answerElement - The answer element to show.
+             */
+            function showAnswer(button, answerElement) {
+                answerElement.classList.add('show');
+                button.setAttribute('aria-expanded', 'true');
+                button.querySelector('span').textContent = 'Cacher la réponse';
+                rotateIcon(button.querySelector('.chevron'), true);
+            }
+
+            /**
+             * Hides the answer and updates the button state.
+             * @param {HTMLElement} button - The button that was clicked.
+             * @param {HTMLElement} answerElement - The answer element to hide.
+             */
+            function hideAnswer(button, answerElement) {
+                answerElement.classList.remove('show');
+                button.setAttribute('aria-expanded', 'false');
+                button.querySelector('span').textContent = 'Afficher la réponse';
+                rotateIcon(button.querySelector('.chevron'), false);
+            }
+
+            /**
+             * Rotates the chevron icon based on the visibility state.
+             * @param {SVGElement} icon - The chevron SVG element.
+             * @param {boolean} expand - Whether to rotate the icon to expanded state.
+             */
+            function rotateIcon(icon, expand) {
+                if (expand) {
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+                icon.style.transition = 'transform 0.3s ease';
             }
         });
-
-        function toggleAnswer(id) {
-            const answerElement = document.getElementById(`answer-${id}`);
-            const button = answerElement.previousElementSibling;
-            if (answerElement.style.display === 'none' || answerElement.style.display === '') {
-                answerElement.style.display = 'block';
-                button.textContent = 'Cacher la réponse';
-            } else {
-                answerElement.style.display = 'none';
-                button.textContent = 'Afficher la réponse';
-            }
-        }
     </script>
 </body>
 </html>
