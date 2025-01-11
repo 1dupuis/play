@@ -1,7 +1,27 @@
+/* CSS Variables for easier theming and maintenance */
+:root {
+    --primary-color: #1a73e8;
+    --primary-hover: #1565c0;
+    --success-color: #34a853;
+    --background-color: #f0f2f5;
+    --container-bg: #ffffff;
+    --text-color: #333333;
+    --secondary-text: #5f6368;
+    --font-family: 'Roboto', sans-serif;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --max-width: 600px;
+    --transition-speed: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
     display: flex;
@@ -11,95 +31,163 @@ body {
 }
 
 .container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    background-color: var(--container-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: var(--max-width);
     width: 90%;
     padding: 2rem;
     margin: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 header {
     text-align: center;
-    margin-bottom: 2rem;
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
 }
 
 h1 {
     font-size: 2.5rem;
-    color: #1a73e8;
+    color: var(--primary-color);
     margin-bottom: 0.5rem;
 }
 
 .tagline {
     font-size: 1.2rem;
-    color: #5f6368;
+    color: var(--secondary-text);
 }
 
 .features {
     margin-bottom: 2rem;
 }
 
-h2 {
+.features h2,
+.additional-info h2 {
     font-size: 1.5rem;
     color: #202124;
     margin-bottom: 1rem;
 }
 
 ul {
-    list-style-type: none;
+    list-style: none;
     padding-left: 0;
 }
 
 li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
     padding-left: 1.5rem;
     position: relative;
+    line-height: 1.5;
 }
 
 li::before {
     content: '✓';
-    color: #34a853;
+    color: var(--success-color);
     position: absolute;
     left: 0;
+    top: 0;
+    font-size: 1rem;
 }
 
 .cta {
     text-align: center;
-    margin-bottom: 2rem;
 }
 
 .button {
     display: inline-block;
-    background-color: #1a73e8;
+    background-color: var(--primary-color);
     color: #fff;
     padding: 0.75rem 2rem;
     text-decoration: none;
     border-radius: 4px;
     font-size: 1.1rem;
     font-weight: 500;
-    transition: background-color 0.3s ease;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
-.button:hover {
-    background-color: #1565c0;
+.button:hover,
+.button:focus {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.button:active {
+    transform: translateY(0);
 }
 
 .compatibility {
     font-size: 0.9rem;
-    color: #5f6368;
+    color: var(--secondary-text);
     margin-top: 1rem;
+}
+
+.additional-info p {
+    font-size: 1rem;
+    color: var(--text-color);
 }
 
 footer {
     text-align: center;
     font-size: 0.9rem;
-    color: #5f6368;
+    color: var(--secondary-text);
+}
+
+.footer-nav {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.footer-nav li a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+}
+
+.footer-nav li a:hover,
+.footer-nav li a:focus {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* Responsive Design Enhancements */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .tagline {
+        font-size: 1.1rem;
+    }
+
+    .button {
+        padding: 0.65rem 1.8rem;
+        font-size: 1rem;
+    }
+
+    .features h2,
+    .additional-info h2 {
+        font-size: 1.3rem;
+    }
 }
 
 @media (max-width: 480px) {
     .container {
-        padding: 1.5rem;
+        padding: 1rem;
     }
 
     h1 {
@@ -108,5 +196,15 @@ footer {
 
     .tagline {
         font-size: 1rem;
+    }
+
+    .button {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .footer-nav {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
