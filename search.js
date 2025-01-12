@@ -93,13 +93,14 @@ const config = {
                 name: 'Classroom Resources',
                 items: [
                     { name: 'FBL', url: 'https://fbl.dupuis.lol/account/signup', description: 'French Blended Learning for schools' },
-                    { name: 'dupuis TV', url: '/tv', description: 'Add a video, and questions to answer' }
+                    { name: '✨ dupuis TV', url: '/tv', description: 'Add a video, and questions to answer' }
                 ]
             },
             {
                 name: 'Edu Resources',
                 items: [
-                    { name: '✨ India Heritage', url: 'https://edu.dupuis.lol/rudraksh', description: 'India Heritage Information-Based Website' }
+                    { name: ' India Heritage', url: 'https://edu.dupuis.lol/rudraksh', description: 'India Heritage Information-Based Website' },
+                    { name: '✨ Grind & Style', url: 'https://edu.dupuis.lol/joshreich', description: 'Shoe & Skateboard Design Business' }
                 ]
             }
         ]
