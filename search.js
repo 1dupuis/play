@@ -52,6 +52,7 @@ const config = {
                {
                    name: '❇️ AI',
                    items: [
+                       { name: 'TrustLens', url: 'https://trustlens.dupuis.lol', description: 'Google Gemini trustworthy video player' },
                        { name: 'GameGenie', url: '/gg', description: 'Google Gemini game maker' },
                        { name: 'Dupuis Search', url: 'https://search.dupuis.lol', description: 'Google Gemini search engine' },
                        { name: 'Make or Break', url: 'https://mob.dupuis.lol', description: 'Google Gemini business game' },
