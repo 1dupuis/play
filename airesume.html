@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Portfolio Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">Portfolio Builder</h1>
+                <div class="space-x-4">
+                    <button onclick="saveProgress()" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-save mr-2"></i>Save Progress
+                    </button>
+                    <button onclick="loadProgress()" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-folder-open mr-2"></i>Load Saved
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-1/3 space-y-6">
+                <!-- Form Section -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">Portfolio Details</h2>
+                    <form id="portfolioForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Full Name</label>
+                            <input type="text" id="name" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Title</label>
+                            <input type="text" id="title" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Full Stack Developer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Location</label>
+                            <input type="text" id="location" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="San Francisco, CA">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Bio</label>
+                            <textarea id="bio" class="w-full p-3 border border-gray-200 rounded-lg h-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Tell us about yourself..."></textarea>
+                            <div class="flex gap-2 mt-2">
+                                <button type="button" onclick="enhanceBio()" class="flex-1 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-magic mr-2"></i>Enhance with AI
+                                </button>
+                                <button type="button" onclick="generateBio()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-robot mr-2"></i>Generate New
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Skills</label>
+                            <div class="flex flex-wrap gap-2 mb-2" id="skillTags"></div>
+                            <div class="flex gap-2">
+                                <input type="text" id="skillInput" class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add a skill...">
+                                <button type="button" onclick="addSkill()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Contact Email</label>
+                            <input type="email" id="email" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="john@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Social Links</label>
+                            <div class="space-y-2">
+                                <div class="flex gap-2">
+                                    <input type="text" id="github" class="flex-1 p-3 border border-gray-200 rounded-lg" placeholder="GitHub URL">
+                                    <input type="text" id="linkedin" class="flex-1 p-3 border border-gray-200 rounded-lg" placeholder="LinkedIn URL">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-700">Theme</label>
+                            <div class="flex gap-4">
+                                <div class="flex-1">
+                                    <label class="block text-xs mb-1">Color</label>
+                                    <input type="color" id="themeColor" class="w-full h-10 rounded-lg cursor-pointer" value="#4F46E5">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-xs mb-1">Style</label>
+                                    <select id="themeStyle" class="w-full p-2 border border-gray-200 rounded-lg" onchange="updateThemeStyle()">
+                                        <option value="minimal">Minimal</option>
+                                        <option value="gradient">Gradient</option>
+                                        <option value="pattern">Pattern</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="w-full lg:w-2/3">
+                <!-- Preview Section -->
+                <div id="preview" class="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300">
+                    <div id="previewHeader" class="relative bg-indigo-600 text-white p-8">
+                        <div id="headerPattern" class="absolute inset-0 opacity-20"></div>
+                        <div class="relative">
+                            <h1 id="previewName" class="text-4xl font-bold mb-2">John Doe</h1>
+                            <p id="previewTitle" class="text-xl mb-2">Full Stack Developer</p>
+                            <p id="previewLocation" class="text-lg opacity-90"><i class="fas fa-map-marker-alt mr-2"></i>San Francisco, CA</p>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold mb-4 text-gray-800">About Me</h2>
+                            <p id="previewBio" class="text-gray-700 leading-relaxed">Your bio will appear here...</p>
+                        </div>
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold mb-4 text-gray-800">Skills</h2>
+                            <div id="previewSkills" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold mb-4 text-gray-800">Connect</h2>
+                            <div class="space-y-3">
+                                <p id="previewEmail" class="text-gray-700"><i class="fas fa-envelope mr-2"></i>john@example.com</p>
+                                <div id="previewSocial" class="flex gap-4">
+                                    <a id="previewGithub" href="#" class="text-gray-600 hover:text-gray-800" target="_blank">
+                                        <i class="fab fa-github fa-lg"></i>
+                                    </a>
+                                    <a id="previewLinkedin" href="#" class="text-gray-600 hover:text-gray-800" target="_blank">
+                                        <i class="fab fa-linkedin fa-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-4">
+                    <button onclick="previewInNewTab()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>Preview
+                    </button>
+                    <button onclick="exportHTML()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export HTML
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GEMINI_API_KEY = 'AIzaSyAtIJNuqJsnifU3Ez3CNEtjUrhQWbB1N7o';
+        const form = document.getElementById('portfolioForm');
+        const preview = document.getElementById('preview');
+        let skills = new Set();
+
+        // Initialize event listeners
+        form.addEventListener('input', updatePreview);
+        document.getElementById('skillInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill();
+            }
+        });
+
+        function addSkill() {
+            const skillInput = document.getElementById('skillInput');
+            const skill = skillInput.value.trim();
+            if (skill && !skills.has(skill)) {
+                skills.add(skill);
+                updateSkillTags();
+                skillInput.value = '';
+                updatePreview();
+            }
+        }
+
+        function removeSkill(skill) {
+            skills.delete(skill);
+            updateSkillTags();
+            updatePreview();
+        }
+
+        function updateSkillTags() {
+            const container = document.getElementById('skillTags');
+            container.innerHTML = '';
+            skills.forEach(skill => {
+                const tag = document.createElement('span');
+                tag.className = 'px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center gap-2';
+                tag.innerHTML = `
+                    ${skill}
+                    <button onclick="removeSkill('${skill}')" class="text-gray-500 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        function updateThemeStyle() {
+            const style = document.getElementById('themeStyle').value;
+            const header = document.getElementById('previewHeader');
+            const pattern = document.getElementById('headerPattern');
+            const color = document.getElementById('themeColor').value;
+
+            switch (style) {
+                case 'minimal':
+                    header.style.background = color;
+                    pattern.style.background = 'none';
+                    break;
+                case 'gradient':
+                    header.style.background = `linear-gradient(135deg, ${color}, ${adjustColor(color, -20)})`;
+                    pattern.style.background = 'none';
+                    break;
+                case 'pattern':
+                    header.style.background = color;
+                    pattern.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23ffffff" fill-opacity="0.2"%3E%3Cpath d="M0 0h20L0 20z"/%3E%3C/g%3E%3C/svg%3E")';
+                    break;
+            }
+        }
+
+        function adjustColor(color, amount) {
+            const hex = color.replace('#', '');
+            const r = Math.max(0, Math.min(255, parseInt(hex.substring(0, 2), 16) + amount));
+            const g = Math.max(0, Math.min(255, parseInt(hex.substring(2, 4), 16) + amount));
+            const b = Math.max(0, Math.min(255, parseInt(hex.substring(4, 6), 16) + amount));
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        function updatePreview() {
+            const name = document.getElementById('name').value || 'John Doe';
+            const title = document.getElementById('title').value || 'Full Stack Developer';
+            const location = document.getElementById('location').value || 'San Francisco, CA';
+            const bio = document.getElementById('bio').value || 'Your bio will appear here...';
+            const email = document.getElementById('email').value || 'john@example.com';
+            const github = document.getElementById('github').value;
+            const linkedin = document.getElementById('linkedin').value;
+
+            document.getElementById('previewName').textContent = name;
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewLocation').innerHTML = `<i class="fas fa-map-marker-alt mr-2"></i>${location}`;
+            document.getElementById('previewBio').textContent = bio;
+            document.getElementById('previewEmail').innerHTML = `<i class="fas fa-envelope mr-2"></i>${email}`;
+            
+            const githubLink = document.getElementById('previewGithub');
+            const linkedinLink = document.getElementById('previewLinkedin');
+            
+            githubLink.style.display = github ? 'inline' : 'none';
+            linkedinLink.style.display = linkedin ? 'inline' : 'none';
+            githubLink.href = github;
+            linkedinLink.href = linkedin;
+
+            updateThemeStyle();
+
+            const skillsContainer = document.getElementById('previewSkills');
+            skillsContainer.innerHTML = '';
+            skills.forEach(skill => {
+                const skillBadge = document.createElement('span');
+                skillBadge.className = 'px-3 py-1 bg-gray-200 rounded-full text-sm';
+                skillBadge.textContent = skill;
+                skillsContainer.appendChild(skillBadge);
+            });
+        }
+
+        async function enhanceBio() {
+            const bioInput = document.getElementById('bio');
+            const currentBio = bioInput.value;
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Enhance this professional bio for ${name} (${title}) to be more engaging and professional, keeping the same information but making it more compelling: ${currentBio}`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    bioInput.value = data.candidates[0].content.parts[0].text;
+                    updatePreview();
+                }
+            } catch (error) {
+                console.error('Error enhancing bio:', error);
+                alert('Failed to enhance bio. Please try again.');
+            }
+        }
+
+        async function generateBio() {
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
+            const skillsList = Array.from(skills).join(', ');
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Generate a professional and engaging bio for ${name}, who works as a ${title}. Their skills include: ${skillsList}. Keep it concise but impactful, highlighting expertise and passion for the field.`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    document.getElementById('bio').value = data.candidates[0].content.parts[0].text;
+                    updatePreview();
+                }
+            } catch (error) {
+                console.error('Error generating bio:', error);
+                alert('Failed to generate bio. Please try again.');
+            }
+        }
+
+        function saveProgress() {
+            const formData = {
+                name: document.getElementById('name').value,
+                title: document.getElementById('title').value,
+                location: document.getElementById('location').value,
+                bio: document.getElementById('bio').value,
+                email: document.getElementById('email').value,
+                github: document.getElementById('github').value,
+                linkedin: document.getElementById('linkedin').value,
+                themeColor: document.getElementById('themeColor').value,
+                themeStyle: document.getElementById('themeStyle').value,
+                skills: Array.from(skills)
+            };
+            
+            localStorage.setItem('portfolioData', JSON.stringify(formData));
+            alert('Progress saved successfully!');
+        }
+
+        function loadProgress() {
+            const savedData = localStorage.getItem('portfolioData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                document.getElementById('name').value = formData.name || '';
+                document.getElementById('title').value = formData.title || '';
+                document.getElementById('location').value = formData.location || '';
+                document.getElementById('bio').value = formData.bio || '';
+                document.getElementById('email').value = formData.email || '';
+                document.getElementById('github').value = formData.github || '';
+                document.getElementById('linkedin').value = formData.linkedin || '';
+                document.getElementById('themeColor').value = formData.themeColor || '#4F46E5';
+                document.getElementById('themeStyle').value = formData.themeStyle || 'minimal';
+                
+                skills = new Set(formData.skills || []);
+                updateSkillTags();
+                updatePreview();
+                alert('Progress loaded successfully!');
+            } else {
+                alert('No saved progress found.');
+            }
+        }
+
+        function previewInNewTab() {
+            const previewWindow = window.open('', '_blank');
+            previewWindow.document.write(generateHTML());
+            previewWindow.document.close();
+        }
+
+        function exportHTML() {
+            const htmlContent = generateHTML();
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'portfolio.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateHTML() {
+            const name = document.getElementById('name').value || 'John Doe';
+            const title = document.getElementById('title').value || 'Full Stack Developer';
+            const location = document.getElementById('location').value || 'San Francisco, CA';
+            const bio = document.getElementById('bio').value || '';
+            const email = document.getElementById('email').value || 'john@example.com';
+            const github = document.getElementById('github').value;
+            const linkedin = document.getElementById('linkedin').value;
+            const themeColor = document.getElementById('themeColor').value;
+            const themeStyle = document.getElementById('themeStyle').value;
+
+            let headerStyle = '';
+            switch (themeStyle) {
+                case 'gradient':
+                    headerStyle = `background: linear-gradient(135deg, ${themeColor}, ${adjustColor(themeColor, -20)});`;
+                    break;
+                case 'pattern':
+                    headerStyle = `
+                        background-color: ${themeColor};
+                        position: relative;
+                    `;
+                    break;
+                default:
+                    headerStyle = `background-color: ${themeColor};`;
+            }
+
+            return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${name} - Portfolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="relative p-8 text-white" style="${headerStyle}">
+                ${themeStyle === 'pattern' ? '<div class="absolute inset-0 opacity-20" style="background-image: url(\'data:image/svg+xml,%3Csvg width=\\\'20\\\' height=\\\'20\\\' viewBox=\\\'0 0 20 20\\\' xmlns=\\\'http://www.w3.org/2000/svg\\\'%3E%3Cg fill=\\\'%23ffffff\\\' fill-opacity=\\\'0.2\\\'%3E%3Cpath d=\\\'M0 0h20L0 20z\\\'/%3E%3C/g%3E%3C/svg%3E\');"></div>' : ''}
+                <div class="relative">
+                    <h1 class="text-4xl font-bold mb-2">${name}</h1>
+                    <p class="text-xl mb-2">${title}</p>
+                    <p class="text-lg opacity-90"><i class="fas fa-map-marker-alt mr-2"></i>${location}</p>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">About Me</h2>
+                    <p class="text-gray-700 leading-relaxed">${bio}</p>
+                </div>
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Skills</h2>
+                    <div class="flex flex-wrap gap-2">
+                        ${Array.from(skills).map(skill => 
+                            `<span class="px-3 py-1 bg-gray-200 rounded-full text-sm">${skill}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Connect</h2>
+                    <div class="space-y-3">
+                        <p class="text-gray-700"><i class="fas fa-envelope mr-2"></i>${email}</p>
+                        <div class="flex gap-4">
+                            ${github ? `<a href="${github}" class="text-gray-600 hover:text-gray-800" target="_blank">
+                                <i class="fab fa-github fa-lg"></i>
+                            </a>` : ''}
+                            ${linkedin ? `<a href="${linkedin}" class="text-gray-600 hover:text-gray-800" target="_blank">
+                                <i class="fab fa-linkedin fa-lg"></i>
+                            </a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+
+        // Initialize the preview
+        updatePreview();
+    </script>
+</body>
+</html>
