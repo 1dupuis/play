@@ -52,6 +52,7 @@ const config = {
                {
                    name: '❇️ AI',
                    items: [
+                       { name: '✨ CareerCompas', url: 'https://skill-sage-coach.lovable.app/', description: 'Google Gemini career compas' },
                        { name: 'TrustLens', url: 'https://trustlens.dupuis.lol', description: 'Google Gemini trustworthy video player' },
                        { name: 'GameGenie', url: '/gg', description: 'Google Gemini game maker' },
                        { name: 'Dupuis Search', url: 'https://search.dupuis.lol', description: 'Google Gemini search engine' },
