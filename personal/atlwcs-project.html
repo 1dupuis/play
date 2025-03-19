@@ -1,1 +1,456 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All The Light We Cannot See - Interactive Experience</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-dM8jqcGvF7wud+O+Z4+zt9wBmd3J+Ew7YtYha2oO0rA1YpksN6IAX+eF/PE4+1+PcxCtnmOAl76oKPi2W1z0Og==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --primary-dark: #0a0e17;
+      --accent-blue: #1a3c5e;
+      --light-blue: #7fa9c9;
+      --faded-white: #d9d9d9;
+      --radio-red: #8a2a2a;
+      --diamond-blue: #a4c8e0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Georgia, serif; }
+    body { background-color: var(--primary-dark); color: var(--faded-white); overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+    #game-container { position: relative; flex: 1; overflow: hidden; background-size: cover; background-position: center; transition: background 1.5s ease; }
+    .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,14,23,0.7); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 10; transition: opacity 1s ease; }
+    h1 { font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    p { max-width: 600px; line-height: 1.6; margin-bottom: 1.5rem; font-size: 1.1rem; }
+    .btn { background-color: var(--accent-blue); color: var(--faded-white); border: none; padding: 0.8rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 4px; transition: all 0.3s ease; margin: 0.5rem; }
+    .btn:hover { background-color: var(--light-blue); color: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+    #scene-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 2rem; background: linear-gradient(transparent, rgba(10,14,23,0.9) 30%, var(--primary-dark)); transform: translateY(100%); transition: transform 0.8s cubic-bezier(0.19,1,0.22,1); }
+    #scene-content.active { transform: translateY(0); }
+    .choice-container { display: flex; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+    #inventory { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 1rem; }
+    .inventory-item { width: 50px; height: 50px; background-color: rgba(26,60,94,0.7); border-radius: 50%; display: flex; justify-content: center; align-items: center; opacity: 0.5; transition: all 0.3s ease; }
+    .inventory-item.active { opacity: 1; box-shadow: 0 0 15px var(--light-blue); }
+    .inventory-item i { font-size: 1.5rem; color: var(--faded-white); }
+    #radio-container { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 300px; height: 200px; background-color: var(--accent-blue); border-radius: 10px; padding: 1.5rem; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 20; }
+    .radio-dial { width: 80px; height: 80px; background-color: var(--radio-red); border-radius: 50%; margin: 10px auto; position: relative; cursor: pointer; transition: transform 0.3s ease; border: 3px solid #4a1a1a; }
+    .radio-dial:hover { transform: scale(1.05); }
+    .radio-dial::after { content: ''; position: absolute; top: 10px; left: 50%; width: 3px; height: 30px; background-color: #d9d9d9; transform: translateX(-50%); }
+    .radio-display { background-color: #1c1c1c; color: #5a9a5a; padding: 5px; text-align: center; font-family: monospace; font-size: 1.2rem; margin-top: 10px; border-radius: 5px; }
+    #maze-container { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 80%; max-width: 500px; height: 500px; background-color: rgba(26,60,94,0.9); border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 20; overflow: hidden; }
+    .maze-cell { position: absolute; background-color: var(--primary-dark); transition: opacity 0.5s ease; }
+    .maze-player { position: absolute; width: 20px; height: 20px; background-color: var(--light-blue); border-radius: 50%; transition: left 0.2s ease, top 0.2s ease; z-index: 21; }
+    #diamond-minigame { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 90%; max-width: 600px; height: 400px; background-color: rgba(26,60,94,0.9); border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8); z-index: 20; padding: 1.5rem; overflow: hidden; }
+    .diamond { position: absolute; width: 40px; height: 40px; transform: rotate(45deg); background-color: var(--diamond-blue); opacity: 0.6; transition: all 0.3s ease; cursor: pointer; }
+    .diamond:hover { opacity: 0.8; box-shadow: 0 0 15px var(--light-blue); }
+    .diamond.real { background-color: transparent; background-image: radial-gradient(circle at 50% 50%, var(--diamond-blue) 30%, var(--light-blue) 70%); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 5px var(--light-blue); } 50% { box-shadow: 0 0 20px var(--light-blue); } 100% { box-shadow: 0 0 5px var(--light-blue); } }
+    .darkness-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: black; z-index: 15; transition: opacity 0.5s ease; pointer-events: none; }
+    .light-circle { position: absolute; border-radius: 50%; background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,1) 70%); width: 300px; height: 300px; transform: translate(-50%,-50%); pointer-events: none; z-index: 16; }
+    .fade-in { animation: fadeIn 1.5s ease forwards; }
+    .fade-out { animation: fadeOut 1.5s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    .shake { animation: shake 0.5s ease; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+    .modal.active { opacity: 1; pointer-events: all; }
+    .modal-content { background-color: var(--primary-dark); color: var(--faded-white); padding: 2rem; border-radius: 8px; max-width: 600px; text-align: center; border: 1px solid var(--accent-blue); box-shadow: 0 0 30px rgba(164,200,224,0.3); }
+    .progress-bar { position: absolute; bottom: 0; left: 0; height: 5px; background-color: var(--light-blue); transition: width 0.3s ease; }
+    @media (max-width: 768px) {
+      h1 { font-size: 1.8rem; }
+      p { font-size: 1rem; padding: 0 1rem; }
+      .btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+      #scene-content { padding: 1.5rem; }
+      .inventory-item { width: 40px; height: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div class="overlay" id="start-screen">
+      <h1>All The Light We Cannot See</h1>
+      <p>Experience the darkness, struggle and resilience of Anthony Doerr's acclaimed novel through this interactive journey. Follow the intertwined paths of Marie-Laure and Werner as war engulfs their worlds.</p>
+      <button class="btn" id="start-btn">Begin Journey</button>
+    </div>
+    <div id="scene-content">
+      <h2 id="scene-title"></h2>
+      <p id="scene-description"></p>
+      <div class="choice-container" id="choices"></div>
+    </div>
+    <div id="inventory">
+      <div class="inventory-item" id="inv-radio"><i class="fas fa-radio"></i></div>
+      <div class="inventory-item" id="inv-diamond"><i class="fas fa-gem"></i></div>
+      <div class="inventory-item" id="inv-book"><i class="fas fa-book"></i></div>
+    </div>
+    <div id="radio-container">
+      <div class="radio-dial" id="radio-dial"></div>
+      <div class="radio-display" id="radio-frequency">88.7 MHz</div>
+      <p style="text-align:center; margin-top:10px;">Find the resistance broadcast...</p>
+    </div>
+    <div id="maze-container"></div>
+    <div id="diamond-minigame">
+      <h3 style="text-align:center; margin-bottom:20px;">Find the Sea of Flames</h3>
+      <div id="diamonds-container"></div>
+    </div>
+    <div class="darkness-overlay" id="darkness"></div>
+    <div class="light-circle" id="light-circle"></div>
+  </div>
+  <div class="modal" id="end-modal">
+    <div class="modal-content">
+      <h2 id="ending-title"></h2>
+      <p id="ending-text"></p>
+      <button class="btn" id="restart-btn">Play Again</button>
+    </div>
+  </div>
+  <script>
+    const gameState = { currentScene: null, inventory: { radio: false, diamond: false, book: false }, wernerPath: 0, mariePath: 0, visitedScenes: [], mazeComplete: false, diamondFound: false, radioTuned: false };
+    const gameContainer = document.getElementById("game-container"), startScreen = document.getElementById("start-screen"), startBtn = document.getElementById("start-btn"), sceneContent = document.getElementById("scene-content"), sceneTitle = document.getElementById("scene-title"), sceneDescription = document.getElementById("scene-description"), choicesContainer = document.getElementById("choices"), radioContainer = document.getElementById("radio-container"), radioDial = document.getElementById("radio-dial"), radioFrequency = document.getElementById("radio-frequency"), mazeContainer = document.getElementById("maze-container"), diamondMinigame = document.getElementById("diamond-minigame"), diamondsContainer = document.getElementById("diamonds-container"), endModal = document.getElementById("end-modal"), endingTitle = document.getElementById("ending-title"), endingText = document.getElementById("ending-text"), restartBtn = document.getElementById("restart-btn"), darkness = document.getElementById("darkness"), lightCircle = document.getElementById("light-circle"), invRadio = document.getElementById("inv-radio"), invDiamond = document.getElementById("inv-diamond"), invBook = document.getElementById("inv-book");
+    const backgrounds = {
+  start: "https://images.unsplash.com/photo-1561323578-dde5e688b4b7?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  saintMalo: "https://images.unsplash.com/photo-1599921614325-12c01757afb5?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  wernerRoom: "https://images.unsplash.com/photo-1621871305450-7d9a2c6e6149?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHJhZGlvJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  volkheimer: "https://plus.unsplash.com/premium_photo-1689974467887-fd222b592a42?q=80&w=2578&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  basement: "https://images.unsplash.com/photo-1589358917980-fe96a0ac2074?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  juttaLetter: "https://plus.unsplash.com/premium_photo-1681554599678-c7cdb0cfd8df?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8anV0dGElMjBsZXR0ZXJ8ZW58MHx8MHx8fDA%3D",
+  nationSchool: "https://plus.unsplash.com/premium_photo-1733306615664-19552f01fe63?q=80&w=2636&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  invasion: "https://plus.unsplash.com/premium_photo-1716788654203-23213ba0396c?q=80&w=2664&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  bombardment: "https://plus.unsplash.com/premium_photo-1716745005851-f459bd0bfe25?q=80&w=2664&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  escape: "https://images.unsplash.com/photo-1588217885773-2f27c9c3b1c2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZXNjYXBlfGVufDB8fDB8fHww",
+  attic: "https://images.unsplash.com/photo-1611991743247-4dd4e50c9c17?q=80&w=2672&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  searchParty: "https://plus.unsplash.com/premium_photo-1666533246605-2a75dc051e30?q=80&w=2575&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  cellars: "https://plus.unsplash.com/premium_photo-1661780367309-772b7b54ad11?q=80&w=2000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  meeting: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ending: "https://images.unsplash.com/photo-1541058785992-8e0abb090ea6?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+};
+    const scenes = {
+      start: { title: "Parallel Lives", description: "1934. Two children on opposite sides of a coming war. Marie-Laure lives in Paris with her father, a locksmith for the Museum of Natural History. Werner Pfennig is an orphan in Germany, fascinated by a crude radio he's found.", background: backgrounds.start, choices: [{ text: "Follow Marie-Laure", nextScene: "marieBlinds" }, { text: "Follow Werner", nextScene: "wernerRadio" }] },
+      marieBlinds: { title: "Darkness Falls", description: "Marie-Laure has gone blind. The world becomes a terrifying void as her eyes fail. Her father carves intricate wooden models of their neighborhood to help her navigate by touch and memory. But war is coming, and soon these models won't be enough.", background: backgrounds.saintMalo, character: "marie", choices: [{ text: "Learn to navigate the darkness", nextScene: "blindMaze", action: "startMaze" }, { text: "Ask about the museum rumors", nextScene: "seaOfFlames" }] },
+      blindMaze: { title: "A World Without Sight", description: "Your father has built a model of the neighborhood. You must learn to navigate it using only your memory and sense of touch. The streets are maze-like, full of dead ends and unexpected turns.", background: backgrounds.saintMalo, character: "marie", choices: [{ text: "Continue", nextScene: "seaOfFlames", condition: { type: "mazeComplete", value: true } }, { text: "Give up", nextScene: "fearGrows", action: "adjustMariePath", actionValue: -2 }] },
+      seaOfFlames: { title: "The Sea of Flames", description: "You hear whispers about a legendary diamond called the Sea of Flames. It's said to grant eternal life to its keeper while bringing misfortune to everyone they love. Your father has been entrusted with protecting it from the Nazis. Is it real or just a story to distract from the actual treasures?", background: backgrounds.basement, character: "marie", choices: [{ text: "Search for the diamond", nextScene: "diamondSearch", action: "startDiamondGame" }, { text: "Focus on survival instead", nextScene: "invasion", action: "adjustMariePath", actionValue: 1 }] },
+      diamondSearch: { title: "Hidden Treasures", description: "Your father has given you a puzzle box - a house with many locks. Inside could be the diamond, or perhaps something else of value. Your fingers trace the intricate mechanisms.", background: backgrounds.basement, character: "marie", choices: [{ text: "Continue", nextScene: "invasion", condition: { type: "diamondFound", value: true }, action: "addInventory", actionValue: "diamond" }, { text: "Give up", nextScene: "invasion" }] },
+      wernerRadio: { title: "Voices in the Air", description: "Werner has discovered an old radio. At night, he and his sister Jutta listen to a mysterious Frenchman who broadcasts science lessons for children. 'Open your eyes and see what you can with them before they close forever.' The radio becomes his window to a world beyond the orphanage.", background: backgrounds.wernerRoom, character: "werner", choices: [{ text: "Fix the radio", nextScene: "radioRepair", action: "startRadioGame" }, { text: "Share the radio with others", nextScene: "publicRadio", action: "adjustWernerPath", actionValue: -1 }] },
+      radioRepair: { title: "The Mechanics of Wonder", description: "The radio's inner workings are complex but beautiful. Your fingers adjust wires and components. Every successful repair brings new voices, new knowledge from across Europe. But some stations speak of troubling developments in Germany.", background: backgrounds.wernerRoom, character: "werner", choices: [{ text: "Continue", nextScene: "frenchBroadcast", condition: { type: "radioTuned", value: true }, action: "addInventory", actionValue: "radio" }, { text: "Give up", nextScene: "nationalSchool", action: "adjustWernerPath", actionValue: 1 }] },
+      frenchBroadcast: { title: "Science Stories", description: "You've found the French broadcast again. The man's gentle voice describes how light moves through the world, how magnetic fields work. 'Ask questions. Demand answers.' These lessons are like oxygen in the suffocating atmosphere of Nazi Germany.", background: backgrounds.wernerRoom, character: "werner", choices: [{ text: "Continue listening secretly", nextScene: "juttaConcerns", action: "adjustWernerPath", actionValue: -2 }, { text: "Focus on more practical skills", nextScene: "nationalSchool", action: "adjustWernerPath", actionValue: 1 }] },
+      publicRadio: { title: "Shared Discovery", description: "Other children gather around as you demonstrate your radio. Herr Siedler, a Nazi official visiting the orphanage, takes notice of your technical abilities. 'Such skills could be valuable to the Reich,' he says with cold calculation in his eyes.", background: backgrounds.wernerRoom, character: "werner", choices: [{ text: "Accept his interest", nextScene: "nationalSchool", action: "adjustWernerPath", actionValue: 2 }, { text: "Downplay your abilities", nextScene: "juttaConcerns", action: "adjustWernerPath", actionValue: -1 }] },
+      juttaConcerns: { title: "Jutta's Warning", description: "'They're going to take you away,' Jutta says, tears in her eyes. 'And then you'll become someone else.' Her words haunt you because you know she's right. Your talent has marked you for recruitment.", background: backgrounds.juttaLetter, character: "werner", choices: [{ text: "Promise to stay true to yourself", nextScene: "nationalSchool", action: "adjustWernerPath", actionValue: -1 }, { text: "Embrace the opportunity", nextScene: "nationalSchool", action: "adjustWernerPath", actionValue: 2 }] },
+      nationalSchool: { title: "National Political Institute", description: "The elite school is both opportunity and prison. Your technical skills are valued, but brutality surrounds you. Students who show weakness are beaten. Frederick, your gentle friend who loves birds, becomes a target. The commandant watches, his eyes measuring everyone's loyalty.", background: backgrounds.nationSchool, character: "werner", choices: [{ text: "Defend Frederick", nextScene: "frederickBeaten", action: "adjustWernerPath", actionValue: -3 }, { text: "Look away", nextScene: "wernerPromoted", action: "adjustWernerPath", actionValue: 2 }] },
+      frederickBeaten: { title: "The Price of Compassion", description: "You try to intervene, but it only earns you punishment alongside Frederick. Later that night, he whispers, 'They can't make us believe what they want.' But his eyes show the damage done. You're both marked now - him as weak, you as disloyal.", background: backgrounds.nationSchool, character: "werner", choices: [{ text: "Help Frederick escape", nextScene: "wernerDilemma", action: "adjustWernerPath", actionValue: -2 }, { text: "Distance yourself from him", nextScene: "wernerPromoted", action: "adjustWernerPath", actionValue: 3 }] },
+      wernerPromoted: { title: "Technical Division", description: "Your skills have not gone unnoticed. Dr. Hauptmann recruits you for a special project: triangulating enemy radio signals. 'This will save German lives,' he says. You're no longer just a student - you're now part of the war machine.", background: backgrounds.volkheimer, character: "werner", choices: [{ text: "Take pride in your work", nextScene: "radioHunting", action: "adjustWernerPath", actionValue: 2 }, { text: "Work reluctantly", nextScene: "wernerDilemma", action: "adjustWernerPath", actionValue: -1 }] },
+      wernerDilemma: { title: "Moral Crossroads", description: "The radio unit travels through occupied territory. Your equipment pinpoints resistance broadcasts. Volkheimer and the soldiers do the rest - breaking down doors, arresting operators, sometimes worse. Blood is on your hands, even if you never leave the truck.", background: backgrounds.volkheimer, character: "werner", choices: [{ text: "Sabotage a mission", nextScene: "invasion", action: "adjustWernerPath", actionValue: -3 }, { text: "Follow orders", nextScene: "radioHunting", action: "adjustWernerPath", actionValue: 2 }] },
+      radioHunting: { title: "Hunting the Resistance", description: "Each signal you track leads to another cell of the resistance. But one frequency eludes you - a broadcast of peculiar numbers followed by music. It reminds you of the science broadcasts from your childhood. Could it possibly be...?", background: backgrounds.volkheimer, character: "werner", choices: [{ text: "Report the mysterious signal", nextScene: "invasion", action: "adjustWernerPath", actionValue: 3 }, { text: "Keep it secret", nextScene: "invasion", action: "adjustWernerPath", actionValue: -2, action2: "addInventory", actionValue2: "book" }] },
+      invasion: { title: "The War Arrives", description: "1940. Paris falls. Marie-Laure and her father flee to Saint-Malo with what might be the museum's greatest treasure. Werner's unit moves through France, hunting resistance broadcasts. Their paths draw closer as the war engulfs everything.", background: backgrounds.invasion, choices: [{ text: "Follow Marie-Laure", nextScene: "saintMaloArrival" }, { text: "Follow Werner", nextScene: "approachingSaintMalo" }] },
+      saintMaloArrival: { title: "Refuge by the Sea", description: "Saint-Malo's ancient walls rise above the sea. Your great-uncle Etienne, a recluse traumatized by the previous war, reluctantly takes you in. His house is tall and narrow, with a secret room at the top where your uncle once broadcast with his brother.", background: backgrounds.saintMalo, character: "marie", choices: [{ text: "Explore the house", nextScene: "hiddenRoom", action: "adjustMariePath", actionValue: 1 }, { text: "Stay cautious", nextScene: "fearGrows", action: "adjustMariePath", actionValue: -1 }] },
+      hiddenRoom: { title: "The Room of Broadcasts", description: "Behind a wardrobe, you discover the secret room filled with radio equipment. Your uncle explains how he and his brother used to broadcast science programs before the trauma of war silenced him. The equipment still works, but using it under occupation would mean death.", background: backgrounds.attic, character: "marie", choices: [{ text: "Encourage restarting broadcasts", nextScene: "resistanceBroadcast", action: "adjustMariePath", actionValue: 2 }, { text: "Keep the room secret", nextScene: "germanOccupation", action: "adjustMariePath", actionValue: -1 }] },
+      fearGrows: { title: "Shadows Deepen", description: "The occupation grows harsher. Food becomes scarce. You hear whispers of deportations, of resistance members executed. Your blindness makes each unfamiliar sound a threat. Your father has disappeared after being called back to Paris.", background: backgrounds.saintMalo, character: "marie", choices: [{ text: "Search for ways to help", nextScene: "resistanceBroadcast", action: "adjustMariePath", actionValue: 2 }, { text: "Focus only on survival", nextScene: "germanOccupation", action: "adjustMariePath", actionValue: -2 }] },
+      resistanceBroadcast: { title: "Numbers in the Air", description: "Your uncle begins broadcasting again - encoded messages hidden among number sequences and music. You help prepare the broadcasts, memorizing codes. Each transmission risks everything, but brings hope to the resistance.", background: backgrounds.attic, character: "marie", choices: [{ text: "Take a larger role", nextScene: "bombardment", action: "adjustMariePath", actionValue: 3 }, { text: "Urge greater caution", nextScene: "bombardment", action: "adjustMariePath", actionValue: -1 }] },
+      germanOccupation: { title: "Under Nazi Rule", description: "Saint-Malo suffers under German control. Sergeant von Rumpel, a gemologist-turned-officer, hunts museum treasures throughout France. There are rumors he's searching for a particular diamond. Your house is requisitioned for German officers, forcing you to hide in the cellar.", background: backgrounds.saintMalo, character: "marie", choices: [{ text: "Hide the diamond (if you have it)", nextScene: "diamondHidden", condition: { type: "inventory", item: "diamond" } }, { text: "Prepare for escape", nextScene: "bombardment", action: "adjustMariePath", actionValue: 1 }] },
+      diamondHidden: { title: "The Weight of Secrets", description: "You hide the diamond inside the intricate model of Saint-Malo that your father built. Its presence weighs on you - is it truly cursed? Is it worth the danger? Von Rumpel's footsteps echo above as he searches the house methodically.", background: backgrounds.basement, character: "marie", choices: [{ text: "Remain hidden", nextScene: "bombardment", action: "adjustMariePath", actionValue: -1 }, { text: "Plan a diversion", nextScene: "bombardment", action: "adjustMariePath", actionValue: 2 }] },
+      approachingSaintMalo: { title: "The Hunt Continues", description: "Your unit approaches the walled city of Saint-Malo. The mysterious broadcast is coming from somewhere within. Volkheimer watches you closely now, suspicious of your hesitation. The truck rumbles over cobblestones as your equipment picks up the signal growing stronger.", background: backgrounds.saintMalo, character: "werner", choices: [{ text: "Mislead your unit", nextScene: "sabotageEquipment", action: "adjustWernerPath", actionValue: -3 }, { text: "Locate the signal accurately", nextScene: "bombardment", action: "adjustWernerPath", actionValue: 2 }] },
+      sabotageEquipment: { title: "Silent Resistance", description: "You secretly damage the equipment, providing false coordinates. 'Technical difficulties,' you explain. Volkheimer's eyes narrow, but he cannot prove your sabotage. The resistance broadcasters live another day, but your position becomes more precarious.", background: backgrounds.volkheimer, character: "werner", choices: [{ text: "Continue the deception", nextScene: "bombardment", action: "adjustWernerPath", actionValue: -2 }, { text: "Repair the equipment", nextScene: "bombardment", action: "adjustWernerPath", actionValue: 2 }] },
+      bombardment: { title: "Fire from the Sky", description: "August 1944. Allied bombs rain down on Saint-Malo. The ancient city burns. Werner's unit is trapped in the hotel cellar by falling debris. Marie-Laure hides alone in her great-uncle's house, von Rumpel searching the floors above her.", background: backgrounds.bombardment, choices: [{ text: "Follow Marie-Laure", nextScene: "marieTrapped" }, { text: "Follow Werner", nextScene: "wernerTrapped" }] },
+      marieTrapped: { title: "Walls Closing In", description: "The house groans under bombardment. Von Rumpel's footsteps grow closer. You're trapped between collapsing walls and a relentless pursuer. The model house with its secret feels heavy in your pocket. Every sound might be your last.", background: backgrounds.basement, character: "marie", choices: [{ text: "Hide deeper in the house", nextScene: "vonRumpelConfrontation", action: "adjustMariePath", actionValue: -2 }, { text: "Attempt to escape", nextScene: "escape", action: "adjustMariePath", actionValue: 2 }] },
+      vonRumpelConfrontation: { title: "The Hunter's Shadow", description: "Von Rumpel finds your hiding place. Weak from his cancer but determined, he corners you. 'The diamond,' he rasps, 'give it to me and live.' His desperation for the stone's rumored healing powers makes him dangerous and unpredictable.", background: backgrounds.basement, character: "marie", choices: [{ text: "Surrender the diamond (if you have it)", nextScene: "diamondSurrendered", condition: { type: "inventory", item: "diamond" } }, { text: "Resist", nextScene: "wernerRescue", action: "adjustMariePath", actionValue: 3 }] },
+      diamondSurrendered: { title: "The Sea of Flames", description: "You hand over the diamond. Von Rumpel holds it to the light, his eyes gleaming with desperate hope. 'My salvation,' he whispers. But as another bomb falls nearby, you realize your chance to escape while he's distracted.", background: backgrounds.basement, character: "marie", choices: [{ text: "Flee while he's distracted", nextScene: "escape", action: "adjustMariePath", actionValue: 1 }, { text: "Try to reclaim the diamond", nextScene: "wernerRescue", action: "adjustMariePath", actionValue: 2 }] },
+      wernerTrapped: { title: "Buried Alive", description: "The hotel collapses around you. Volkheimer, Bernd, and you are trapped in the cellar, air growing thin. Your radio equipment is damaged but might be salvageable. In the darkness, memories of Jutta and the French broadcasts resurface.", background: backgrounds.cellars, character: "werner", choices: [{ text: "Try to repair the radio", nextScene: "radioRepaired", action: "adjustWernerPath", actionValue: -1 }, { text: "Conserve energy", nextScene: "slowSuffocation", action: "adjustWernerPath", actionValue: 1 }] },
+      radioRepaired: { title: "Signals in Darkness", description: "Your fingers work by touch, repairing the radio with scavenged parts. Then you hear it - the same broadcast from your childhood, but now with encoded messages. The broadcaster is in this very city, perhaps still alive. The numbers remind you of the science lessons that once gave you hope.", background: backgrounds.cellars, character: "werner", choices: [{ text: "Follow the broadcast", nextScene: "escapeRubble", action: "adjustWernerPath", actionValue: -2 }, { text: "Signal for help", nextScene: "escapeRubble", action: "adjustWernerPath", actionValue: 1 }] },
+      slowSuffocation: { title: "Fading Light", description: "Hours pass. The air thins. Bernd has stopped moving. Volkheimer sits motionless, conserving oxygen. Your thoughts drift to Jutta, to your childhood, to the French voice that once spoke of science and light. Regrets fill your mind.", background: backgrounds.cellars, character: "werner", choices: [{ text: "Make one last effort", nextScene: "radioRepaired", action: "adjustWernerPath", actionValue: -1 }, { text: "Accept your fate", nextScene: "escapeRubble", action: "adjustWernerPath", actionValue: 2 }] },
+      escapeRubble: { title: "Into the Light", description: "Volkheimer's strength creates an opening. You squeeze through ruins, emerging into a city transformed by destruction. The broadcast signal is stronger now, guiding you through the streets. Every step is a choice between duty and conscience.", background: backgrounds.escape, character: "werner", choices: [{ text: "Search for the broadcaster", nextScene: "searchForMarie", action: "adjustWernerPath", actionValue: -3 }, { text: "Rejoin your unit", nextScene: "dutyBound", action: "adjustWernerPath", actionValue: 3 }] },
+      searchForMarie: { title: "Following the Voice", description: "The signal leads you to a tall house near the walls. Inside, you hear movement. Someone is trapped. The broadcast equipment is here, but silent now. Dust falls as another section of the house collapses.", background: backgrounds.saintMalo, character: "werner", choices: [{ text: "Call out", nextScene: "wernerRescue", action: "adjustWernerPath", actionValue: -2 }, { text: "Enter cautiously", nextScene: "wernerRescue", action: "adjustWernerPath", actionValue: -1 }] },
+      dutyBound: { title: "The Soldier's Path", description: "You return to what remains of your unit. New orders arrive - evacuate before the Allied ground forces arrive. As you prepare to leave, the broadcast begins again. The voice, the numbers, the music - calling to you like a memory of a better self.", background: backgrounds.escape, character: "werner", choices: [{ text: "Follow orders", nextScene: "distantEnding", action: "adjustWernerPath", actionValue: 3 }, { text: "Desert", nextScene: "searchForMarie", action: "adjustWernerPath", actionValue: -3 }] },
+      escape: { title: "Through the Ruins", description: "You navigate the burning city using your memory of the streets. Every explosion, every falling stone amplifies your fear. The sea is close - you can smell it. If you could reach the water, perhaps there's a chance.", background: backgrounds.escape, character: "marie", choices: [{ text: "Head for the ramparts", nextScene: "searchParty", action: "adjustMariePath", actionValue: 1 }, { text: "Hide in the ruins", nextScene: "wernerRescue", action: "adjustMariePath", actionValue: -1 }] },
+      searchParty: { title: "Hunters and Hunted", description: "German soldiers patrol the ruins, searching for survivors and deserters. You freeze as boots crunch on rubble nearby. Your blindness, usually a disadvantage, might save you now - you're accustomed to navigating by sound while they fumble in smoke and darkness.", background: backgrounds.searchParty, character: "marie", choices: [{ text: "Remain perfectly still", nextScene: "patrolPasses", action: "adjustMariePath", actionValue: -1 }, { text: "Create a diversion", nextScene: "caughtInCrossfire", action: "adjustMariePath", actionValue: 2 }] },
+      patrolPasses: { title: "Breath Held", description: "The patrol passes. You're alone again among the ruins. But as you prepare to move, you hear new footsteps - lighter, hesitant. Not a soldier. Someone else trying to survive.", background: backgrounds.searchParty, character: "marie", choices: [{ text: "Call out softly", nextScene: "wernerRescue", action: "adjustMariePath", actionValue: 2 }, { text: "Stay hidden", nextScene: "distantEnding", action: "adjustMariePath", actionValue: -2 }] },
+      caughtInCrossfire: { title: "Between Two Fires", description: "Your diversion works too well. German soldiers fire in your direction as Allied shells begin falling again. You're caught between collapsing buildings and gunfire, with nowhere to run.", background: backgrounds.bombardment, character: "marie", choices: [{ text: "Make a desperate run", nextScene: "wernerRescue", action: "adjustMariePath", actionValue: 3 }, { text: "Take cover", nextScene: "distantEnding", action: "adjustMariePath", actionValue: -1 }] },
+      wernerRescue: { title: "Paths Converge", description: "Werner finds Marie-Laure hiding in the house. 'I'm not going to hurt you,' he says in broken French. Two enemies by definition, two children of the same war. He recognizes the broadcast equipment - the source of the voice that once inspired him.", background: backgrounds.meeting, choices: [{ text: "Share food and stories", nextScene: "briefConnection", action: "adjustMariePath", actionValue: 2, action2: "adjustWernerPath", actionValue2: -2 }, { text: "Maintain cautious distance", nextScene: "briefConnection", action: "adjustMariePath", actionValue: -1, action2: "adjustWernerPath", actionValue2: 1 }] },
+      briefConnection: { title: "Borrowed Time", description: "Hours pass. Werner repairs the radio. Marie-Laure shares her bread. They speak of science, of light, of the broadcasts that connected them years before they met. 'Your voice,' Werner says, 'it sounds like the man from the radio.' 'My grandfather,' she replies.", background: backgrounds.meeting, choices: [{ text: "Werner helps Marie-Laure escape", nextScene: "finalChoice", action: "adjustMariePath", actionValue: 1, action2: "adjustWernerPath", actionValue2: -3 }, { text: "They part ways", nextScene: "distantEnding", action: "adjustMariePath", actionValue: -1, action2: "adjustWernerPath", actionValue2: 1 }] },
+      finalChoice: { title: "Last Crossroads", description: "Werner leads Marie-Laure to safety beyond the city walls. German forces are retreating, Allied forces advancing. 'Come with me,' she says. 'You don't have to go back.' The choice before him is impossible - potential freedom with certain danger, or return to a duty he no longer believes in.", background: backgrounds.escape, choices: [{ text: "Werner chooses to escape", nextScene: "escapeTogether", condition: { type: "wernerPath", value: -5, operator: "lte" } }, { text: "Werner returns to his unit", nextScene: "separateWays", condition: { type: "wernerPath", value: 0, operator: "gt" } }, { text: "Werner hesitates too long", nextScene: "tragicEnd", condition: { type: "default" } }] },
+      escapeTogether: { title: "Into Uncertainty", description: "Werner discards his uniform. They travel together for a short while, two survivors in a broken landscape. Their backgrounds, their countries, their languages divide them - but something deeper connects them. A shared understanding of what has been lost.", background: backgrounds.escape, choices: [{ text: "Continue", nextScene: "epilogue" }] },
+      separateWays: { title: "Duty and Memory", description: "Werner returns to what remains of his unit. Marie-Laure continues alone. But something has changed in both of them - a brief connection that will sustain them through what's to come. A memory of kindness amid cruelty.", background: backgrounds.escape, choices: [{ text: "Continue", nextScene: "epilogue" }] },
+      tragicEnd: { title: "The Land of Mines", description: "Werner steps on a land mine while helping Marie-Laure escape. In his final moments, he sees the sky above, remembers the broadcasts about science and light. 'It's full of stars,' he whispers. Marie-Laure feels the vibration of the explosion but continues on alone.", background: backgrounds.escape, choices: [{ text: "Continue", nextScene: "epilogue" }] },
+      distantEnding: { title: "Ships Passing", description: "Their paths never directly cross. Werner is captured by Allied forces or dies in the retreat. Marie-Laure is evacuated with other civilians. Two lives that might have connected, separated by chance and circumstance.", background: backgrounds.ending, choices: [{ text: "Continue", nextScene: "epilogue" }] },
+      epilogue: { title: "Echoes Through Time", description: "Years later, Marie-Laure is an old woman in Paris. She has spent her life studying mollusks at the museum where her father once worked. Sometimes she runs her fingers over the model of Saint-Malo, remembering. The diamond, real or not, has faded into legend.", background: backgrounds.ending, choices: [{ text: "Complete your journey", nextScene: "ending" }] },
+      ending: { title: "All The Light We Cannot See", description: "The war shaped them both - Werner's brilliant mind extinguished too soon, Marie-Laure's quiet strength enduring. Their brief connection, almost nothing in the grand scheme of war, meant everything to them. Some lights, once lit, never truly fade.", background: backgrounds.ending, choices: [] }
+    };
+    function initGame() {
+      gameState.currentScene = "start";
+      gameState.inventory = { radio: false, diamond: false, book: false };
+      gameState.wernerPath = 0;
+      gameState.mariePath = 0;
+      gameState.visitedScenes = [];
+      gameState.mazeComplete = false;
+      gameState.diamondFound = false;
+      gameState.radioTuned = false;
+      updateInventoryUI();
+      gameContainer.style.backgroundImage = `url(${backgrounds.start})`;
+      radioContainer.style.display = "none";
+      mazeContainer.style.display = "none";
+      diamondMinigame.style.display = "none";
+      startScreen.style.display = "flex";
+      sceneContent.classList.remove("active");
+      darkness.style.opacity = "0";
+      lightCircle.style.opacity = "0";
+    }
+    startBtn.addEventListener("click", () => {
+      startScreen.classList.add("fade-out");
+      setTimeout(() => {
+        startScreen.style.display = "none";
+        loadScene("start");
+      }, 1500);
+    });
+    restartBtn.addEventListener("click", () => {
+      endModal.classList.remove("active");
+      initGame();
+    });
+    function loadScene(sceneId) {
+      const scene = scenes[sceneId];
+      if (!scene) return;
+      gameState.currentScene = sceneId;
+      gameState.visitedScenes.push(sceneId);
+      gameContainer.style.backgroundImage = `url(${scene.background || backgrounds.start})`;
+      sceneTitle.textContent = scene.title;
+      sceneDescription.textContent = scene.description;
+      if (scene.character === "marie") {
+        darkness.style.opacity = "1";
+        lightCircle.style.opacity = "1";
+        document.addEventListener("mousemove", updateLightPosition);
+      } else {
+        darkness.style.opacity = "0";
+        lightCircle.style.opacity = "0";
+        document.removeEventListener("mousemove", updateLightPosition);
+      }
+      choicesContainer.innerHTML = "";
+      scene.choices.forEach(choice => {
+        if (choice.condition) { if (!checkCondition(choice.condition)) return; }
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = choice.text;
+        btn.addEventListener("click", () => makeChoice(choice));
+        choicesContainer.appendChild(btn);
+      });
+      if (sceneId === "ending") determineEnding();
+      sceneContent.classList.add("active");
+    }
+    function makeChoice(choice) {
+      if (choice.action) processAction(choice.action, choice.actionValue);
+      if (choice.action2) processAction(choice.action2, choice.actionValue2);
+      loadScene(choice.nextScene);
+    }
+    function processAction(action, value) {
+      if (action === "adjustWernerPath") {
+        gameState.wernerPath += value;
+        gameState.wernerPath = Math.max(-5, Math.min(5, gameState.wernerPath));
+      } else if (action === "adjustMariePath") {
+        gameState.mariePath += value;
+        gameState.mariePath = Math.max(-5, Math.min(5, gameState.mariePath));
+      } else if (action === "addInventory") {
+        gameState.inventory[value] = true;
+        updateInventoryUI();
+      } else if (action === "startMaze") {
+        setupMaze();
+      } else if (action === "startRadioGame") {
+        setupRadioGame();
+      } else if (action === "startDiamondGame") {
+        setupDiamondGame();
+      }
+    }
+    function checkCondition(condition) {
+      if (condition.type === "inventory") return gameState.inventory[condition.item];
+      if (condition.type === "wernerPath") {
+        if (condition.operator === "eq") return gameState.wernerPath === condition.value;
+        if (condition.operator === "lt") return gameState.wernerPath < condition.value;
+        if (condition.operator === "gt") return gameState.wernerPath > condition.value;
+        if (condition.operator === "lte") return gameState.wernerPath <= condition.value;
+        if (condition.operator === "gte") return gameState.wernerPath >= condition.value;
+      }
+      if (condition.type === "mariePath") {
+        if (condition.operator === "eq") return gameState.mariePath === condition.value;
+        if (condition.operator === "lt") return gameState.mariePath < condition.value;
+        if (condition.operator === "gt") return gameState.mariePath > condition.value;
+        if (condition.operator === "lte") return gameState.mariePath <= condition.value;
+        if (condition.operator === "gte") return gameState.mariePath >= condition.value;
+      }
+      if (condition.type === "mazeComplete") return gameState.mazeComplete === condition.value;
+      if (condition.type === "diamondFound") return gameState.diamondFound === condition.value;
+      if (condition.type === "radioTuned") return gameState.radioTuned === condition.value;
+      if (condition.type === "default") return true;
+      return false;
+    }
+    function updateInventoryUI() {
+      invRadio.classList.toggle("active", gameState.inventory.radio);
+      invDiamond.classList.toggle("active", gameState.inventory.diamond);
+      invBook.classList.toggle("active", gameState.inventory.book);
+    }
+    function setupMaze() {
+      mazeContainer.style.display = "block";
+      mazeContainer.innerHTML = "";
+      const player = document.createElement("div");
+      player.className = "maze-player";
+      player.id = "maze-player";
+      mazeContainer.appendChild(player);
+      const progressBar = document.createElement("div");
+      progressBar.className = "progress-bar";
+      progressBar.id = "maze-progress";
+      mazeContainer.appendChild(progressBar);
+      const mazeCells = [];
+      const cellSize = 30;
+      for (let i = 0; i < 40; i++) {
+        const cell = document.createElement("div");
+        cell.className = "maze-cell";
+        cell.style.width = `${cellSize}px`;
+        cell.style.height = `${cellSize}px`;
+        cell.style.left = `${Math.floor(Math.random() * (mazeContainer.offsetWidth - cellSize))}px`;
+        cell.style.top = `${Math.floor(Math.random() * (mazeContainer.offsetHeight - cellSize))}px`;
+        mazeContainer.appendChild(cell);
+        mazeCells.push(cell);
+      }
+      const newPlayer = document.getElementById("maze-player");
+      newPlayer.style.left = "10px";
+      newPlayer.style.top = "10px";
+      const goal = { x: mazeContainer.offsetWidth - 30, y: mazeContainer.offsetHeight - 30, width: 20, height: 20 };
+      const goalMarker = document.createElement("div");
+      goalMarker.style.position = "absolute";
+      goalMarker.style.left = `${goal.x}px`;
+      goalMarker.style.top = `${goal.y}px`;
+      goalMarker.style.width = `${goal.width}px`;
+      goalMarker.style.height = `${goal.height}px`;
+      goalMarker.style.backgroundColor = "var(--light-blue)";
+      goalMarker.style.border = "2px solid var(--faded-white)";
+      goalMarker.style.borderRadius = "5px";
+      mazeContainer.appendChild(goalMarker);
+      function handleKeyDown(e) {
+        const playerRect = newPlayer.getBoundingClientRect();
+        const containerRect = mazeContainer.getBoundingClientRect();
+        let newX = parseInt(newPlayer.style.left);
+        let newY = parseInt(newPlayer.style.top);
+        const step = 5;
+        if (e.key === "ArrowUp") newY -= step;
+        if (e.key === "ArrowDown") newY += step;
+        if (e.key === "ArrowLeft") newX -= step;
+        if (e.key === "ArrowRight") newX += step;
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+        if (newX > containerRect.width - playerRect.width - 10) newX = containerRect.width - playerRect.width - 10;
+        if (newY > containerRect.height - playerRect.height - 10) newY = containerRect.height - playerRect.height - 10;
+        let collision = false;
+        for (const cell of mazeCells) {
+          const cellRect = cell.getBoundingClientRect();
+          if (newX < cellRect.right - containerRect.left && newX + playerRect.width > cellRect.left - containerRect.left && newY < cellRect.bottom - containerRect.top && newY + playerRect.height > cellRect.top - containerRect.top) {
+            collision = true;
+            break;
+          }
+        }
+        if (!collision) {
+          newPlayer.style.left = `${newX}px`;
+          newPlayer.style.top = `${newY}px`;
+          const startDistance = Math.sqrt(Math.pow(goal.x - 10, 2) + Math.pow(goal.y - 10, 2));
+          const currentDistance = Math.sqrt(Math.pow(goal.x - newX, 2) + Math.pow(goal.y - newY, 2));
+          const progress = 100 - (currentDistance / startDistance * 100);
+          document.getElementById("maze-progress").style.width = `${progress}%`;
+          if (newX + playerRect.width >= goal.x && newX <= goal.x + goal.width && newY + playerRect.height >= goal.y && newY <= goal.y + goal.height) {
+            document.removeEventListener("keydown", handleKeyDown);
+            gameState.mazeComplete = true;
+            mazeContainer.style.display = "none";
+            loadScene(gameState.currentScene);
+          }
+        }
+      }
+      document.addEventListener("keydown", handleKeyDown);
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "btn";
+      closeBtn.style.position = "absolute";
+      closeBtn.style.top = "10px";
+      closeBtn.style.right = "10px";
+      closeBtn.textContent = "Give Up";
+      closeBtn.addEventListener("click", () => {
+        document.removeEventListener("keydown", handleKeyDown);
+        mazeContainer.style.display = "none";
+        loadScene("fearGrows");
+      });
+      mazeContainer.appendChild(closeBtn);
+    }
+    function setupRadioGame() {
+      radioContainer.style.display = "block";
+      let currentFrequency = 88.7, targetFrequency = 92.3, rotationAngle = 0, isDragging = false;
+      radioFrequency.textContent = `${currentFrequency.toFixed(1)} MHz`;
+      radioDial.onmousedown = () => { isDragging = true; };
+      document.onmouseup = () => { isDragging = false; };
+      function mouseMoveHandler(e) {
+        if (!isDragging) return;
+        rotationAngle += e.movementX;
+        radioDial.style.transform = `rotate(${rotationAngle}deg)`;
+        currentFrequency = 88.0 + (rotationAngle % 360) / 45;
+        if (currentFrequency < 88.0) currentFrequency = 88.0;
+        if (currentFrequency > 108.0) currentFrequency = 108.0;
+        radioFrequency.textContent = `${currentFrequency.toFixed(1)} MHz`;
+        if (Math.abs(currentFrequency - targetFrequency) < 0.2) {
+          radioFrequency.style.color = "#5a9a5a";
+          setTimeout(() => {
+            radioContainer.style.display = "none";
+            gameState.radioTuned = true;
+            document.removeEventListener("mousemove", mouseMoveHandler);
+            loadScene(gameState.currentScene);
+          }, 1500);
+        } else {
+          radioFrequency.style.color = currentFrequency < targetFrequency ? "#ffcc00" : "#ff6600";
+        }
+      }
+      document.addEventListener("mousemove", mouseMoveHandler);
+    }
+    function setupDiamondGame() {
+      diamondMinigame.style.display = "block";
+      diamondsContainer.innerHTML = "";
+      const numberOfDiamonds = 8, realDiamondIndex = Math.floor(Math.random() * numberOfDiamonds);
+      const containerRect = diamondMinigame.getBoundingClientRect(), diamondSize = 40;
+      for (let i = 0; i < numberOfDiamonds; i++) {
+        const diamond = document.createElement("div");
+        diamond.className = "diamond";
+        if (i === realDiamondIndex) diamond.classList.add("real");
+        diamond.style.position = "absolute";
+        const posX = Math.random() * (containerRect.width - diamondSize), posY = Math.random() * (containerRect.height - diamondSize);
+        diamond.style.left = posX + "px";
+        diamond.style.top = posY + "px";
+        diamond.onclick = () => {
+          if (diamond.classList.contains("real")) {
+            gameState.diamondFound = true;
+            gameState.inventory.diamond = true;
+            updateInventoryUI();
+            diamondMinigame.style.display = "none";
+            loadScene(gameState.currentScene);
+          } else {
+            diamond.classList.add("shake");
+            setTimeout(() => { diamond.classList.remove("shake"); }, 500);
+          }
+        };
+        diamondsContainer.appendChild(diamond);
+      }
+      const giveUpBtn = document.createElement("button");
+      giveUpBtn.className = "btn";
+      giveUpBtn.textContent = "Give Up";
+      giveUpBtn.style.position = "absolute";
+      giveUpBtn.style.bottom = "10px";
+      giveUpBtn.style.right = "10px";
+      giveUpBtn.onclick = () => {
+        diamondMinigame.style.display = "none";
+        loadScene("invasion");
+      };
+      diamondMinigame.appendChild(giveUpBtn);
+    }
+    function determineEnding() {
+      if (gameState.wernerPath <= -3 && gameState.mariePath >= 2) {
+        endingTitle.textContent = "A Life of Defiance";
+        endingText.textContent = "Against all odds, you chose the path of resistance and courage. Though the journey was perilous, your actions lit a spark of hope in a dark time.";
+      } else if (gameState.wernerPath >= 3 && gameState.mariePath <= -2) {
+        endingTitle.textContent = "A Life of Subservience";
+        endingText.textContent = "Bound by duty and the chains of expectation, you followed orders, leaving behind a life of possibilities. The cost of obedience was steep.";
+      } else {
+        endingTitle.textContent = "Paths Intertwined";
+        endingText.textContent = "Your choices carved a unique destiny, where moments of defiance met with duty. In the end, the light and darkness merged into a story of resilience.";
+      }
+      endModal.classList.add("active");
+    }
+    function updateLightPosition(e) {
+      lightCircle.style.left = e.clientX + "px";
+      lightCircle.style.top = e.clientY + "px";
+    }
+    initGame();
+  </script>
+</body>
+</html>
