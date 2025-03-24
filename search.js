@@ -52,7 +52,8 @@ const config = {
                {
                    name: '❇️ AI',
                    items: [
-                       { name: '✨ CareerCompas', url: 'https://careercompas.lovable.app/', description: 'Google Gemini career compas' },
+                       { name: '✨ Homepage v3', url: '/ask', description: 'New homepage with built-in AI' },
+                       { name: 'CareerCompas', url: 'https://careercompas.lovable.app/', description: 'Google Gemini career compas' },
                        { name: 'TrustLens', url: 'https://trustlens.dupuis.lol', description: 'Google Gemini trustworthy video player' },
                        { name: 'GameGenie', url: '/gg', description: 'Google Gemini game maker' },
                        { name: 'Dupuis Search', url: 'https://search.dupuis.lol', description: 'Google Gemini search engine' },
