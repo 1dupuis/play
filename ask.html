@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,15 +7,15 @@
   <title>dupuis.lol | AI Assistant</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     *{font-family:'Inter',sans-serif;}
-    body{overflow-x:hidden;}
+    body{overflow-x:hidden;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;}
     .gradient-text{background:linear-gradient(90deg,#22c55e,#0ea5e9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-    .gradient-border{position:relative;border-radius:12px;transition:transform 0.3s;}
-    .gradient-border:focus-within{transform:translateY(-2px);}
-    .gradient-border::before{content:"";position:absolute;inset:0;border-radius:12px;padding:2px;background:linear-gradient(45deg,#22c55e,#0ea5e9,#8b5cf6);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0.7;transition:opacity 0.3s;}
+    .gradient-border{position:relative;border-radius:16px;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .gradient-border:focus-within{transform:translateY(-3px);box-shadow:0 12px 28px -5px rgba(0,0,0,0.1),0 8px 16px -6px rgba(0,0,0,0.1);}
+    .gradient-border::before{content:"";position:absolute;inset:0;border-radius:16px;padding:2px;background:linear-gradient(45deg,#22c55e,#0ea5e9,#8b5cf6);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0.7;transition:opacity 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
     .gradient-border:focus-within::before{opacity:1;}
     .chat-bubble{transition:all 0.6s cubic-bezier(0.175,0.885,0.32,1.275);opacity:0;transform:translateY(20px) scale(0.95);}
     .typing-indicator span{width:8px;height:8px;background-color:#22c55e;border-radius:50%;display:inline-block;margin:0 1px;}
@@ -22,93 +23,180 @@
     .typing-indicator span:nth-child(2){animation:bounce 1s infinite 0.3s;}
     .typing-indicator span:nth-child(3){animation:bounce 1s infinite 0.5s;}
     @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-    .link-bubble{transition:all 0.3s;position:relative;overflow:hidden;z-index:1;}
-    .link-bubble::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:0;background-color:rgba(255,255,255,0.1);transition:all 0.3s;z-index:-1;}
-    .link-bubble:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+    .link-bubble{transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;overflow:hidden;z-index:1;}
+    .link-bubble::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:0;background-color:rgba(255,255,255,0.15);transition:all 0.3s ease;z-index:-1;}
+    .link-bubble:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(0,0,0,0.08);}
     .link-bubble:hover::after{height:100%;}
-    .bg-dots{background-image:radial-gradient(rgba(0,0,0,0.1) 1px,transparent 1px);background-size:20px 20px;}
-    .dark .bg-dots{background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);}
-    .suggestion-btn{transition:all 0.3s ease;}
-    .suggestion-btn:hover{transform:translateY(-2px);}
+    .bg-dots{background-image:radial-gradient(rgba(0,0,0,0.05) 1px,transparent 1px);background-size:24px 24px;}
+    .dark .bg-dots{background-image:radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px);}
+    .suggestion-btn{transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .suggestion-btn:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.08);}
     .message-content p{margin-bottom:0.75rem;}
     .message-content p:last-child{margin-bottom:0;}
-    .message-content a{color:#0ea5e9;text-decoration:underline;text-underline-offset:2px;}
-    .bg-gradient-pulse{animation:gradientShift 15s ease infinite;}
+    .message-content a{color:#0ea5e9;text-decoration:underline;text-underline-offset:2px;transition:all 0.2s ease;}
+    .message-content a:hover{color:#0284c7;}
+    .bg-gradient-pulse{animation:gradientShift 20s ease infinite;}
     @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
-    .website-card{transition:all 0.3s ease;transform:translateY(0);}
-    .website-card:hover{transform:translateY(-5px);}
-    .markdown code{background-color:rgba(0,0,0,0.05);padding:0.2em 0.4em;border-radius:3px;font-family:monospace;font-size:0.9em;}
+    .website-card{transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);transform:translateY(0);}
+    .website-card:hover{transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,0.08);}
+    .markdown code{background-color:rgba(0,0,0,0.05);padding:0.2em 0.4em;border-radius:4px;font-family:monospace;font-size:0.9em;}
     .dark .markdown code{background-color:rgba(255,255,255,0.1);}
     .markdown ul,.markdown ol{padding-left:1.5rem;margin-bottom:1rem;}
     .markdown li{margin-bottom:0.5rem;}
-    .voice-btn{transition:all 0.2s ease;}
+    .voice-btn{transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);border-radius:50%;}
     .voice-btn:hover{background-color:rgba(34,197,94,0.1);}
     .voice-btn.recording{animation:pulse-red 2s infinite;}
     @keyframes pulse-red{0%{box-shadow:0 0 0 0 rgba(239,68,68,0.7);}70%{box-shadow:0 0 0 10px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,0);}}
-    #announcement-banner{background-color:#fef3c7;color:#92400e;padding:0.75rem 1rem;text-align:center;font-size:0.9rem;}
+    #announcement-banner{background-color:#fef9c3;color:#92400e;padding:0.75rem 1rem;text-align:center;font-size:0.9rem;box-shadow:0 2px 5px rgba(0,0,0,0.05);transform:translateY(-100%);transition:transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+    #announcement-banner.visible{transform:translateY(0);}
+    .feedback-btn{transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .feedback-btn:hover{transform:scale(1.2);}
+    .tooltip{position:relative;}
+    .tooltip::before{content:attr(data-tooltip);position:absolute;bottom:130%;left:50%;transform:translateX(-50%) scale(0.9);background-color:rgba(0,0,0,0.8);color:white;border-radius:6px;padding:6px 10px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);transform-origin:bottom center;}
+    .tooltip:hover::before{opacity:1;transform:translateX(-50%) scale(1);}
+    .header-btn{position:relative;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .header-btn:hover{background-color:rgba(255,255,255,0.1);}
+    .header-btn::after{content:'';position:absolute;bottom:-2px;left:50%;width:0;height:2px;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);transform:translateX(-50%);}
+    .header-btn:hover::after{width:70%;}
+    .chat-container-wrapper{position:relative;overflow:hidden;border-radius:20px;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);box-shadow:0 10px 30px -5px rgba(0,0,0,0.1),0 0 1px rgba(0,0,0,0.1);transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .chat-container-wrapper:hover{box-shadow:0 15px 35px -5px rgba(0,0,0,0.1),0 0 1px rgba(0,0,0,0.1);}
+    .dark .chat-container-wrapper{background:rgba(15,23,42,0.7);}
+    .send-btn{transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .send-btn:hover{transform:scale(1.1) rotate(10deg);}
+    .send-btn:active{transform:scale(0.95);}
+    .glow{position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(56,189,248,0.15) 0%,rgba(56,189,248,0) 70%);border-radius:50%;pointer-events:none;z-index:-1;will-change:transform;}
+    .scroll-indicator{position:absolute;bottom:15px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(255,255,255,0.9);color:#0ea5e9;padding:6px 12px;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(0,0,0,0.1);opacity:0;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);pointer-events:none;}
+    .scroll-indicator.visible{transform:translateX(-50%) translateY(0);opacity:1;}
+    .dark .scroll-indicator{background:rgba(15,23,42,0.9);color:#38bdf8;}
+    .user-bubble{background:linear-gradient(135deg,#22c55e,#16a34a);border:1px solid rgba(255,255,255,0.1);}
+    .assistant-bubble{background:rgba(255,255,255,0.9);border:1px solid rgba(0,0,0,0.05);backdrop-filter:blur(10px);}
+    .dark .assistant-bubble{background:rgba(30,41,59,0.9);border:1px solid rgba(255,255,255,0.05);}
+    @keyframes float{0%{transform:translateY(0px);}50%{transform:translateY(-10px);}100%{transform:translateY(0px);}}
+    .floating-animation{animation:float 6s ease-in-out infinite;}
+    .chat-input{transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);box-shadow:inset 0 1px 2px rgba(0,0,0,0.05);}
+    .chat-input:focus{box-shadow:inset 0 1px 2px rgba(0,0,0,0.05),0 0 0 2px rgba(56,189,248,0.2);}
+    .info-banner{border-left:4px solid #0ea5e9;background:rgba(14,165,233,0.1);}
+    .ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,0.7);animation:ripple 0.6s linear;pointer-events:none;}
+    @keyframes ripple{to{transform:scale(4);opacity:0;}}
+    .blur-load{filter:blur(10px);transition:filter 0.3s ease;}
+    .blur-load.loaded{filter:blur(0);}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.2);border-radius:3px;}
+    .dark ::-webkit-scrollbar-thumb{background-color:rgba(255,255,255,0.2);}
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-all bg-dots">
-  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
-    <div id="bg-gradient" class="absolute top-0 right-0 w-96 h-96 rounded-full filter blur-3xl bg-gradient-to-r from-emerald-400 to-blue-500 bg-gradient-pulse"></div>
-    <div id="bg-gradient-2" class="absolute bottom-0 left-0 w-64 h-64 rounded-full filter blur-3xl bg-gradient-to-r from-blue-500 to-purple-500 bg-gradient-pulse"></div>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-all duration-300 bg-dots">
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50">
+    <div id="bg-gradient" class="absolute top-0 right-0 w-[500px] h-[500px] rounded-full filter blur-3xl bg-gradient-to-r from-emerald-400 to-blue-500 bg-gradient-pulse"></div>
+    <div id="bg-gradient-2" class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full filter blur-3xl bg-gradient-to-r from-blue-500 to-purple-500 bg-gradient-pulse"></div>
   </div>
-  <header class="sticky top-0 z-30 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 shadow-sm">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <div class="gradient-text text-2xl font-bold">dupuis.lol</div>
-        <span class="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 px-2 py-0.5 rounded-full">Friendly Chat</span>
+  
+  <header class="sticky top-0 z-30 w-full backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 shadow-sm border-b border-slate-200/80 dark:border-slate-800/80 transition-all duration-300">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="gradient-text text-2xl font-bold tracking-tight">dupuis.lol</div>
+        <span class="text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2.5 py-0.5 rounded-full font-medium">Friendly Chat</span>
       </div>
       <div class="flex items-center space-x-2">
-        <button id="summarize-chat" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-600" title="Summarize Chat">
+        <button id="summarize-chat" class="header-btn p-2 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-800/70 transition-all text-slate-600 dark:text-slate-300 tooltip" data-tooltip="Summarize Chat">
           <i class="fas fa-file-alt"></i>
         </button>
-        <button id="clear-chat" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-600" title="Clear Chat">
+        <button id="clear-chat" class="header-btn p-2 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-800/70 transition-all text-slate-600 dark:text-slate-300 tooltip" data-tooltip="Clear Chat">
           <i class="fas fa-trash-alt"></i>
         </button>
-        <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition" title="Toggle Dark Mode">
+        <button id="theme-toggle" class="header-btn p-2 rounded-lg hover:bg-slate-200/70 dark:hover:bg-slate-800/70 transition-all tooltip" data-tooltip="Toggle Theme">
           <i class="fas fa-moon dark:hidden"></i>
           <i class="fas fa-sun hidden dark:block"></i>
         </button>
       </div>
     </div>
   </header>
-  <div id="announcement-banner" class="hidden"></div>
+  
+  <div id="announcement-banner" class="transform transition-transform duration-300"></div>
+  
   <main class="flex-1 flex flex-col items-center justify-center p-4 relative z-10 pt-8">
-    <div class="w-full max-w-3xl mx-auto">
-      <div id="chat-container" class="mb-6 max-h-[65vh] overflow-y-auto space-y-6 p-2 scroll-smooth"></div>
+    <div class="w-full max-w-4xl mx-auto">
+      <div class="chat-container-wrapper mb-6 p-4">
+        <div id="chat-container" class="max-h-[70vh] overflow-y-auto space-y-6 p-2 scroll-smooth pr-4"></div>
+        <div class="scroll-indicator" id="scroll-indicator">
+          <i class="fas fa-arrow-down text-xs"></i> New messages
+        </div>
+      </div>
+      
       <div class="gradient-border">
-        <div class="relative flex items-center bg-white dark:bg-slate-800 rounded-xl shadow-lg">
-          <input id="chat-input" type="text" placeholder="Ask me anything..." class="w-full py-4 px-5 bg-transparent outline-none text-lg" autocomplete="off">
-          <button id="voice-input-btn" class="voice-btn mr-1 w-10 h-10 rounded-full flex items-center justify-center text-emerald-500 hover:text-emerald-600" title="Voice Input">
+        <div class="relative flex items-center bg-white dark:bg-slate-800/90 rounded-xl shadow-lg">
+          <input id="chat-input" type="text" placeholder="Ask me anything..." class="chat-input w-full py-4 px-6 bg-transparent outline-none text-lg rounded-xl" autocomplete="off">
+          <button id="voice-input-btn" class="voice-btn mr-2 w-10 h-10 flex items-center justify-center text-emerald-500 hover:text-emerald-600" title="Voice Input">
             <i class="fas fa-microphone"></i>
           </button>
-          <button id="send-btn" class="mr-2 w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition hover:scale-105" title="Send">
+          <button id="send-btn" class="send-btn mr-3 w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white flex items-center justify-center transition-all shadow-md shadow-blue-500/20" title="Send">
             <i class="fas fa-arrow-up"></i>
           </button>
         </div>
       </div>
-      <div class="mt-4 flex flex-wrap justify-center gap-2">
-        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+      
+      <div class="mt-5 flex flex-wrap justify-center gap-3">
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800/80 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 px-5 py-2.5 rounded-full shadow-sm transition-all border border-slate-200/50 dark:border-slate-700/50">
           <i class="fas fa-gamepad mr-1.5 text-emerald-500"></i>Games
         </button>
-        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800/80 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-5 py-2.5 rounded-full shadow-sm transition-all border border-slate-200/50 dark:border-slate-700/50">
           <i class="fas fa-book mr-1.5 text-blue-500"></i>Resources
         </button>
-        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800/80 hover:bg-purple-50 dark:hover:bg-purple-900/30 px-5 py-2.5 rounded-full shadow-sm transition-all border border-slate-200/50 dark:border-slate-700/50">
           <i class="fas fa-code mr-1.5 text-purple-500"></i>Development
         </button>
       </div>
     </div>
   </main>
-  <footer class="py-3 px-6 text-center text-slate-500 text-xs">
+  
+  <footer class="py-4 px-6 text-center text-slate-500 text-xs mt-4 transition-all duration-300">
     <p>Experimental Version. <span class="gradient-text font-medium">Proceed with Caution.</span></p>
   </footer>
+  
+  <div class="glow" id="glow"></div>
+  
   <script>
     (function(){
-      gsap.to(document.getElementById('bg-gradient'), {x:'20vw', y:'5vh', duration:15, repeat:-1, yoyo:true, ease:'sine.inOut'});
-      gsap.to(document.getElementById('bg-gradient'), {rotation:360, duration:45, repeat:-1, ease:'none'});
-      gsap.to(document.getElementById('bg-gradient-2'), {x:'-15vw', y:'-8vh', duration:18, repeat:-1, yoyo:true, ease:'sine.inOut'});
+      // Background animations
+      gsap.to(document.getElementById('bg-gradient'), {x:'15vw', y:'10vh', duration:25, repeat:-1, yoyo:true, ease:'sine.inOut'});
+      gsap.to(document.getElementById('bg-gradient'), {rotation:360, duration:60, repeat:-1, ease:'none'});
+      gsap.to(document.getElementById('bg-gradient-2'), {x:'-20vw', y:'-10vh', duration:30, repeat:-1, yoyo:true, ease:'sine.inOut'});
+      
+      // Mouse follower glow effect
+      const glow = document.getElementById('glow');
+      document.addEventListener('mousemove', (e) => {
+        gsap.to(glow, {
+          x: e.clientX - 100,
+          y: e.clientY - 100,
+          duration: 0.8,
+          ease: 'power2.out'
+        });
+      });
+      
+      // Add ripple effect to buttons
+      const addRipple = (e) => {
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        e.currentTarget.appendChild(ripple);
+        
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      };
+      
+      document.querySelectorAll('.suggestion-btn, .header-btn, .send-btn').forEach(btn => {
+        btn.addEventListener('mousedown', addRipple);
+      });
+      
+      // Site configuration
       const siteConfig = {categories: [
         {name:'Games', subtitle:'Language Games', icon:'fa-gamepad', subcategories: [
           {name:'Featured', items: [{name:'Sandbox', url:'/sandbox', description:'Fun physics game', image:'/images/sandbox.jpg', icon:'fa-cubes', color:'emerald'}]},
@@ -165,53 +253,127 @@
           ]}
         ]}
       ], announcements: [
-        {message:"Create any game/tool using GameGenie! [Resources > GameGenie]", showForever:true},
-        {message:"Weekly Maintenance in progress.", startTime:"00:00", endTime:"24:00", days:["Friday","Saturday","Sunday"], persistent:true},
-        {message:"Maintenance concluded.", startTime:"00:00", endTime:"24:00", days:["Monday"], persistent:true}
+        {message:"Try out our latest AI creations! <a href='/gg' class='underline hover:text-blue-500 transition-colors'>GameGenie</a> is now available.", showForever:true},
+        {message:"Weekly Maintenance in progress. Some features may be unavailable.", startTime:"00:00", endTime:"24:00", days:["Friday","Saturday","Sunday"], persistent:true},
+        {message:"Maintenance concluded. All systems operational.", startTime:"00:00", endTime:"24:00", days:["Monday"], persistent:true}
       ]};
+      
+      // Announcement banner handling
       function annActive(ann) {
         if (ann.showForever) return true;
         if (ann.persistent && ann.days && ann.startTime && ann.endTime) {
-          const now = new Date(), day = now.toLocaleDateString("en-US", {weekday:"long"});
+          const now = new Date();
+          const day = now.toLocaleDateString("en-US", {weekday:"long"});
           if (!ann.days.includes(day)) return false;
-          const curr = now.getHours() * 60 + now.getMinutes(), [sh, sm] = ann.startTime.split(":").map(Number), [eh, em] = ann.endTime.split(":").map(Number);
+          
+          const curr = now.getHours() * 60 + now.getMinutes();
+          const [sh, sm] = ann.startTime.split(":").map(Number);
+          const [eh, em] = ann.endTime.split(":").map(Number);
+          
           return curr >= sh * 60 + sm && curr <= eh * 60 + em;
         }
         return false;
       }
+      
       function updateAnnouncements() {
-        const banner = document.getElementById("announcement-banner"), activeAnns = siteConfig.announcements.filter(annActive);
-        if (activeAnns.length) { banner.classList.remove("hidden"); banner.textContent = activeAnns[0].message; }
-        else { banner.classList.add("hidden"); }
+        const banner = document.getElementById("announcement-banner");
+        const activeAnns = siteConfig.announcements.filter(annActive);
+        
+        if (activeAnns.length) {
+          banner.innerHTML = activeAnns[0].message;
+          banner.classList.add("visible");
+        } else {
+          banner.classList.remove("visible");
+        }
       }
+      
       updateAnnouncements();
       setInterval(updateAnnouncements, 60000);
+      
+      // Get all items from config for search and recommendations
       function getAllItems() {
-        return siteConfig.categories.flatMap(cat => cat.subcategories.flatMap(sub => sub.items.map(item => ({...item, category: cat.name}))));
+        return siteConfig.categories.flatMap(cat => 
+          cat.subcategories.flatMap(sub => 
+            sub.items.map(item => ({
+              ...item, 
+              category: cat.name,
+              subcategory: sub.name
+            }))
+          )
+        );
       }
-      let userName = localStorage.getItem("dupuisUserName") || prompt("Hi! What's your name?") || "Guest";
-      localStorage.setItem("dupuisUserName", userName);
+      
+      // User handling
+      let userName = localStorage.getItem("dupuisUserName");
+      if (!userName) {
+        userName = prompt("Hi! What's your name?") || "Guest";
+        localStorage.setItem("dupuisUserName", userName);
+      }
+      
+      // Chat history
       let chatHistory = [];
       if (localStorage.getItem("dupuisChatHistory")) {
         try {
           chatHistory = JSON.parse(localStorage.getItem("dupuisChatHistory"));
-          chatHistory.forEach(msg => { msg.type === "user" ? addUserMessage(msg.text, false) : addAssistantMessage(msg.content, false); });
-        } catch(e) { localStorage.removeItem("dupuisChatHistory"); }
+          
+          if (chatHistory.length) {
+            chatHistory.forEach(msg => {
+              if (msg.type === "user") {
+                addUserMessage(msg.text, false);
+              } else {
+                addAssistantMessage(msg.content, false);
+              }
+            });
+          }
+        } catch(e) {
+          console.error("Error loading chat history:", e);
+          localStorage.removeItem("dupuisChatHistory");
+        }
       }
-      function saveHistory() { localStorage.setItem("dupuisChatHistory", JSON.stringify(chatHistory)); }
+      
+      function saveHistory() {
+        localStorage.setItem("dupuisChatHistory", JSON.stringify(chatHistory));
+      }
+      
+      // Theme handling
       const themeToggle = document.getElementById("theme-toggle");
       themeToggle.addEventListener("click", () => {
         document.documentElement.classList.toggle("dark");
         localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
       });
-      if (localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches))
+      
+      // Set initial theme
+      if (localStorage.getItem("theme") === "dark" || 
+          (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
         document.documentElement.classList.add("dark");
-      const chatContainer = document.getElementById("chat-container"), chatInput = document.getElementById("chat-input"), sendBtn = document.getElementById("send-btn"), clearChatBtn = document.getElementById("clear-chat"), voiceBtn = document.getElementById("voice-input-btn"), summarizeBtn = document.getElementById("summarize-chat");
+      }
+      
+      // DOM elements
+      const chatContainer = document.getElementById("chat-container");
+      const chatInput = document.getElementById("chat-input");
+      const sendBtn = document.getElementById("send-btn");
+      const clearChatBtn = document.getElementById("clear-chat");
+      const voiceBtn = document.getElementById("voice-input-btn");
+      const summarizeBtn = document.getElementById("summarize-chat");
+      const scrollIndicator = document.getElementById("scroll-indicator");
+      
+      // Scroll indicator
+      chatContainer.addEventListener("scroll", () => {
+        const isAtBottom = chatContainer.scrollHeight - chatContainer.clientHeight - chatContainer.scrollTop < 50;
+        scrollIndicator.classList.toggle("visible", !isAtBottom && chatContainer.scrollTop > 0);
+      });
+      
+      scrollIndicator.addEventListener("click", () => {
+        scrollToBottom(true);
+      });
+      
+      // Clear chat
       clearChatBtn.addEventListener("click", () => {
-        if (confirm("Clear chat history?")) {
+        if (confirm("Are you sure you want to clear the entire chat history?")) {
           chatContainer.innerHTML = "";
           chatHistory = [];
           saveHistory();
+          
           setTimeout(() => {
             addAssistantMessage({
               text: `**Chat cleared!** Hi ${userName}, what can I help you with today?`,
@@ -224,19 +386,32 @@
           }, 300);
         }
       });
+      
+      // Voice input
       let recognition;
       if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = "en-US";
-        recognition.onresult = e => {
-          chatInput.value = e.results[0][0].transcript;
+        
+        recognition.onresult = (e) => {
+          const transcript = e.results[0][0].transcript;
+          chatInput.value = transcript;
           voiceBtn.classList.remove("recording");
           voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
         };
-        recognition.onerror = () => { voiceBtn.classList.remove("recording"); voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
-        recognition.onend = () => { voiceBtn.classList.remove("recording"); voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
+        
+        recognition.onerror = () => {
+          voiceBtn.classList.remove("recording");
+          voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+        
+        recognition.onend = () => {
+          voiceBtn.classList.remove("recording");
+          voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+        
         voiceBtn.addEventListener("click", () => {
           if (voiceBtn.classList.contains("recording")) {
             recognition.stop();
@@ -248,177 +423,504 @@
             voiceBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
           }
         });
-      } else { voiceBtn.style.display = "none"; }
+      } else {
+        voiceBtn.style.display = "none";
+      }
+      
+      // Summarize chat
       summarizeBtn.addEventListener("click", () => {
-        if (!chatHistory.length) { alert("No conversation to summarize."); return; }
-        const convo = chatHistory.map(msg => (msg.type === "user" ? "User: " : "Assistant: ") + (msg.text || (msg.content && msg.content.text) || "")).join("\n");
+        if (!chatHistory.length) {
+          alert("No conversation to summarize yet.");
+          return;
+        }
+        
+        const convo = chatHistory.map(msg => 
+          (msg.type === "user" ? "User: " : "Assistant: ") + 
+          (msg.text || (msg.content && msg.content.text) || "")
+        ).join("\n");
+        
         showThinking();
+        
         fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyCTUreMKF6dS1t9HJAnUHATm3vk3PXx9u4", {
-          method:"POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify({contents:[{parts:[{text:`Summarize this conversation in a few friendly sentences:\n\n${convo}`}]}], generationConfig:{temperature:0.7, maxOutputTokens:150}})
-        }).then(r => { if (!r.ok) throw new Error("API error"); return r.json(); })
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Summarize this conversation in a few friendly sentences:
+                    
+                    ${convo}`
+                  }
+                ]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 150
+            }
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("API error: " + response.status);
+          return response.json();
+        })
         .then(data => {
-          const summary = data.candidates[0].content.parts[0].text;
-          addAssistantMessage({text: `**Summary:**\n${summary}`});
-        }).catch(() => { addAssistantMessage({text:"Sorry, I couldn't generate a summary."}); });
+          if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const summary = data.candidates[0].content.parts[0].text;
+            addAssistantMessage({
+              text: `**Summary:**\n${summary}`
+            });
+          } else {
+            throw new Error("Invalid API response format");
+          }
+        })
+        .catch(error => {
+          console.error("Summary error:", error);
+          addAssistantMessage({
+            text: "Sorry, I couldn't generate a summary right now. Please try again later."
+          });
+        });
       });
+      
+      // Initial welcome message
       window.addEventListener("load", () => {
         if (!chatHistory.length) {
           setTimeout(() => {
             addAssistantMessage({
-              text: `**Welcome ${userName}!** I'm here to help. What would you like to know?`,
+              text: `**Welcome ${userName}!** I'm here to help you find what you need. What would you like to know today?`,
               links: [
                 {name:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
                 {name:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
                 {name:"Development", url:"/dev", icon:"fa-code", color:"purple"}
               ],
-              featured: {name:"Motle", description:"Guess the French word of the day in our popular game!", url:"/motle", image:"/api/placeholder/400/200", icon:"fa-language", color:"emerald"}
+              featured: {
+                name:"Motle", 
+                description:"Challenge yourself with our popular French word game! Try to guess the word of the day.",
+                url:"/motle", 
+                image:"https://images.unsplash.com/photo-1652451764453-eff80b50f736?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", 
+                icon:"fa-language", 
+                color:"emerald"
+              }
             });
           }, 500);
         }
       });
+      
+      // Suggestion buttons
       document.querySelectorAll(".suggestion-btn").forEach(btn => {
-        btn.addEventListener("click", () => { chatInput.value = btn.textContent.trim(); sendMessage(); });
+        btn.addEventListener("click", () => {
+          chatInput.value = btn.textContent.trim();
+          sendMessage();
+        });
       });
+      
+      // Send message handlers
       sendBtn.addEventListener("click", sendMessage);
-      chatInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
-      function sendMessage(){
+      chatInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") sendMessage();
+      });
+      
+      function sendMessage() {
         const message = chatInput.value.trim();
-        if(!message)return;
+        if (!message) return;
+        
         addUserMessage(message);
         chatInput.value = "";
-        setTimeout(() => { chatInput.focus(); }, 50);
+        setTimeout(() => {
+          chatInput.focus();
+        }, 50);
+        
         showThinking();
         processQuery(message);
       }
+      
+      // Add user message to chat
       function addUserMessage(text, save = true) {
         const bubble = document.createElement("div");
         bubble.className = "chat-bubble flex justify-end";
-        bubble.innerHTML = `<div class="max-w-[80%] bg-emerald-500 text-white rounded-2xl py-3 px-4 shadow-md"><p>${escapeHTML(text)}</p></div>`;
+        bubble.innerHTML = `
+          <div class="max-w-[80%] user-bubble rounded-2xl rounded-tr-sm py-3 px-4 shadow-md">
+            <p>${escapeHTML(text)}</p>
+          </div>
+        `;
+        
         chatContainer.appendChild(bubble);
-        gsap.fromTo(bubble, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.4, ease:"back.out(1.7)"});
+        
+        gsap.fromTo(bubble, 
+          {opacity: 0, y: 20, scale: 0.95}, 
+          {opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)"}
+        );
+        
         scrollToBottom();
-        if(save){ chatHistory.push({type:"user", text}); saveHistory(); }
+        
+        if (save) {
+          chatHistory.push({type: "user", text});
+          saveHistory();
+        }
       }
+      
+      // Add assistant message to chat
       function addAssistantMessage(response, save = true) {
+        // Remove thinking indicator if it exists
         const thinking = document.getElementById("thinking-indicator");
-        if(thinking) thinking.remove();
+        if (thinking) thinking.remove();
+        
         const bubble = document.createElement("div");
         bubble.className = "chat-bubble flex justify-start";
+        
+        // Format message content
         const formatted = formatMarkdown(response.text);
-        const featured = response.featured ? `<div class="mt-4 website-card bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border dark:border-slate-700">
-          <div class="relative">
-            <img src="${response.featured.image}" alt="${response.featured.name}" class="w-full h-32 object-cover">
-            <div class="absolute top-2 right-2 bg-${response.featured.color}-500 text-white rounded-full w-8 h-8 flex items-center justify-center"><i class="fas ${response.featured.icon}"></i></div>
+        
+        // Featured section
+        const featured = response.featured ? `
+          <div class="mt-4 website-card bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-slate-200/70 dark:border-slate-700/70">
+            <div class="relative">
+              <img src="${response.featured.image}" alt="${response.featured.name}" 
+                class="w-full h-40 object-cover blur-load"
+                onload="this.classList.add('loaded')">
+              <div class="absolute top-3 right-3 bg-${response.featured.color}-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+                <i class="fas ${response.featured.icon}"></i>
+              </div>
+            </div>
+            <div class="p-4">
+              <h3 class="font-bold text-lg mb-1">${response.featured.name}</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">${response.featured.description}</p>
+              <a href="${response.featured.url}" class="inline-block bg-${response.featured.color}-100 dark:bg-${response.featured.color}-900/30 text-${response.featured.color}-700 dark:text-${response.featured.color}-300 px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:shadow-md hover:translate-y-[-2px]">
+                Visit <i class="fas fa-arrow-right ml-1 text-xs"></i>
+              </a>
+            </div>
           </div>
-          <div class="p-4">
-            <h3 class="font-bold text-lg mb-1">${response.featured.name}</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">${response.featured.description}</p>
-            <a href="${response.featured.url}" class="inline-block bg-${response.featured.color}-100 dark:bg-${response.featured.color}-900/30 text-${response.featured.color}-700 dark:text-${response.featured.color}-300 px-3 py-1 rounded-full text-sm font-medium">Visit <i class="fas fa-arrow-right ml-1 text-xs"></i></a>
+        ` : "";
+        
+        // Recommendations section
+        const recommendations = response.recommendations && response.recommendations.length ? `
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${response.recommendations.map(site => `
+              <div class="website-card bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border border-slate-200/70 dark:border-slate-700/70 flex flex-col">
+                <div class="relative h-24">
+                  <img src="${site.image}" alt="${site.name}" class="w-full h-full object-cover blur-load"
+                    onload="this.classList.add('loaded')">
+                  <div class="absolute top-2 right-2 bg-${site.color}-500 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                    <i class="fas ${site.icon} text-xs"></i>
+                  </div>
+                </div>
+                <div class="p-3 flex-1 flex flex-col">
+                  <h3 class="font-medium text-sm mb-1">${site.name}</h3>
+                  <p class="text-xs text-slate-600 dark:text-slate-300 flex-1">
+                    ${site.description.length > 80 ? site.description.substring(0, 80) + "..." : site.description}
+                  </p>
+                  <a href="${site.url}" class="mt-2 inline-block bg-${site.color}-100 dark:bg-${site.color}-900/30 text-${site.color}-700 dark:text-${site.color}-300 px-2 py-1 rounded-full text-xs font-medium transition-all hover:translate-y-[-2px]">
+                    Visit <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                  </a>
+                </div>
+              </div>
+            `).join("")}
           </div>
-        </div>` : "";
-        const recommendations = response.recommendations && response.recommendations.length ? `<div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">${response.recommendations.map(site => `<div class="website-card bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700 flex flex-col">
-          <div class="relative h-24">
-            <img src="${site.image}" alt="${site.name}" class="w-full h-full object-cover">
-            <div class="absolute top-2 right-2 bg-${site.color}-500 text-white rounded-full w-6 h-6 flex items-center justify-center"><i class="fas ${site.icon} text-xs"></i></div>
+        ` : "";
+        
+        // Links section
+        const links = response.links && response.links.length ? `
+          <div class="mt-3 pt-3 border-t dark:border-slate-700/70">
+            <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">Related resources:</div>
+            <div class="flex flex-wrap gap-2">
+              ${response.links.map(link => `
+                <a href="${link.url}" class="link-bubble flex items-center text-xs bg-${link.color}-100 dark:bg-${link.color}-900/30 text-${link.color}-700 dark:text-${link.color}-300 px-3 py-1.5 rounded-full shadow-sm transition-all">
+                  <i class="fas ${link.icon} mr-1.5"></i>${link.name}
+                </a>
+              `).join("")}
+            </div>
           </div>
-          <div class="p-3 flex-1 flex flex-col">
-            <h3 class="font-medium text-sm mb-1">${site.name}</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-300 flex-1">${site.description.length > 80 ? site.description.substring(0,80)+"..." : site.description}</p>
-            <a href="${site.url}" class="mt-2 inline-block bg-${site.color}-100 dark:bg-${site.color}-900/30 text-${site.color}-700 dark:text-${site.color}-300 px-2 py-1 rounded-full text-xs font-medium">Visit <i class="fas fa-arrow-right ml-1 text-xs"></i></a>
+        ` : "";
+        
+        // Feedback buttons
+        const feedback = `
+          <div class="mt-2 flex items-center space-x-2 text-sm opacity-70 hover:opacity-100 transition-opacity">
+            <span class="text-xs">Helpful?</span>
+            <button class="feedback-btn text-emerald-500 hover:text-emerald-600">
+              <i class="fas fa-thumbs-up"></i>
+            </button>
+            <button class="feedback-btn text-red-500 hover:text-red-600">
+              <i class="fas fa-thumbs-down"></i>
+            </button>
           </div>
-        </div>`).join("")}</div>` : "";
-        const links = response.links && response.links.length ? `<div class="mt-3 pt-3 border-t dark:border-slate-700">
-          <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">Related resources:</div>
-          <div class="flex flex-wrap gap-2">${response.links.map(link => `<a href="${link.url}" class="link-bubble flex items-center text-xs bg-${link.color}-100 dark:bg-${link.color}-900/30 text-${link.color}-700 dark:text-${link.color}-300 px-3 py-1.5 rounded-full shadow-sm"><i class="fas ${link.icon} mr-1.5"></i>${link.name}</a>`).join("")}</div>
-        </div>` : "";
-        const feedback = `<div class="mt-2 flex items-center space-x-2 text-sm">
-          <span>Helpful?</span>
-          <button class="feedback-btn text-emerald-500 hover:text-emerald-600"><i class="fas fa-thumbs-up"></i></button>
-          <button class="feedback-btn text-red-500 hover:text-red-600"><i class="fas fa-thumbs-down"></i></button>
-        </div>`;
-        bubble.innerHTML = `<div class="max-w-[85%] bg-white dark:bg-slate-800 rounded-2xl py-3 px-4 shadow-md">
-          <div class="message-content markdown">${formatted}</div>${featured}${recommendations}${links}${feedback}
-        </div>`;
+        `;
+        
+        bubble.innerHTML = `
+          <div class="max-w-[85%] assistant-bubble rounded-2xl rounded-tl-sm py-3 px-4 shadow-md">
+            <div class="message-content markdown">${formatted}</div>
+            ${featured}
+            ${recommendations}
+            ${links}
+            ${feedback}
+          </div>
+        `;
+        
         chatContainer.appendChild(bubble);
-        gsap.fromTo(bubble, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.4, ease:"back.out(1.7)"});
+        
+        gsap.fromTo(bubble, 
+          {opacity: 0, y: 20, scale: 0.95}, 
+          {opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)"}
+        );
+        
         scrollToBottom();
-        if(save){ chatHistory.push({type:"assistant", content:response}); saveHistory(); }
-        bubble.querySelectorAll(".feedback-btn").forEach(btn => { btn.addEventListener("click", () => { alert("Thanks for your feedback!"); }); });
+        
+        if (save) {
+          chatHistory.push({type: "assistant", content: response});
+          saveHistory();
+        }
+        
+        // Add feedback button handlers
+        bubble.querySelectorAll(".feedback-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const isPositive = btn.classList.contains("text-emerald-500");
+            const allFeedbackBtns = bubble.querySelectorAll(".feedback-btn");
+            
+            allFeedbackBtns.forEach(b => b.classList.add("opacity-50"));
+            btn.classList.remove("opacity-50");
+            btn.classList.add("scale-125");
+            
+            // Show feedback thankyou tooltip
+            const tooltip = document.createElement("div");
+            tooltip.className = "text-xs bg-slate-800 text-white px-2 py-1 rounded absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0";
+            tooltip.textContent = isPositive ? "Thanks for your feedback!" : "We'll improve this";
+            
+            btn.parentNode.style.position = "relative";
+            btn.parentNode.appendChild(tooltip);
+            
+            gsap.to(tooltip, {
+              opacity: 1,
+              y: -5,
+              duration: 0.3,
+              onComplete: () => {
+                setTimeout(() => {
+                  gsap.to(tooltip, {
+                    opacity: 0,
+                    y: 0,
+                    duration: 0.3,
+                    onComplete: () => tooltip.remove()
+                  });
+                }, 2000);
+              }
+            });
+            
+            // Could send feedback to server here
+            console.log("Feedback:", isPositive ? "positive" : "negative");
+          });
+        });
       }
+      
+      // Query processing with Gemini API
       async function processQuery(message) {
         try {
           const items = getAllItems();
           const context = items.map(item => `${item.name}: ${item.description}`).join("\n");
-          const prompt = `Hi ${userName}, you asked: "${message}". Based on our resources below, here's a friendly answer (keep it under 150 words):\n\n${context}`;
+          
+          const prompt = `Hi ${userName}, you asked: "${message}". Based on our resources below, here's a friendly and helpful answer (keep it under 150 words):
+
+${context}`;
+          
           const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyCTUreMKF6dS1t9HJAnUHATm3vk3PXx9u4", {
-            method:"POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:150}})
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: prompt
+                    }
+                  ]
+                }
+              ],
+              generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 150
+              }
+            })
           });
-          if(!res.ok) throw new Error(`API error: ${res.status}`);
+          
+          if (!res.ok) throw new Error(`API error: ${res.status}`);
+          
           const data = await res.json();
-          const reply = data.candidates[0].content.parts[0].text;
-          const links = findRelevantLinks(message);
-          const recs = findRecommendations(message);
-          addAssistantMessage({text:reply, links, recommendations: recs});
-        } catch(e) {
-          addAssistantMessage({text:"Sorry, something went wrong. Please try again later.", links:[{name:"Help Center", url:"/help", icon:"fa-question-circle", color:"blue"}]});
+          
+          if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const reply = data.candidates[0].content.parts[0].text;
+            const links = findRelevantLinks(message);
+            const recs = findRecommendations(message);
+            
+            addAssistantMessage({
+              text: reply,
+              links: links,
+              recommendations: recs
+            });
+          } else {
+            throw new Error("Invalid API response format");
+          }
+        } catch (e) {
+          console.error("API error:", e);
+          
+          addAssistantMessage({
+            text: "Sorry, I couldn't process your request right now. Please try again later.",
+            links: [
+              {name: "Help Center", url: "/help", icon: "fa-question-circle", color: "blue"}
+            ]
+          });
         }
       }
+      
+      // Find relevant links based on query keywords
       function findRelevantLinks(query) {
         const mapping = [
-          {keyword:"game", category:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
-          {keyword:"play", category:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
-          {keyword:"learn", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
-          {keyword:"grammar", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
-          {keyword:"vocabulary", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
-          {keyword:"develop", category:"Development", url:"/dev", icon:"fa-code", color:"purple"},
-          {keyword:"api", category:"Development", url:"/dev", icon:"fa-code", color:"purple"},
-          {keyword:"code", category:"Development", url:"/dev", icon:"fa-code", color:"purple"}
+          {keyword: "game", category: "Games", url: "/games", icon: "fa-gamepad", color: "emerald"},
+          {keyword: "play", category: "Games", url: "/games", icon: "fa-gamepad", color: "emerald"},
+          {keyword: "french", category: "Games", url: "/games", icon: "fa-language", color: "emerald"},
+          {keyword: "learn", category: "Resources", url: "/resources", icon: "fa-book", color: "blue"},
+          {keyword: "grammar", category: "Resources", url: "/resources", icon: "fa-book", color: "blue"},
+          {keyword: "vocabulary", category: "Resources", url: "/resources", icon: "fa-book", color: "blue"},
+          {keyword: "ai", category: "Resources", url: "/resources", icon: "fa-robot", color: "blue"},
+          {keyword: "develop", category: "Development", url: "/dev", icon: "fa-code", color: "purple"},
+          {keyword: "api", category: "Development", url: "/dev", icon: "fa-code", color: "purple"},
+          {keyword: "code", category: "Development", url: "/dev", icon: "fa-code", color: "purple"}
         ];
+        
         const lower = query.toLowerCase();
         let links = [];
-        mapping.forEach(map => { if(lower.includes(map.keyword) && !links.find(l => l.name === map.category)) { links.push({name: map.category, url: map.url, icon: map.icon, color: map.color}); } });
-        if(!links.length) links = [
-          {name:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
-          {name:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
-          {name:"Development", url:"/dev", icon:"fa-code", color:"purple"}
-        ];
+        
+        mapping.forEach(map => {
+          if (lower.includes(map.keyword) && !links.find(l => l.name === map.category)) {
+            links.push({
+              name: map.category,
+              url: map.url,
+              icon: map.icon,
+              color: map.color
+            });
+          }
+        });
+        
+        if (!links.length) {
+          links = [
+            {name: "Games", url: "/games", icon: "fa-gamepad", color: "emerald"},
+            {name: "Resources", url: "/resources", icon: "fa-book", color: "blue"},
+            {name: "Development", url: "/dev", icon: "fa-code", color: "purple"}
+          ];
+        }
+        
         return links.slice(0, 3);
       }
+      
+      // Find content recommendations based on query
       function findRecommendations(query) {
         const lower = query.toLowerCase();
         let recs = [];
+        
         const items = getAllItems();
+        
         items.forEach(item => {
           let score = 0;
-          const text = (item.name + " " + item.description + " " + item.category).toLowerCase();
-          text.split(/[\s,.;:!?]+/).forEach(word => { if(lower.includes(word) && word.length > 3) score++; });
-          if(lower.includes(item.category.toLowerCase())) score += 2;
-          if(score > 0) recs.push({...item, score});
+          const text = (item.name + " " + item.description + " " + item.category + " " + (item.subcategory || "")).toLowerCase();
+          
+          // Score based on word matches
+          text.split(/[\s,.;:!?]+/).forEach(word => {
+            if (lower.includes(word) && word.length > 3) score++;
+            if (word.length > 5 && lower.includes(word)) score++; // Bonus for longer words
+          });
+          
+          // Bonus points for category/subcategory matches
+          if (lower.includes(item.category.toLowerCase())) score += 2;
+          if (item.subcategory && lower.includes(item.subcategory.toLowerCase())) score += 2;
+          
+          // Direct name match bonus
+          if (lower.includes(item.name.toLowerCase())) score += 3;
+          
+          if (score > 0) recs.push({...item, score});
         });
+        
+        // Sort by relevance score
         recs.sort((a, b) => b.score - a.score);
+        
         return recs.slice(0, 4);
       }
+      
+      // Show typing indicator
       function showThinking() {
         const thinking = document.createElement("div");
         thinking.id = "thinking-indicator";
         thinking.className = "chat-bubble flex justify-start";
-        thinking.innerHTML = `<div class="bg-white dark:bg-slate-800 rounded-2xl py-3 px-4 shadow-md"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+        thinking.innerHTML = `
+          <div class="assistant-bubble rounded-2xl rounded-tl-sm py-3 px-4 shadow-md">
+            <div class="typing-indicator"><span></span><span></span><span></span></div>
+          </div>
+        `;
+        
         chatContainer.appendChild(thinking);
-        gsap.fromTo(thinking, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.3, ease:"back.out(1.7)"});
+        
+        gsap.fromTo(thinking, 
+          {opacity: 0, y: 20, scale: 0.95}, 
+          {opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(1.7)"}
+        );
+        
         scrollToBottom();
       }
-      function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }
-      function escapeHTML(text) { const div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+      
+      // Scroll to bottom of chat
+      function scrollToBottom(animated = false) {
+        if (animated) {
+          gsap.to(chatContainer, {
+            scrollTop: chatContainer.scrollHeight,
+            duration: 0.5,
+            ease: "power2.out"
+          });
+        } else {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }
+      
+      // Escape HTML for security
+      function escapeHTML(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+      }
+      
+      // Format markdown
       function formatMarkdown(text) {
-        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>").replace(/<br><br>/g, "</p><p>");
-        if(!text.startsWith("<p>")) text = "<p>" + text;
-        if(!text.endsWith("</p>")) text += "</p>";
+        if (!text) return "";
+        
+        // Bold formatting
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        
+        // List formatting
+        text = text.replace(/^\s*\*\s+(.+)$/gm, "<li>$1</li>");
+        text = text.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+        
+        // Code formatting
+        text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
+        
+        // Handle line breaks
+        text = text.replace(/\n/g, "<br>");
+        text = text.replace(/<br><br>/g, "</p><p>");
+        
+        // Make sure text starts and ends with paragraph tags
+        if (!text.startsWith("<p>")) text = "<p>" + text;
+        if (!text.endsWith("</p>")) text += "</p>";
+        
         return text;
       }
+      
+      // Handle lazy loading images
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".blur-load").forEach(img => {
+          img.addEventListener("load", () => {
+            img.classList.add("loaded");
+          });
+        });
+      });
     })();
   </script>
 </body>
