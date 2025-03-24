@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dupuis.lol | AI Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    *{font-family:'Inter',sans-serif;}
+    body{overflow-x:hidden;}
+    .gradient-text{background:linear-gradient(90deg,#22c55e,#0ea5e9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .gradient-border{position:relative;border-radius:12px;transition:transform 0.3s;}
+    .gradient-border:focus-within{transform:translateY(-2px);}
+    .gradient-border::before{content:"";position:absolute;inset:0;border-radius:12px;padding:2px;background:linear-gradient(45deg,#22c55e,#0ea5e9,#8b5cf6);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0.7;transition:opacity 0.3s;}
+    .gradient-border:focus-within::before{opacity:1;}
+    .chat-bubble{transition:all 0.6s cubic-bezier(0.175,0.885,0.32,1.275);opacity:0;transform:translateY(20px) scale(0.95);}
+    .typing-indicator span{width:8px;height:8px;background-color:#22c55e;border-radius:50%;display:inline-block;margin:0 1px;}
+    .typing-indicator span:nth-child(1){animation:bounce 1s infinite 0.1s;}
+    .typing-indicator span:nth-child(2){animation:bounce 1s infinite 0.3s;}
+    .typing-indicator span:nth-child(3){animation:bounce 1s infinite 0.5s;}
+    @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+    .link-bubble{transition:all 0.3s;position:relative;overflow:hidden;z-index:1;}
+    .link-bubble::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:0;background-color:rgba(255,255,255,0.1);transition:all 0.3s;z-index:-1;}
+    .link-bubble:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+    .link-bubble:hover::after{height:100%;}
+    .bg-dots{background-image:radial-gradient(rgba(0,0,0,0.1) 1px,transparent 1px);background-size:20px 20px;}
+    .dark .bg-dots{background-image:radial-gradient(rgba(255,255,255,0.1) 1px,transparent 1px);}
+    .suggestion-btn{transition:all 0.3s ease;}
+    .suggestion-btn:hover{transform:translateY(-2px);}
+    .message-content p{margin-bottom:0.75rem;}
+    .message-content p:last-child{margin-bottom:0;}
+    .message-content a{color:#0ea5e9;text-decoration:underline;text-underline-offset:2px;}
+    .bg-gradient-pulse{animation:gradientShift 15s ease infinite;}
+    @keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+    .website-card{transition:all 0.3s ease;transform:translateY(0);}
+    .website-card:hover{transform:translateY(-5px);}
+    .markdown code{background-color:rgba(0,0,0,0.05);padding:0.2em 0.4em;border-radius:3px;font-family:monospace;font-size:0.9em;}
+    .dark .markdown code{background-color:rgba(255,255,255,0.1);}
+    .markdown ul,.markdown ol{padding-left:1.5rem;margin-bottom:1rem;}
+    .markdown li{margin-bottom:0.5rem;}
+    .voice-btn{transition:all 0.2s ease;}
+    .voice-btn:hover{background-color:rgba(34,197,94,0.1);}
+    .voice-btn.recording{animation:pulse-red 2s infinite;}
+    @keyframes pulse-red{0%{box-shadow:0 0 0 0 rgba(239,68,68,0.7);}70%{box-shadow:0 0 0 10px rgba(239,68,68,0);}100%{box-shadow:0 0 0 0 rgba(239,68,68,0);}}
+    #announcement-banner{background-color:#fef3c7;color:#92400e;padding:0.75rem 1rem;text-align:center;font-size:0.9rem;}
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen flex flex-col transition-all bg-dots">
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
+    <div id="bg-gradient" class="absolute top-0 right-0 w-96 h-96 rounded-full filter blur-3xl bg-gradient-to-r from-emerald-400 to-blue-500 bg-gradient-pulse"></div>
+    <div id="bg-gradient-2" class="absolute bottom-0 left-0 w-64 h-64 rounded-full filter blur-3xl bg-gradient-to-r from-blue-500 to-purple-500 bg-gradient-pulse"></div>
+  </div>
+  <header class="sticky top-0 z-30 w-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="gradient-text text-2xl font-bold">dupuis.lol</div>
+        <span class="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 px-2 py-0.5 rounded-full">Friendly Chat</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="summarize-chat" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-600" title="Summarize Chat">
+          <i class="fas fa-file-alt"></i>
+        </button>
+        <button id="clear-chat" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-600" title="Clear Chat">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition" title="Toggle Dark Mode">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="announcement-banner" class="hidden"></div>
+  <main class="flex-1 flex flex-col items-center justify-center p-4 relative z-10 pt-8">
+    <div class="w-full max-w-3xl mx-auto">
+      <div id="chat-container" class="mb-6 max-h-[65vh] overflow-y-auto space-y-6 p-2 scroll-smooth"></div>
+      <div class="gradient-border">
+        <div class="relative flex items-center bg-white dark:bg-slate-800 rounded-xl shadow-lg">
+          <input id="chat-input" type="text" placeholder="Ask me anything..." class="w-full py-4 px-5 bg-transparent outline-none text-lg" autocomplete="off">
+          <button id="voice-input-btn" class="voice-btn mr-1 w-10 h-10 rounded-full flex items-center justify-center text-emerald-500 hover:text-emerald-600" title="Voice Input">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <button id="send-btn" class="mr-2 w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition hover:scale-105" title="Send">
+            <i class="fas fa-arrow-up"></i>
+          </button>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap justify-center gap-2">
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+          <i class="fas fa-gamepad mr-1.5 text-emerald-500"></i>Games
+        </button>
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+          <i class="fas fa-book mr-1.5 text-blue-500"></i>Resources
+        </button>
+        <button class="suggestion-btn text-sm bg-white dark:bg-slate-800 hover:bg-emerald-50 px-4 py-2 rounded-full shadow-sm transition">
+          <i class="fas fa-code mr-1.5 text-purple-500"></i>Development
+        </button>
+      </div>
+    </div>
+  </main>
+  <footer class="py-3 px-6 text-center text-slate-500 text-xs">
+    <p>Experimental Version. <span class="gradient-text font-medium">Proceed with Caution.</span></p>
+  </footer>
+  <script>
+    (function(){
+      gsap.to(document.getElementById('bg-gradient'), {x:'20vw', y:'5vh', duration:15, repeat:-1, yoyo:true, ease:'sine.inOut'});
+      gsap.to(document.getElementById('bg-gradient'), {rotation:360, duration:45, repeat:-1, ease:'none'});
+      gsap.to(document.getElementById('bg-gradient-2'), {x:'-15vw', y:'-8vh', duration:18, repeat:-1, yoyo:true, ease:'sine.inOut'});
+      const siteConfig = {categories: [
+        {name:'Games', subtitle:'Language Games', icon:'fa-gamepad', subcategories: [
+          {name:'Featured', items: [{name:'Sandbox', url:'/sandbox', description:'Fun physics game', image:'/images/sandbox.jpg', icon:'fa-cubes', color:'emerald'}]},
+          {name:'French Games', items: [
+            {name:'Motle', url:'/motle', description:'Guess the French word of the day', image:'https://images.unsplash.com/photo-1652451764453-eff80b50f736?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-language', color:'emerald'},
+            {name:'DupuisGuessr', url:'/guessr', description:'Locate French landmarks', image:'https://images.unsplash.com/photo-1599930113854-d6d7fd521f10?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-map-marker-alt', color:'emerald'},
+            {name:'Word Voyage', url:'/word-voyage', description:'Practice French spelling', image:'https://images.unsplash.com/photo-1561651188-d207bbec4ec3?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-spell-check', color:'emerald'},
+            {name:'Stromae', url:'/stromae', description:"Learn French with Stromae's music", image:'https://images.unsplash.com/photo-1535712593684-0efd191312bb?q=80&w=869&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-music', color:'emerald'},
+            {name:'Snake Game', url:'/snake-game', description:'Classic snake game for French practice', image:'https://images.unsplash.com/photo-1633183921767-2e0c740bada2?q=80&w=804&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-snake', color:'emerald'}
+          ]},
+          {name:'English Games', items: [{name:'Trivia', url:'/trivia', description:'Test your knowledge', image:'/images/trivia.jpg', icon:'fa-question', color:'emerald'}]},
+          {name:'Music Games', items: [
+            {name:'Notle', url:'/notle', description:'Music Wordle', image:'/images/notle.jpg', icon:'fa-music', color:'emerald'},
+            {name:'ScaleUp', url:'/scaleup', description:'Practice music scales', image:'/images/scaleup.jpg', icon:'fa-music', color:'emerald'}
+          ]},
+          {name:'Other Games', items: [
+            {name:'Ascend', url:'/ascend', description:'Platformer game', image:'/images/ascend.jpg', icon:'fa-arrow-up', color:'emerald'},
+            {name:'Climate Change', url:'/climate-change', description:'Visualize climate data', image:'/images/climate.jpg', icon:'fa-leaf', color:'emerald'}
+          ]}
+        ]},
+        {name:'Resources', subtitle:'Learning Tools', icon:'fa-book', subcategories: [
+          {name:'AI', items: [
+            {name:'CareerCompas', url:'https://careercompas.lovable.app/', description:'Career guidance', image:'https://images.unsplash.com/photo-1586473219010-2ffc57b0d282?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-briefcase', color:'blue'},
+            {name:'TrustLens', url:'https://trustlens.dupuis.lol', description:'Trusted video player', image:'https://images.unsplash.com/photo-1594997064882-16446ba7d8e1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHRpa3Rva3xlbnwwfHwwfHx8MA%3D%3D', icon:'fa-video', color:'blue'},
+            {name:'GameGenie', url:'/gg', description:'Game maker', image:'https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=878&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-gamepad', color:'blue'},
+            {name:'Dupuis Search', url:'https://search.dupuis.lol', description:'Search engine', image:'https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-search', color:'blue'},
+            {name:'Make or Break', url:'https://mob.dupuis.lol', description:'Business game', image:'https://images.unsplash.com/photo-1619344501177-cb47c4a94c59?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-building', color:'blue'},
+            {name:'ChatDupuis', url:'https://chat.dupuis.lol', description:'French tutor', image:'https://plus.unsplash.com/premium_photo-1694475109634-8211f51c987b?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZnJlbmNqaHxlbnwwfHwwfHx8MA%3D%3D', icon:'fa-comments', color:'blue'}
+          ]},
+          {name:'Learning Tools', items: [
+            {name:'Study', url:'/workspace/study', description:'Collaborative workspace', image:'https://plus.unsplash.com/premium_photo-1661761077411-d50cba031848?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-pen', color:'blue'},
+            {name:'Extension', url:'/extension/download', description:'Browser extension for learning', image:'https://images.unsplash.com/photo-1515799251528-8e14681f214e?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-plug', color:'blue'},
+            {name:'Cuisine AI', url:'/cuisine-ai', description:'Cooking assistant', image:'https://plus.unsplash.com/premium_photo-1670603797915-84486361a0a7?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-utensils', color:'blue'}
+          ]},
+          {name:'Community', items: [
+            {name:'Events', url:'/events', description:'Upcoming events', image:'https://images.unsplash.com/photo-1617106400392-b53e003bfc35?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-calendar', color:'blue'},
+            {name:'Café', url:'/cafe', description:'Chat with learners', image:'https://plus.unsplash.com/premium_photo-1664970900025-1e3099ca757a?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-coffee', color:'blue'},
+            {name:'Rewards', url:'/rewards', description:'Earn rewards', image:'https://plus.unsplash.com/premium_photo-1683749805319-2c481ae54bc1?q=80&w=830&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-gift', color:'blue'}
+          ]},
+          {name:'Information', items: [
+            {name:'Snow Day', url:'/snowday', description:'Snow day predictor', image:'https://plus.unsplash.com/premium_photo-1726994887025-b91b0362b297?q=80&w=871&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-snowflake', color:'blue'},
+            {name:'News', url:'/news', description:'Latest news', image:'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-newspaper', color:'blue'},
+            {name:'Translate', url:'/translate', description:'Language translation', image:'https://images.unsplash.com/photo-1592179900427-1631dd95b04a?q=80&w=1013&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-language', color:'blue'}
+          ]}
+        ]},
+        {name:'Development', subtitle:'Developer Tools', icon:'fa-code', subcategories: [
+          {name:'Workspace', items: [{name:'Notes', url:'/workspace/notes', description:'Share your notes', image:'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?q=80&w=876&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-sticky-note', color:'purple'}]},
+          {name:'Other Tools', items: [
+            {name:'gg Beta', url:'/gg-beta.html', description:'Beta version', image:'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?q=80&w=812&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-flask', color:'purple'},
+            {name:'Old Homepage', url:'/homepage', description:'Previous site version', image:'https://images.unsplash.com/photo-1533749047139-189de3cf06d3?q=80&w=872&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-home', color:'purple'},
+            {name:'Contact', url:'/contact', description:'Get in touch', image:'https://images.unsplash.com/photo-1586769852044-692d6e3703f0?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-envelope', color:'purple'},
+            {name:'Videos', url:'/videos', description:'Tutorials', image:'https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-video', color:'purple'},
+            {name:'Forms', url:'/forms', description:'Custom forms', image:'https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', icon:'fa-file', color:'purple'}
+          ]}
+        ]}
+      ], announcements: [
+        {message:"Create any game/tool using GameGenie! [Resources > GameGenie]", showForever:true},
+        {message:"Weekly Maintenance in progress.", startTime:"00:00", endTime:"24:00", days:["Friday","Saturday","Sunday"], persistent:true},
+        {message:"Maintenance concluded.", startTime:"00:00", endTime:"24:00", days:["Monday"], persistent:true}
+      ]};
+      function annActive(ann) {
+        if (ann.showForever) return true;
+        if (ann.persistent && ann.days && ann.startTime && ann.endTime) {
+          const now = new Date(), day = now.toLocaleDateString("en-US", {weekday:"long"});
+          if (!ann.days.includes(day)) return false;
+          const curr = now.getHours() * 60 + now.getMinutes(), [sh, sm] = ann.startTime.split(":").map(Number), [eh, em] = ann.endTime.split(":").map(Number);
+          return curr >= sh * 60 + sm && curr <= eh * 60 + em;
+        }
+        return false;
+      }
+      function updateAnnouncements() {
+        const banner = document.getElementById("announcement-banner"), activeAnns = siteConfig.announcements.filter(annActive);
+        if (activeAnns.length) { banner.classList.remove("hidden"); banner.textContent = activeAnns[0].message; }
+        else { banner.classList.add("hidden"); }
+      }
+      updateAnnouncements();
+      setInterval(updateAnnouncements, 60000);
+      function getAllItems() {
+        return siteConfig.categories.flatMap(cat => cat.subcategories.flatMap(sub => sub.items.map(item => ({...item, category: cat.name}))));
+      }
+      let userName = localStorage.getItem("dupuisUserName") || prompt("Hi! What's your name?") || "Guest";
+      localStorage.setItem("dupuisUserName", userName);
+      let chatHistory = [];
+      if (localStorage.getItem("dupuisChatHistory")) {
+        try {
+          chatHistory = JSON.parse(localStorage.getItem("dupuisChatHistory"));
+          chatHistory.forEach(msg => { msg.type === "user" ? addUserMessage(msg.text, false) : addAssistantMessage(msg.content, false); });
+        } catch(e) { localStorage.removeItem("dupuisChatHistory"); }
+      }
+      function saveHistory() { localStorage.setItem("dupuisChatHistory", JSON.stringify(chatHistory)); }
+      const themeToggle = document.getElementById("theme-toggle");
+      themeToggle.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark");
+        localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+      });
+      if (localStorage.getItem("theme") === "dark" || (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches))
+        document.documentElement.classList.add("dark");
+      const chatContainer = document.getElementById("chat-container"), chatInput = document.getElementById("chat-input"), sendBtn = document.getElementById("send-btn"), clearChatBtn = document.getElementById("clear-chat"), voiceBtn = document.getElementById("voice-input-btn"), summarizeBtn = document.getElementById("summarize-chat");
+      clearChatBtn.addEventListener("click", () => {
+        if (confirm("Clear chat history?")) {
+          chatContainer.innerHTML = "";
+          chatHistory = [];
+          saveHistory();
+          setTimeout(() => {
+            addAssistantMessage({
+              text: `**Chat cleared!** Hi ${userName}, what can I help you with today?`,
+              links: [
+                {name:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
+                {name:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+                {name:"Development", url:"/dev", icon:"fa-code", color:"purple"}
+              ]
+            });
+          }, 300);
+        }
+      });
+      let recognition;
+      if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+        recognition.onresult = e => {
+          chatInput.value = e.results[0][0].transcript;
+          voiceBtn.classList.remove("recording");
+          voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        };
+        recognition.onerror = () => { voiceBtn.classList.remove("recording"); voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
+        recognition.onend = () => { voiceBtn.classList.remove("recording"); voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>'; };
+        voiceBtn.addEventListener("click", () => {
+          if (voiceBtn.classList.contains("recording")) {
+            recognition.stop();
+            voiceBtn.classList.remove("recording");
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+          } else {
+            recognition.start();
+            voiceBtn.classList.add("recording");
+            voiceBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+          }
+        });
+      } else { voiceBtn.style.display = "none"; }
+      summarizeBtn.addEventListener("click", () => {
+        if (!chatHistory.length) { alert("No conversation to summarize."); return; }
+        const convo = chatHistory.map(msg => (msg.type === "user" ? "User: " : "Assistant: ") + (msg.text || (msg.content && msg.content.text) || "")).join("\n");
+        showThinking();
+        fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyCTUreMKF6dS1t9HJAnUHATm3vk3PXx9u4", {
+          method:"POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({contents:[{parts:[{text:`Summarize this conversation in a few friendly sentences:\n\n${convo}`}]}], generationConfig:{temperature:0.7, maxOutputTokens:150}})
+        }).then(r => { if (!r.ok) throw new Error("API error"); return r.json(); })
+        .then(data => {
+          const summary = data.candidates[0].content.parts[0].text;
+          addAssistantMessage({text: `**Summary:**\n${summary}`});
+        }).catch(() => { addAssistantMessage({text:"Sorry, I couldn't generate a summary."}); });
+      });
+      window.addEventListener("load", () => {
+        if (!chatHistory.length) {
+          setTimeout(() => {
+            addAssistantMessage({
+              text: `**Welcome ${userName}!** I'm here to help. What would you like to know?`,
+              links: [
+                {name:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
+                {name:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+                {name:"Development", url:"/dev", icon:"fa-code", color:"purple"}
+              ],
+              featured: {name:"Motle", description:"Guess the French word of the day in our popular game!", url:"/motle", image:"/api/placeholder/400/200", icon:"fa-language", color:"emerald"}
+            });
+          }, 500);
+        }
+      });
+      document.querySelectorAll(".suggestion-btn").forEach(btn => {
+        btn.addEventListener("click", () => { chatInput.value = btn.textContent.trim(); sendMessage(); });
+      });
+      sendBtn.addEventListener("click", sendMessage);
+      chatInput.addEventListener("keydown", e => { if (e.key === "Enter") sendMessage(); });
+      function sendMessage(){
+        const message = chatInput.value.trim();
+        if(!message)return;
+        addUserMessage(message);
+        chatInput.value = "";
+        setTimeout(() => { chatInput.focus(); }, 50);
+        showThinking();
+        processQuery(message);
+      }
+      function addUserMessage(text, save = true) {
+        const bubble = document.createElement("div");
+        bubble.className = "chat-bubble flex justify-end";
+        bubble.innerHTML = `<div class="max-w-[80%] bg-emerald-500 text-white rounded-2xl py-3 px-4 shadow-md"><p>${escapeHTML(text)}</p></div>`;
+        chatContainer.appendChild(bubble);
+        gsap.fromTo(bubble, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.4, ease:"back.out(1.7)"});
+        scrollToBottom();
+        if(save){ chatHistory.push({type:"user", text}); saveHistory(); }
+      }
+      function addAssistantMessage(response, save = true) {
+        const thinking = document.getElementById("thinking-indicator");
+        if(thinking) thinking.remove();
+        const bubble = document.createElement("div");
+        bubble.className = "chat-bubble flex justify-start";
+        const formatted = formatMarkdown(response.text);
+        const featured = response.featured ? `<div class="mt-4 website-card bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border dark:border-slate-700">
+          <div class="relative">
+            <img src="${response.featured.image}" alt="${response.featured.name}" class="w-full h-32 object-cover">
+            <div class="absolute top-2 right-2 bg-${response.featured.color}-500 text-white rounded-full w-8 h-8 flex items-center justify-center"><i class="fas ${response.featured.icon}"></i></div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">${response.featured.name}</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">${response.featured.description}</p>
+            <a href="${response.featured.url}" class="inline-block bg-${response.featured.color}-100 dark:bg-${response.featured.color}-900/30 text-${response.featured.color}-700 dark:text-${response.featured.color}-300 px-3 py-1 rounded-full text-sm font-medium">Visit <i class="fas fa-arrow-right ml-1 text-xs"></i></a>
+          </div>
+        </div>` : "";
+        const recommendations = response.recommendations && response.recommendations.length ? `<div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">${response.recommendations.map(site => `<div class="website-card bg-white dark:bg-slate-800 rounded-lg shadow-sm overflow-hidden border dark:border-slate-700 flex flex-col">
+          <div class="relative h-24">
+            <img src="${site.image}" alt="${site.name}" class="w-full h-full object-cover">
+            <div class="absolute top-2 right-2 bg-${site.color}-500 text-white rounded-full w-6 h-6 flex items-center justify-center"><i class="fas ${site.icon} text-xs"></i></div>
+          </div>
+          <div class="p-3 flex-1 flex flex-col">
+            <h3 class="font-medium text-sm mb-1">${site.name}</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 flex-1">${site.description.length > 80 ? site.description.substring(0,80)+"..." : site.description}</p>
+            <a href="${site.url}" class="mt-2 inline-block bg-${site.color}-100 dark:bg-${site.color}-900/30 text-${site.color}-700 dark:text-${site.color}-300 px-2 py-1 rounded-full text-xs font-medium">Visit <i class="fas fa-arrow-right ml-1 text-xs"></i></a>
+          </div>
+        </div>`).join("")}</div>` : "";
+        const links = response.links && response.links.length ? `<div class="mt-3 pt-3 border-t dark:border-slate-700">
+          <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">Related resources:</div>
+          <div class="flex flex-wrap gap-2">${response.links.map(link => `<a href="${link.url}" class="link-bubble flex items-center text-xs bg-${link.color}-100 dark:bg-${link.color}-900/30 text-${link.color}-700 dark:text-${link.color}-300 px-3 py-1.5 rounded-full shadow-sm"><i class="fas ${link.icon} mr-1.5"></i>${link.name}</a>`).join("")}</div>
+        </div>` : "";
+        const feedback = `<div class="mt-2 flex items-center space-x-2 text-sm">
+          <span>Helpful?</span>
+          <button class="feedback-btn text-emerald-500 hover:text-emerald-600"><i class="fas fa-thumbs-up"></i></button>
+          <button class="feedback-btn text-red-500 hover:text-red-600"><i class="fas fa-thumbs-down"></i></button>
+        </div>`;
+        bubble.innerHTML = `<div class="max-w-[85%] bg-white dark:bg-slate-800 rounded-2xl py-3 px-4 shadow-md">
+          <div class="message-content markdown">${formatted}</div>${featured}${recommendations}${links}${feedback}
+        </div>`;
+        chatContainer.appendChild(bubble);
+        gsap.fromTo(bubble, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.4, ease:"back.out(1.7)"});
+        scrollToBottom();
+        if(save){ chatHistory.push({type:"assistant", content:response}); saveHistory(); }
+        bubble.querySelectorAll(".feedback-btn").forEach(btn => { btn.addEventListener("click", () => { alert("Thanks for your feedback!"); }); });
+      }
+      async function processQuery(message) {
+        try {
+          const items = getAllItems();
+          const context = items.map(item => `${item.name}: ${item.description}`).join("\n");
+          const prompt = `Hi ${userName}, you asked: "${message}". Based on our resources below, here's a friendly answer (keep it under 150 words):\n\n${context}`;
+          const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyCTUreMKF6dS1t9HJAnUHATm3vk3PXx9u4", {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.7, maxOutputTokens:150}})
+          });
+          if(!res.ok) throw new Error(`API error: ${res.status}`);
+          const data = await res.json();
+          const reply = data.candidates[0].content.parts[0].text;
+          const links = findRelevantLinks(message);
+          const recs = findRecommendations(message);
+          addAssistantMessage({text:reply, links, recommendations: recs});
+        } catch(e) {
+          addAssistantMessage({text:"Sorry, something went wrong. Please try again later.", links:[{name:"Help Center", url:"/help", icon:"fa-question-circle", color:"blue"}]});
+        }
+      }
+      function findRelevantLinks(query) {
+        const mapping = [
+          {keyword:"game", category:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
+          {keyword:"play", category:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
+          {keyword:"learn", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+          {keyword:"grammar", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+          {keyword:"vocabulary", category:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+          {keyword:"develop", category:"Development", url:"/dev", icon:"fa-code", color:"purple"},
+          {keyword:"api", category:"Development", url:"/dev", icon:"fa-code", color:"purple"},
+          {keyword:"code", category:"Development", url:"/dev", icon:"fa-code", color:"purple"}
+        ];
+        const lower = query.toLowerCase();
+        let links = [];
+        mapping.forEach(map => { if(lower.includes(map.keyword) && !links.find(l => l.name === map.category)) { links.push({name: map.category, url: map.url, icon: map.icon, color: map.color}); } });
+        if(!links.length) links = [
+          {name:"Games", url:"/games", icon:"fa-gamepad", color:"emerald"},
+          {name:"Resources", url:"/resources", icon:"fa-book", color:"blue"},
+          {name:"Development", url:"/dev", icon:"fa-code", color:"purple"}
+        ];
+        return links.slice(0, 3);
+      }
+      function findRecommendations(query) {
+        const lower = query.toLowerCase();
+        let recs = [];
+        const items = getAllItems();
+        items.forEach(item => {
+          let score = 0;
+          const text = (item.name + " " + item.description + " " + item.category).toLowerCase();
+          text.split(/[\s,.;:!?]+/).forEach(word => { if(lower.includes(word) && word.length > 3) score++; });
+          if(lower.includes(item.category.toLowerCase())) score += 2;
+          if(score > 0) recs.push({...item, score});
+        });
+        recs.sort((a, b) => b.score - a.score);
+        return recs.slice(0, 4);
+      }
+      function showThinking() {
+        const thinking = document.createElement("div");
+        thinking.id = "thinking-indicator";
+        thinking.className = "chat-bubble flex justify-start";
+        thinking.innerHTML = `<div class="bg-white dark:bg-slate-800 rounded-2xl py-3 px-4 shadow-md"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+        chatContainer.appendChild(thinking);
+        gsap.fromTo(thinking, {opacity:0, y:20, scale:0.95}, {opacity:1, y:0, scale:1, duration:0.3, ease:"back.out(1.7)"});
+        scrollToBottom();
+      }
+      function scrollToBottom() { chatContainer.scrollTop = chatContainer.scrollHeight; }
+      function escapeHTML(text) { const div = document.createElement("div"); div.textContent = text; return div.innerHTML; }
+      function formatMarkdown(text) {
+        text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>").replace(/<br><br>/g, "</p><p>");
+        if(!text.startsWith("<p>")) text = "<p>" + text;
+        if(!text.endsWith("</p>")) text += "</p>";
+        return text;
+      }
+    })();
+  </script>
+</body>
+</html>
