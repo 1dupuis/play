@@ -730,7 +730,7 @@
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
         const intensity = e.intensity !== undefined ? e.intensity : 0.9;
-        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 120px, rgba(0,0,0,${intensity}) 180px)`;
+        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 60px, rgba(0,0,0,${intensity}) 90px)`;
       }
       function determineCurrentSection() {
         let newCurrentSection = currentSection;
