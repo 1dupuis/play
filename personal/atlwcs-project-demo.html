@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All the Light We Cannot See - Interactive Experience</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -730,7 +730,7 @@
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
         const intensity = e.intensity !== undefined ? e.intensity : 0.9;
-        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 30px, rgba(0,0,0,${intensity}) 50px)`;
+        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 30px, rgba(0,0,0,0.99) 50px)`;
       }
       function determineCurrentSection() {
         let newCurrentSection = currentSection;
