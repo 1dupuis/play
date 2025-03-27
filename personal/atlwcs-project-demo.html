@@ -230,7 +230,7 @@
     body.dark .city-model { background: #2c2c2e; }
     .city-model::before {
       content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: url('public/lovable-uploads/bffb5b96-2cf2-4c00-b8a7-994286a708ff.png');
+      background: url('https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQUez8BMh95E1QeRI-lCGZ4vWaHLuBs63k5C-VPsjhs_NlPxGfSA_srp1NOaHKeowl-fAJuKDJGfNFh36AKWTGCM1SxwXknpRY8KEzJGtNIs11zsYhRt2MtuDpkTHC8uTrNa5MuLast61FKmBTR4BrwSH.jpg?r=d59');
       background-size: cover; background-position: center; opacity: 0.7;
       transition: opacity 0.5s var(--timing-function), transform 3s var(--timing-function);
     }
@@ -420,19 +420,19 @@
       <div class="browser-content" id="browserContent">
         <div class="browser-content-transition">
           <h2 class="subheading active">All the Light We Cannot See</h2>
-          <h1 class="heading active">The World Through Marie-Laure's Eyes</h1>
-          <p class="paragraph active">Welcome to an interactive journey through the life of Marie-Laure LeBlanc, the blind protagonist from Anthony Doerr's Pulitzer Prize-winning novel. Scroll to experience her world through sight and blindness.</p>
-          <blockquote class="quote active">"Open your eyes and see what you can with them before they close forever." <br>― Anthony Doerr, All the Light We Cannot See</blockquote>
+          <h1 class="heading active">See the World Like Marie-Laure</h1>
+          <p class="paragraph active">Welcome to a fun, interactive look at the life of Marie-Laure, a girl who lost her sight. Scroll down to explore her world of light and dark.</p>
+          <blockquote class="quote active">"Look with your eyes while you still can." <br>― Anthony Doerr, All the Light We Cannot See</blockquote>
         </div>
       </div>
     </div>
   </div>
   <div class="container">
-    <section id="intro" data-address="marie-laure.worldview.com" data-title="The World Through Marie-Laure's Eyes">
+    <section id="intro" data-address="marie-laure.worldview.com" data-title="See the World Like Marie-Laure">
       <div class="section-marker" data-section="intro"></div>
       <div style="height: 70vh"></div>
     </section>
-    <section id="sight" data-address="marie-laure.memories.com" data-title="The Last Images She Remembers">
+    <section id="sight" data-address="marie-laure.memories.com" data-title="The Last Pictures She Saw">
       <div class="section-marker" data-section="sight"></div>
       <div style="height: 70vh"></div>
     </section>
@@ -440,15 +440,15 @@
       <div class="section-marker" data-section="blindness"></div>
       <div style="height: 70vh"></div>
     </section>
-    <section id="adaptation" data-address="marie-laure.senses.com" data-title="Learning to Navigate Through Touch">
+    <section id="adaptation" data-address="marie-laure.senses.com" data-title="Learning to Feel the World">
       <div class="section-marker" data-section="adaptation"></div>
       <div style="height: 70vh"></div>
     </section>
-    <section id="drawingGame" data-address="marie-laure.touch.com" data-title="Draw Papa's Model">
+    <section id="drawingGame" data-address="marie-laure.touch.com" data-title="Draw Your Own Model">
       <div class="section-marker" data-section="drawingGame"></div>
       <div style="height: 70vh"></div>
     </section>
-    <section id="game" data-address="marie-laure.experience.com" data-title="Navigate by Memory">
+    <section id="game" data-address="marie-laure.experience.com" data-title="Remember the Pattern">
       <div class="section-marker" data-section="game"></div>
       <div style="height: 70vh"></div>
     </section>
@@ -463,8 +463,8 @@
   </div>
   <div class="model-game" id="modelGame">
     <div class="game-instructions">
-      <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Memorize the Pattern</h2>
-      <p>Study the lit squares carefully. They will disappear, and you must recreate the pattern from memory.</p>
+      <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level 1: Remember the Pattern</h2>
+      <p>Look at the lit squares. They will go away, and you must copy the pattern from memory.</p>
     </div>
     <div class="game-grid" id="gameGrid">
       <div class="game-cell" data-index="0"></div>
@@ -485,7 +485,7 @@
   <div class="model-score" id="modelScore">
     <h2>Your Drawing Score</h2>
     <div class="score-value">85%</div>
-    <p>You've captured most of the details of Papa's model!</p>
+    <p>Great job! You copied most of the details.</p>
     <button id="closeScoreBtn" class="btn">Continue</button>
   </div>
   <div class="tooltip" id="tutorial"></div>
@@ -493,31 +493,31 @@
     document.addEventListener('DOMContentLoaded', function() {
       const sectionData = {
         intro: {
-          title: "The World Through Marie-Laure's Eyes",
+          title: "See the World Like Marie-Laure",
           content: `
             <h2 class="subheading">All the Light We Cannot See</h2>
-            <h1 class="heading">The World Through Marie-Laure's Eyes</h1>
-            <p class="paragraph">Welcome to an interactive journey through the life of Marie-Laure LeBlanc, the blind protagonist from Anthony Doerr's Pulitzer Prize-winning novel. Scroll to experience her world through sight and blindness.</p>
-            <blockquote class="quote">"Open your eyes and see what you can with them before they close forever." <br>― Anthony Doerr, All the Light We Cannot See</blockquote>
+            <h1 class="heading">See the World Like Marie-Laure</h1>
+            <p class="paragraph">Welcome to a fun, interactive look at the life of Marie-Laure, a girl who lost her sight. Scroll down to explore her world of light and dark.</p>
+            <blockquote class="quote">"Look with your eyes while you still can." <br>― Anthony Doerr, All the Light We Cannot See</blockquote>
             <div class="tabs">
               <div class="tab active" data-tab="biography">Biography</div>
               <div class="tab" data-tab="paris">Paris</div>
               <div class="tab" data-tab="models">Papa's Models</div>
             </div>
             <div class="tab-content active" id="biography">
-              <p class="paragraph">Marie-Laure LeBlanc loses her sight at the age of six. Her papa, a master locksmith at the Museum of Natural History in Paris, builds her a perfect miniature model of their neighborhood so she can memorize it by touch and navigate the real streets.</p>
-              <p class="paragraph">As she grows up, Marie-Laure's papa teaches her to navigate using her other senses, reading to her in braille, and helping her become more independent despite her blindness.</p>
+              <p class="paragraph">Marie-Laure lost her sight when she was six. Her father, a skilled locksmith at the Natural History Museum in Paris, made a small model of their neighborhood so she could learn it by touch and find her way.</p>
+              <p class="paragraph">As she grew up, her father helped her use her other senses. He read to her in braille and taught her to be independent.</p>
             </div>
             <div class="tab-content" id="paris">
-              <p class="paragraph">Paris in the 1930s was a city of light and life. Marie-Laure experienced it first through sight, and then through the intricate models her papa crafted for her to memorize by touch.</p>
-              <p class="paragraph">Every street, every corner of their neighborhood was recreated in perfect scale, allowing Marie-Laure to form a mental map that would guide her through the real city.</p>
+              <p class="paragraph">Paris in the 1930s was full of life and light. Marie-Laure first saw the city, then learned it by feeling the detailed models her father made.</p>
+              <p class="paragraph">Every street and corner was made in a small scale, so she could remember it and find her way.</p>
             </div>
             <div class="tab-content" id="models">
-              <p class="paragraph">Marie-Laure's papa, a locksmith at the Museum of Natural History, crafted incredibly detailed scale models of their neighborhood for his daughter.</p>
-              <p class="paragraph">These wooden models were perfect in every detail, from the number of storm drains to the benches in the parks. They became Marie-Laure's window to a world she could no longer see.</p>
+              <p class="paragraph">Her father made very detailed small models of their neighborhood for Marie-Laure.</p>
+              <p class="paragraph">These models showed every small detail, like storm drains and park benches. They helped her see the world in a new way.</p>
               <div class="model-grid">
                 <div class="model-item">
-                  <img src="public/lovable-uploads/72b36500-8f71-42bc-92e5-9a93caf81e09.png" alt="Model of Saint-Malo">
+                  <img src="https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQUez8BMh95E1QeRI-lCGZ4vWaHLuBs63k5C-VPsjhs_NlPxGfSA_srp1NOaHKeowl-fAJuKDJGfNFh36AKWTGCM1SxwXknpRY8KEzJGtNIs11zsYhRt2MtuDpkTHC8uTrNa5MuLast61FKmBTR4BrwSH.jpg?r=d59" alt="Model of Saint-Malo">
                   <div class="model-title">Saint-Malo Model</div>
                 </div>
                 <div class="model-item">
@@ -530,50 +530,50 @@
                 </div>
                 <div class="model-item">
                   <i class="fa-solid fa-tree fa-3x" style="color: #8e8e93;"></i>
-                  <div class="model-title">Garden District</div>
+                  <div class="model-title">Garden Area</div>
                 </div>
               </div>
             </div>
           `
         },
         sight: {
-          title: "The Last Images She Remembers",
+          title: "The Last Pictures She Saw",
           content: `
-            <h2 class="subheading">Early Memories</h2>
-            <h1 class="heading">The Last Images She Remembers</h1>
-            <p class="paragraph">Before losing her sight at age six, Marie-Laure saw the world in vibrant colors and shapes. She remembers the blue of the sky, the green of the trees in the Jardin des Plantes, and the intricate details of the museum where her papa worked.</p>
-            <blockquote class="quote">"When I lost my sight, Werner, people said I was brave. When my papa left, people said I was brave. But it is not bravery; I have no choice. I wake up and live my life. Don't you do the same?"</blockquote>
+            <h2 class="subheading">Old Memories</h2>
+            <h1 class="heading">The Last Pictures She Saw</h1>
+            <p class="paragraph">Before she lost her sight, Marie-Laure saw the world in bright colors and shapes. She remembers the blue sky, green trees, and the details of the museum where her father worked.</p>
+            <blockquote class="quote">"When I lost my sight, people called me brave. But I had no choice. I wake up and live my life. Do you do the same?"</blockquote>
             <div class="memory-grid">
               <div class="memory-card">
                 <div class="memory-card-front">
-                  <i class="fa-solid fa-image"></i>
+                  <i class="fa-solid fa-museum"></i>
                 </div>
                 <div class="memory-card-back">
-                  <img src="public/lovable-uploads/eb44b8ab-1e86-4371-899b-a56e9cf8c153.png" alt="Paris Streets">
+                  <img src="https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQUez8BMh95E1QeRI-lCGZ4vWaHLuBs63k5C-VPsjhs_NlPxGfSA_srp1NOaHKeowl-fAJuKDJGfNFh36AKWTGCM1SxwXknpRY8KEzJGtNIs11zsYhRt2MtuDpkTHC8uTrNa5MuLast61FKmBTR4BrwSH.jpg?r=d59" alt="Paris Streets">
                   <div class="memory-title">Paris Streets</div>
                 </div>
               </div>
               <div class="memory-card">
                 <div class="memory-card-front">
-                  <i class="fa-solid fa-image"></i>
+                  <i class="fa-solid fa-diamond"></i>
                 </div>
                 <div class="memory-card-back">
                   <i class="fa-solid fa-landmark fa-4x" style="color: #8e8e93;"></i>
-                  <div class="memory-title">Natural History Museum</div>
+                  <div class="memory-title">Museum</div>
                 </div>
               </div>
               <div class="memory-card">
                 <div class="memory-card-front">
-                  <i class="fa-solid fa-image"></i>
+                  <i class="fa-solid fa-diamond"></i>
                 </div>
                 <div class="memory-card-back">
                   <i class="fa-solid fa-person fa-4x" style="color: #8e8e93;"></i>
-                  <div class="memory-title">Her Papa</div>
+                  <div class="memory-title">Her Father</div>
                 </div>
               </div>
               <div class="memory-card">
                 <div class="memory-card-front">
-                  <i class="fa-solid fa-image"></i>
+                  <i class="fa-solid fa-museum"></i>
                 </div>
                 <div class="memory-card-back">
                   <i class="fa-solid fa-book fa-4x" style="color: #8e8e93;"></i>
@@ -586,39 +586,39 @@
         blindness: {
           title: "Losing Her Sight",
           content: `
-            <h2 class="subheading">The Darkness Comes</h2>
+            <h2 class="subheading">Darkness Falls</h2>
             <h1 class="heading">Losing Her Sight</h1>
-            <p class="paragraph">At age six, Marie-Laure's world went dark. The doctors could not explain why. Cataracts, they suggested. A rare, rapid-onset form. "It's like snow," she told her papa, "but it's black snow."</p>
-            <blockquote class="quote">"To shut your eyes is to guess nothing of blindness."</blockquote>
-            <p class="paragraph">As you continue scrolling, you will experience what Marie-Laure experiences - a world without sight, where sound, touch, smell, and memory create a different kind of vision.</p>
+            <p class="paragraph">When she was six, Marie-Laure's world went dark. Doctors said it was cataracts, a fast type of eye problem. She described it as "black snow."</p>
+            <blockquote class="quote">"Closing your eyes means you miss the world." </blockquote>
+            <p class="paragraph">Keep scrolling to feel what Marie-Laure felt in a world without sight, where other senses take over.</p>
           `
         },
         adaptation: {
-          title: "Learning to Navigate Through Touch",
+          title: "Learning to Feel the World",
           content: `
-            <h2 class="subheading">A New Kind of Sight</h2>
-            <h1 class="heading">Learning to Navigate Through Touch</h1>
-            <p class="paragraph">After losing her sight, Marie-Laure had to learn a new way to see the world. Her papa, determined to help her maintain her independence, built intricate wooden models of their neighborhood in Paris.</p>
-            <p class="paragraph">These models became Marie-Laure's map of the world, allowing her to memorize the layout of streets and buildings by touch before venturing out into the real world.</p>
-            <blockquote class="quote">"What do we call visible light? We call it color. But the electromagnetic spectrum runs to zero in one direction and infinity in the other, so really, children, mathematically, all of light is invisible."</blockquote>
-            <h3 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 16px;">The Model of Saint-Malo</h3>
-            <p class="paragraph">When Marie-Laure and her papa flee to Saint-Malo to escape the German occupation of Paris, he creates a new model of the walled city. This becomes crucial for her survival as she learns to navigate yet another new environment.</p>
+            <h2 class="subheading">A New Way to See</h2>
+            <h1 class="heading">Learning to Feel the World</h1>
+            <p class="paragraph">After she lost her sight, Marie-Laure learned to use her other senses. Her father made detailed wooden models of their Paris neighborhood to help her learn the layout.</p>
+            <p class="paragraph">These models were like a map that she could feel and remember to move around safely.</p>
+            <blockquote class="quote">"We call light 'color', but light itself is invisible." </blockquote>
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin: 32px 0 16px;">The Saint-Malo Model</h3>
+            <p class="paragraph">When Marie-Laure and her father went to Saint-Malo to escape the war, he made a new model of the city. It helped her learn a new place.</p>
             <div class="city-model"></div>
           `
         },
         drawingGame: {
-          title: "Draw Papa's Model",
+          title: "Draw Your Own Model",
           content: `
             <h2 class="subheading">Feel What She Felt</h2>
-            <h1 class="heading">Draw Papa's Model</h1>
-            <p class="paragraph">Now it's your turn to create. Marie-Laure had to learn the details of her papa's models through touch. Try to draw the model of Saint-Malo as accurately as you can. Look at the reference image, then recreate it from memory.</p>
+            <h1 class="heading">Draw Your Own Model</h1>
+            <p class="paragraph">Now it's your turn. Marie-Laure learned by touching her father's models. Try to draw the model of Saint-Malo as best as you can. Look at the picture, then draw it from memory.</p>
             <div style="text-align: center; margin-bottom: 24px;">
               <button id="showReferenceBtn" class="btn pulse-glow">View Reference Model</button>
               <button id="startDrawingBtn" class="btn" style="display: none;">Start Drawing</button>
             </div>
             <div id="referenceImage" style="display: none; margin-bottom: 24px; text-align: center;">
-              <img src="public/lovable-uploads/72b36500-8f71-42bc-92e5-9a93caf81e09.png" alt="Saint-Malo Model" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
-              <p style="margin-top: 12px; font-style: italic;">Study this model carefully. The image will disappear soon, and you'll be asked to draw it from memory.</p>
+              <img src="https://dnm.nflximg.net/api/v6/2DuQlx0fM4wd1nzqm5BFBi6ILa8/AAAAQUez8BMh95E1QeRI-lCGZ4vWaHLuBs63k5C-VPsjhs_NlPxGfSA_srp1NOaHKeowl-fAJuKDJGfNFh36AKWTGCM1SxwXknpRY8KEzJGtNIs11zsYhRt2MtuDpkTHC8uTrNa5MuLast61FKmBTR4BrwSH.jpg?r=d59" alt="Saint-Malo Model" style="max-width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+              <p style="margin-top: 12px; font-style: italic;">Look at this model closely. It will disappear soon, and then you will draw it from memory.</p>
             </div>
             <div class="canvas-container" id="canvasContainer" style="display: none;">
               <canvas id="drawingCanvas" width="600" height="400"></canvas>
@@ -637,35 +637,35 @@
                 </div>
               </div>
             </div>
-            <blockquote class="quote">"But Papa, how did you make all those houses look so real, how did you make them look like they're leaning inward a little?"</blockquote>
+            <blockquote class="quote">"But Papa, how did you make the houses look so real? How did you make them seem to lean in a little?"</blockquote>
           `
         },
         game: {
-          title: "Navigate by Memory",
+          title: "Remember the Pattern",
           content: `
-            <h2 class="subheading">Experience Blindness</h2>
-            <h1 class="heading">Navigate by Memory</h1>
-            <p class="paragraph">Now it's your turn to experience what Marie-Laure did. In this interactive challenge, you'll see a pattern briefly, then it will disappear. You must recreate it from memory - much like how Marie-Laure had to memorize her papa's models.</p>
-            <p class="paragraph">Click the button below to start the challenge:</p>
+            <h2 class="subheading">Try It Out</h2>
+            <h1 class="heading">Remember the Pattern</h1>
+            <p class="paragraph">Now it's your turn to try what Marie-Laure did. You will see a pattern for a short time, and then it will go away. Try to recreate it from memory, just like she remembered her father's models.</p>
+            <p class="paragraph">Click the button to start:</p>
             <button id="startGameBtn" class="btn pulse-glow">Start Memory Challenge</button>
-            <blockquote class="quote">"She walks like a ballerina in dance slippers, her feet as articulate as hands, a little vessel of grace moving out into the fog."</blockquote>
+            <blockquote class="quote">"She moves with grace, like a dancer in soft shoes."</blockquote>
           `
         },
         radio: {
           title: "Radio Broadcasts",
           content: `
-            <h2 class="subheading">The Power of Sound</h2>
+            <h2 class="subheading">The Sound of Life</h2>
             <h1 class="heading">Radio Broadcasts</h1>
-            <p class="paragraph">For Marie-Laure, sound becomes an essential way to connect with the world. In Saint-Malo, she discovers her great-uncle's radio and becomes fascinated by the broadcasts that travel through the air.</p>
-            <p class="paragraph">Later, during the war, radio takes on an even more significant role as Marie-Laure reads secret messages over the airwaves, becoming part of the resistance against German occupation.</p>
+            <p class="paragraph">For Marie-Laure, sound was very important. In Saint-Malo, she found her great-uncle's radio and loved the broadcasts on it.</p>
+            <p class="paragraph">During the war, radio played a big part as she listened to secret messages and helped the resistance.</p>
             <div style="margin: 40px 0; padding: 24px; background: rgba(0,102,204,0.1); border-radius: 12px; border-left: 4px solid var(--accent);" class="pulse-glow">
               <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; color: var(--accent);">
-                <i class="fa-solid fa-radio" style="margin-right: 8px;"></i> Broadcast: Twenty Thousand Leagues Under the Sea
+                <i class="fa-solid fa-radio" style="margin-right: 8px;"></i> Broadcast: Under the Sea
               </h3>
-              <p style="font-style: italic; margin-bottom: 16px;" class="wiggle">"Whether these ranges were mountains 12,000 feet high, or fortifications 600 feet tall, the eye was unable to judge. Perhaps they were both. But they were cliffs the Canadian could not climb, caverns he could not enter, fissures he could not follow..."</p>
-              <p style="font-size: 0.875rem; color: var(--subtle);">Marie-Laure broadcasting from Etienne's attic, sending coded messages to the resistance.</p>
+              <p style="font-style: italic; margin-bottom: 16px;" class="wiggle">"The mountains or forts looked so tall, they could not be climbed or entered..."</p>
+              <p style="font-size: 0.875rem; color: var(--subtle);">Marie-Laure sent secret messages from a small attic.</p>
             </div>
-            <blockquote class="quote">"Radio: it ties a million ears to a single mouth."</blockquote>
+            <blockquote class="quote">"Radio connects many ears to one voice."</blockquote>
           `
         },
         ending: {
@@ -673,12 +673,12 @@
           content: `
             <h2 class="subheading">The Light We Cannot See</h2>
             <h1 class="heading">Marie-Laure's Legacy</h1>
-            <p class="paragraph">Marie-Laure's story teaches us that there are many ways to see the world. Though she lost her physical sight, she gained a deeper understanding of life through her other senses and her imagination.</p>
-            <p class="paragraph">In the novel, she survives the war and goes on to become a scientist who studies mollusks, continuing her connection to the natural world that began in her childhood at the Museum of Natural History.</p>
-            <blockquote class="quote">"We all come into existence as a single cell, smaller than a speck of dust. Much smaller. Divide. Multiply. Add and subtract. Matter changes hands, atoms flow in and out, molecules pivot, proteins stitch together, mitochondria send out their oxidative dictates; we begin as a microscopic electrical swarm. The lungs the brain the heart. Forty weeks later, six trillion cells get crushed in the vise of our mother's birth canal and we howl. Then the world starts in on us."</blockquote>
+            <p class="paragraph">Marie-Laure's story shows us that there are many ways to see. Even though she lost her sight, she learned more about life using her other senses and her mind.</p>
+            <p class="paragraph">In the book, she survives the war and becomes a scientist who studies sea creatures, keeping her bond with nature from her early days at the museum.</p>
+            <blockquote class="quote">"We all start as a tiny cell, even smaller than a speck of dust. Then we grow and change until we become who we are."</blockquote>
             <div style="margin-top: 40px; text-align: center;">
-              <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 24px;">Thank You For Experiencing "All the Light We Cannot See"</h3>
-              <p class="paragraph" style="text-align: center;">This interactive experience was inspired by Anthony Doerr's Pulitzer Prize-winning novel and created as a creative project for ENG2DN.</p>
+              <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 24px;">Thank You for Trying "All the Light We Cannot See"</h3>
+              <p class="paragraph" style="text-align: center;">This interactive experience was made for fun and learning, inspired by the book by Anthony Doerr.</p>
             </div>
           `
         }
@@ -730,7 +730,7 @@
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
         const intensity = e.intensity !== undefined ? e.intensity : 0.9;
-        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 60px, rgba(0,0,0,${intensity}) 90px)`;
+        blindnessOverlay.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, transparent 30px, rgba(0,0,0,${intensity}) 50px)`;
       }
       function determineCurrentSection() {
         let newCurrentSection = currentSection;
@@ -755,7 +755,7 @@
             }
             if (currentSection === 'game') {
               setTimeout(() => {
-                showTutorial('Test your memory like Marie-Laure had to', document.getElementById('startGameBtn'), 'top');
+                showTutorial('Test your memory like Marie-Laure did', document.getElementById('startGameBtn'), 'top');
                 setTimeout(() => hideTutorial(), 5000);
               }, 1000);
             }
@@ -840,7 +840,7 @@
               startDrawingBtn.click();
             }
           }, 10000);
-          showTutorial('Study this model carefully! It will disappear in 10 seconds', referenceImage, 'top');
+          showTutorial('Look at this model closely! It will disappear in 10 seconds', referenceImage, 'top');
           setTimeout(() => hideTutorial(), 4000);
         });
         startDrawingBtn.addEventListener('click', function() {
@@ -924,9 +924,9 @@
           const score = Math.round(baseScore + (complexityPercentage * 25));
           document.querySelector('.score-value').textContent = score + '%';
           let message;
-          if (score >= 90) { message = "Excellent! Your drawing captures Papa's model perfectly!"; }
-          else if (score >= 80) { message = "Great job! You've captured most of the details of Papa's model!"; }
-          else { message = "Good attempt! With practice, you'll learn to notice more details, just like Marie-Laure."; }
+          if (score >= 90) { message = "Excellent! Your drawing copied the model perfectly!"; }
+          else if (score >= 80) { message = "Great job! You copied most of the details."; }
+          else { message = "Good try! With practice, you'll notice more details."; }
           document.querySelector('#modelScore p').textContent = message;
           modelScore.classList.add('active');
           canvasContainer.style.display = 'none';
@@ -952,9 +952,9 @@
         pattern = generateRandomPattern(gameLevel);
         userPattern = [];
         document.querySelector('.game-instructions').innerHTML = `
-          <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Memorize the Pattern</h2>
-          <p>Study the lit squares carefully. They will disappear, and you must recreate the pattern from memory.</p>
-          <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">This is how Marie-Laure had to memorize her papa's models by touch.</p>
+          <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Remember the Pattern</h2>
+          <p>Look at the lit squares. They will go away, and you must copy the pattern from memory.</p>
+          <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">This is like how Marie-Laure learned her father's models by touch.</p>
         `;
         setTimeout(() => {
           pattern.forEach((index, i) => {
@@ -965,9 +965,9 @@
             gameState = 'selecting';
             checkPatternBtn.style.display = 'block';
             document.querySelector('.game-instructions').innerHTML = `
-              <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Recreate the Pattern</h2>
-              <p>Click on the squares to recreate the pattern you just saw.</p>
-              <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">Marie-Laure had to remember the layout of her neighborhood through touch alone.</p>
+              <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Copy the Pattern</h2>
+              <p>Click on the squares to copy the pattern you just saw.</p>
+              <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">Your score: ${correctAnswers} correct</p>
             `;
           }, (pattern.length * 600) + 1000);
         }, 1500);
@@ -992,7 +992,7 @@
             gameLevel++;
             document.querySelector('.game-instructions').innerHTML = `
               <h2 style="margin-bottom: 16px; font-size: 1.75rem; color: #34c759;">Correct!</h2>
-              <p>Great job! You're learning to navigate through memory, just like Marie-Laure did with her papa's models.</p>
+              <p>Great job! You are learning to remember like Marie-Laure did.</p>
               <p style="margin-top: 16px;">Get ready for level ${gameLevel}...</p>
             `;
             gameCells.forEach(cell => {
@@ -1003,7 +1003,7 @@
           } else {
             document.querySelector('.game-instructions').innerHTML = `
               <h2 style="margin-bottom: 16px; font-size: 1.75rem; color: #ff3b30;">Not Quite Right</h2>
-              <p>This is how Marie-Laure must have felt when learning a new route - it takes practice!</p>
+              <p>This is how Marie-Laure felt when learning a new route - it takes practice!</p>
               <p style="margin-top: 16px;">Let's see the correct pattern...</p>
             `;
             setTimeout(() => {
@@ -1021,8 +1021,8 @@
           pattern = generateRandomPattern(gameLevel);
           userPattern = [];
           document.querySelector('.game-instructions').innerHTML = `
-            <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Memorize the Pattern</h2>
-            <p>Study the lit squares carefully. They will disappear, and you must recreate the pattern from memory.</p>
+            <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Remember the Pattern</h2>
+            <p>Look at the lit squares. They will go away, and you must copy the pattern from memory.</p>
             <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">Your score: ${correctAnswers} correct</p>
           `;
           checkPatternBtn.style.display = 'none';
@@ -1034,8 +1034,8 @@
             gameState = 'selecting';
             checkPatternBtn.style.display = 'block';
             document.querySelector('.game-instructions').innerHTML = `
-              <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Recreate the Pattern</h2>
-              <p>Click on the squares to recreate the pattern you just saw.</p>
+              <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Level ${gameLevel}: Copy the Pattern</h2>
+              <p>Click on the squares to copy the pattern you just saw.</p>
               <p style="margin-top: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.7);">Your score: ${correctAnswers} correct</p>
             `;
           }, (pattern.length * 600) + 1000);
@@ -1069,8 +1069,8 @@
           checkPatternBtn.style.display = 'none';
           resetGameGrid();
           document.querySelector('.game-instructions').innerHTML = `
-            <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Memorize the Pattern</h2>
-            <p>Study the lit squares carefully. They will disappear, and you must recreate the pattern from memory.</p>
+            <h2 style="margin-bottom: 16px; font-size: 1.75rem;">Remember the Pattern</h2>
+            <p>Look at the lit squares. They will go away, and you must copy the pattern from memory.</p>
           `;
         }
       }
