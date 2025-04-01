@@ -1793,6 +1793,37 @@
         tooltip.style.left = `${left}px`;
       }
       function hideTutorial() { document.getElementById('tutorial').classList.remove('active'); }
+      // Add this snippet at the end of the DOMContentLoaded callback, before its closing "});"
+
+const toggleBlindnessBtn = document.createElement('button');
+toggleBlindnessBtn.textContent = 'Turn Blindness Off (Boring!!)';
+toggleBlindnessBtn.style.position = 'fixed';
+toggleBlindnessBtn.style.bottom = '20px';
+toggleBlindnessBtn.style.right = '20px';
+toggleBlindnessBtn.style.zIndex = '3000';
+toggleBlindnessBtn.style.padding = '10px';
+toggleBlindnessBtn.style.background = 'var(--accent)';
+toggleBlindnessBtn.style.color = '#fff';
+toggleBlindnessBtn.style.border = 'none';
+toggleBlindnessBtn.style.borderRadius = '8px';
+toggleBlindnessBtn.style.cursor = 'pointer';
+document.body.appendChild(toggleBlindnessBtn);
+
+let blindnessEnabled = true;
+toggleBlindnessBtn.addEventListener('click', function() {
+  blindnessEnabled = !blindnessEnabled;
+  if (!blindnessEnabled) {
+    // Turn off the blindness effect
+    document.removeEventListener('mousemove', spotlightHandler);
+    spotlightActive = false;
+    blindnessOverlay.style.background = 'rgba(0,0,0,0)';
+    toggleBlindnessBtn.textContent = 'Turn Blindness On (Not Boring!!)';
+  } else {
+    // Turn it back on
+    document.addEventListener('mousemove', spotlightHandler);
+    toggleBlindnessBtn.textContent = 'Turn Blindness Off (Boring!!)';
+  }
+});
       window.addEventListener('scroll', function() {
         if (!ticking) {
           window.requestAnimationFrame(function() {
