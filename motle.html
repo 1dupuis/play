@@ -3,28 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>dupuis.lol - Motle</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>Motle - French Word Game</title>
   <link rel="stylesheet" href="motle.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
 </head>
 <body>
   <div class="container">
     <header>
-      <a href="/search" class="home-button">🏠</a>
       <h1>Motle</h1>
-      <p>Guess the 5‑letter French word!</p>
-      <p><em><a href="https://www.wordreference.com/fren/mot" target="_blank">Mot means word in French</a></em></p>
+      <p>Devinez le mot français de 5 lettres!</p>
+      <p><em>Guess the 5-letter French word</em></p>
+      
+      <div class="settings">
+        <div class="dropdown">
+          <button class="dropdown-btn" aria-label="Game settings">
+            <i class="bi bi-gear-fill"></i>
+          </button>
+          <div class="dropdown-content">
+            <div class="setting-item">
+              <label for="gamemode">Mode de jeu:</label>
+              <select id="gamemode">
+                <option value="normal">Normal</option>
+                <option value="timed">Chronomètre (60s)</option>
+                <option value="hard">Mode difficile</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
+    
     <div id="game">
+      <div id="timer" class="hidden">
+        <span id="time-left">60</span>s
+      </div>
       <div id="board"></div>
       <div id="keyboard"></div>
     </div>
+    
     <div id="result" class="hidden">
       <p id="message"></p>
-      <button onclick="resetGame()">Play Again</button>
+      <button id="play-again">Jouer encore</button>
     </div>
+    
+    <footer>
+      <p>Motle - A French Wordle Clone</p>
+    </footer>
   </div>
+  
+  <div id="toast" class="toast hidden"></div>
+  
   <script src="motle.js"></script>
 </body>
 </html>
