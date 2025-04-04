@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dupuis.lol - Motle</title>
-    <link rel="stylesheet" href="motle.css">
-    <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
-    <script src="access.js" defer></script>
-    <script src="theme.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dupuis.lol - Motle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="motle.css">
+  <link rel="icon" href="https://raw.githubusercontent.com/1dupuis/play/main/dupuis-lol-web-icon.png">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <a href="/search" class="home-button">🏠 Home</a>
-            <h1>Motle</h1>
-            <p>Guess the 5-letter French word!</p>
-            <p><em><a href="https://www.wordreference.com/fren/mot" target="_blank">Did you know 'mot' means 'word' in French?</a></em></p>
-        </header>
-
-        <div id="game">
-            <div id="board"></div>
-            <div id="keyboard"></div>
-        </div>
-
-        <div id="result" class="hidden">
-            <p id="message"></p>
-            <button onclick="resetGame()">Play Again</button>
-        </div>
+  <div class="container">
+    <header>
+      <a href="/search" class="home-button">🏠</a>
+      <h1>Motle</h1>
+      <p>Guess the 5‑letter French word!</p>
+      <p><em><a href="https://www.wordreference.com/fren/mot" target="_blank">Mot means word in French</a></em></p>
+    </header>
+    <div id="game">
+      <div id="board"></div>
+      <div id="keyboard"></div>
     </div>
-
-    <script src="motle.js"></script>
+    <div id="result" class="hidden">
+      <p id="message"></p>
+      <button onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+  <script src="motle.js"></script>
 </body>
 </html>
