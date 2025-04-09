@@ -24,9 +24,7 @@
       --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       --border-radius: 16px;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body::before {
       content: "";
       position: fixed;
@@ -40,7 +38,6 @@
       z-index: 10;
       animation: noiseJump 0.3s steps(2) infinite;
     }
-
     @keyframes noiseJump {
       0% { transform: translate(0px, 0px); }
       10% { transform: translate(-2px, 1px); }
@@ -54,7 +51,6 @@
       90% { transform: translate(-2px, 1px); }
       100% { transform: translate(0px, 0px); }
     }
-
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       color: var(--primary);
@@ -63,19 +59,16 @@
       transition: background-color 0.5s var(--timing-function);
       line-height: 1.6;
     }
-
     body.dark {
       background-color: var(--primary);
       color: var(--secondary);
       --box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
-
     .container {
       width: 100%;
       padding: 0;
       position: relative;
     }
-
     .progress-container {
       position: fixed;
       top: 0;
@@ -86,7 +79,6 @@
       z-index: 2000;
       backdrop-filter: blur(4px);
     }
-
     .progress-bar {
       height: 100%;
       background: linear-gradient(90deg, var(--accent), var(--accent-hover));
@@ -95,7 +87,6 @@
       box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
       border-radius: 0 4px 4px 0;
     }
-
     .sticky-browser {
       position: fixed;
       top: 50%;
@@ -109,7 +100,6 @@
       transition: opacity 0.5s var(--timing-function), transform 0.5s var(--timing-function);
       perspective: 1500px;
     }
-
     section {
       min-height: 100vh;
       padding: 15vh 0;
@@ -118,7 +108,6 @@
       justify-content: center;
       position: relative;
     }
-
     .browser-frame {
       width: 100%;
       max-width: 1080px;
@@ -132,17 +121,14 @@
       will-change: transform;
       border: 1px solid rgba(0, 0, 0, 0.05);
     }
-
     .browser-frame:hover {
       transform: translateY(-5px);
       box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.2);
     }
-
     body.dark .browser-frame {
       background: #121218;
       border-color: rgba(255, 255, 255, 0.05);
     }
-
     .browser-header {
       display: flex;
       align-items: center;
@@ -152,17 +138,14 @@
       border-radius: var(--border-radius) var(--border-radius) 0 0;
       backdrop-filter: blur(5px);
     }
-
     body.dark .browser-header {
       background: #1a1a22;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-
     .browser-dots {
       display: flex;
       gap: 8px;
     }
-
     .browser-dot {
       width: 12px;
       height: 12px;
@@ -170,27 +153,21 @@
       transition: transform 0.2s var(--timing-function);
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
-
     body.dark .browser-dot {
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     }
-
     .browser-dot:hover {
       transform: scale(1.2);
     }
-
     .browser-dot.red {
       background: linear-gradient(145deg, #ff5f57, #ff4f47);
     }
-
     .browser-dot.yellow {
       background: linear-gradient(145deg, #febc2e, #feac1e);
     }
-
     .browser-dot.green {
       background: linear-gradient(145deg, #28c840, #18b830);
     }
-
     .browser-address {
       flex: 1;
       margin: 0 16px;
@@ -208,26 +185,21 @@
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
       backdrop-filter: blur(4px);
     }
-
     .browser-address:hover {
       background: rgba(220, 220, 230, 0.9);
     }
-
     body.dark .browser-address {
       background: rgba(40, 40, 50, 0.8);
       color: #f0f0f5;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
-
     body.dark .browser-address:hover {
       background: rgba(50, 50, 60, 0.9);
     }
-
     .browser-buttons {
       display: flex;
       gap: 16px;
     }
-
     .browser-button {
       color: var(--subtle);
       font-size: 16px;
@@ -240,13 +212,11 @@
       justify-content: center;
       border-radius: 8px;
     }
-
     .browser-button:hover {
       color: var(--accent);
       transform: scale(1.1);
       background: rgba(59, 130, 246, 0.1);
     }
-
     .browser-content {
       padding: 45px;
       min-height: 60vh;
@@ -258,24 +228,19 @@
       scrollbar-width: thin;
       scrollbar-color: var(--subtle) transparent;
     }
-
     .browser-content::-webkit-scrollbar {
       width: 6px;
     }
-
     .browser-content::-webkit-scrollbar-track {
       background: transparent;
     }
-
     .browser-content::-webkit-scrollbar-thumb {
       background-color: var(--subtle);
       border-radius: 6px;
     }
-
     body.dark .browser-content {
       background: #121218;
     }
-
     .heading {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
@@ -291,19 +256,16 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
     body.dark .heading {
       background: linear-gradient(135deg, var(--secondary), #c8c8d0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
     .heading.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .subheading {
       font-family: 'Playfair Display', serif;
       font-weight: 500;
@@ -315,12 +277,10 @@
       transition: opacity 0.8s var(--timing-function) 0.5s, transform 0.8s var(--timing-function) 0.5s;
       letter-spacing: 0.01em;
     }
-
     .subheading.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .paragraph {
       font-size: 1.125rem;
       line-height: 1.7;
@@ -331,16 +291,13 @@
       transition: opacity 0.8s var(--timing-function) 0.7s, transform 0.8s var(--timing-function) 0.7s;
       color: rgba(10, 10, 15, 0.8);
     }
-
     body.dark .paragraph {
       color: rgba(247, 247, 249, 0.8);
     }
-
     .paragraph.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .quote {
       font-family: 'Playfair Display', serif;
       font-size: 1.5rem;
@@ -357,17 +314,14 @@
       box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.1);
       line-height: 1.6;
     }
-
     body.dark .quote {
       background: rgba(59, 130, 246, 0.1);
       box-shadow: 0 4px 12px -2px rgba(59, 130, 246, 0.2);
     }
-
     .quote.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .tabs {
       display: flex;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -379,20 +333,16 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-
     .tabs::-webkit-scrollbar {
       display: none;
     }
-
     body.dark .tabs {
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .tabs.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .tab {
       padding: 14px 28px;
       font-weight: 500;
@@ -402,15 +352,12 @@
       transition: color 0.3s var(--timing-function);
       white-space: nowrap;
     }
-
     .tab:hover {
       color: var(--accent);
     }
-
     .tab.active {
       color: var(--accent);
     }
-
     .tab.active::after {
       content: '';
       position: absolute;
@@ -424,22 +371,18 @@
       transform-origin: left;
       border-radius: 2px 2px 0 0;
     }
-
     @keyframes tab-indicator {
       from { transform: scaleX(0); }
       to { transform: scaleX(1); }
     }
-
     .tab-content {
       padding: 36px 0;
       display: none;
       animation: fade-in 0.5s var(--timing-function);
     }
-
     .tab-content.active {
       display: block;
     }
-
     .blindness-overlay {
       position: fixed;
       top: 0;
@@ -452,14 +395,12 @@
       transition: background 0.5s ease-out;
       mix-blend-mode: multiply;
     }
-
     .model-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 24px;
       margin-top: 36px;
     }
-
     .model-item {
       height: 180px;
       background: #f5f5f7;
@@ -473,27 +414,22 @@
       position: relative;
       overflow: hidden;
     }
-
     body.dark .model-item {
       background: #1a1a22;
     }
-
     .model-item:hover {
       transform: translateY(-8px) scale(1.02);
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
     }
-
     .model-item img {
       max-width: 100%;
       max-height: 100%;
       object-fit: cover;
       transition: transform 0.5s var(--timing-function);
     }
-
     .model-item:hover img {
       transform: scale(1.08);
     }
-
     .model-title {
       position: absolute;
       bottom: 0;
@@ -507,11 +443,9 @@
       transform: translateY(100%);
       transition: transform 0.4s var(--timing-function);
     }
-
     .model-item:hover .model-title {
       transform: translateY(0);
     }
-
     .model-game {
       position: fixed;
       top: 0;
@@ -529,13 +463,11 @@
       transition: opacity 0.5s var(--timing-function);
       backdrop-filter: blur(10px);
     }
-
     .model-game.active {
       display: flex;
       opacity: 1;
       animation: scaleIn 0.4s var(--timing-function);
     }
-
     .game-instructions {
       color: white;
       font-size: 1.25rem;
@@ -546,7 +478,6 @@
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-
     .game-grid {
       display: grid;
       grid-template-columns: repeat(3, 100px);
@@ -554,7 +485,6 @@
       gap: 16px;
       perspective: 1000px;
     }
-
     .game-cell {
       background: rgba(255,255,255,0.08);
       border-radius: 12px;
@@ -566,7 +496,6 @@
       animation: floatIn 0.6s var(--timing-function) forwards;
       opacity: 0;
     }
-
     .game-cell:nth-child(1) { animation-delay: 0.1s; }
     .game-cell:nth-child(2) { animation-delay: 0.15s; }
     .game-cell:nth-child(3) { animation-delay: 0.2s; }
@@ -576,13 +505,11 @@
     .game-cell:nth-child(7) { animation-delay: 0.4s; }
     .game-cell:nth-child(8) { animation-delay: 0.45s; }
     .game-cell:nth-child(9) { animation-delay: 0.5s; }
-
     .game-cell:hover {
       background: rgba(255,255,255,0.15);
       transform: translateZ(10px) scale(1.05);
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
-
     .game-cell.selected {
       background: var(--accent);
       animation: pulse-glow 1.5s infinite alternate;
@@ -594,8 +521,6 @@
         animation: none !important;
         box-shadow: 0 0 15px var(--success), 0 0 30px rgba(16, 185, 129, 0.4);
     }
-
-
     .game-actions {
       margin-top: 36px;
       display: flex;
@@ -603,7 +528,6 @@
       animation: floatIn 0.8s var(--timing-function) 0.4s forwards;
       opacity: 0;
     }
-
     .btn {
       padding: 12px 30px;
       background: var(--accent);
@@ -618,7 +542,6 @@
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3), 0 1px 3px rgba(0,0,0,0.1);
     }
-
     .btn::before {
       content: '';
       position: absolute;
@@ -629,32 +552,26 @@
       background: rgba(255,255,255,0.2);
       transition: left 0.3s var(--timing-function);
     }
-
     .btn:hover {
       background: var(--accent-hover);
       transform: translateY(-3px);
       box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4), 0 2px 4px rgba(0,0,0,0.1);
     }
-
     .btn:active {
       transform: translateY(1px);
       box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
     }
-
     .btn:hover::before {
       left: 100%;
     }
-
     .btn.btn-secondary {
       background: rgba(255,255,255,0.15);
       box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1);
     }
-
     .btn.btn-secondary:hover {
       background: rgba(255,255,255,0.25);
       box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.2);
     }
-
     .city-model {
       position: relative;
       margin-top: 54px;
@@ -668,16 +585,13 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       transition: transform 0.5s var(--timing-function), box-shadow 0.5s var(--timing-function);
     }
-
     .city-model:hover {
       transform: scale(1.02);
       box-shadow: 0 16px 48px rgba(0,0,0,0.25);
     }
-
     body.dark .city-model {
       background: #1a1a22;
     }
-
     .city-model::before {
       content: '';
       position: absolute;
@@ -692,19 +606,16 @@
       transition: opacity 0.6s var(--timing-function), transform 4s var(--timing-function);
       filter: brightness(1.05) contrast(1.1);
     }
-
     .city-model:hover::before {
       opacity: 0.9;
       transform: scale(1.05);
     }
-
     .memory-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 28px;
       margin-top: 36px;
     }
-
     .memory-card {
       height: 280px;
       border-radius: var(--border-radius);
@@ -716,11 +627,9 @@
       transition: transform 0.7s var(--timing-function);
       box-shadow: 0 10px 24px rgba(0,0,0,0.12);
     }
-
     .memory-card.flipped {
       transform: perspective(1000px) rotateY(180deg);
     }
-
     .memory-card-front,
     .memory-card-back {
       position: absolute;
@@ -736,12 +645,10 @@
       justify-content: center;
       border-radius: var(--border-radius);
     }
-
     .memory-card:hover .memory-card-front,
     .memory-card:hover .memory-card-back {
       box-shadow: 0 15px 30px rgba(0,0,0,0.2);
     }
-
     .memory-card-front {
       background: linear-gradient(135deg, var(--accent), #1d4ed8);
       font-size: 2.25rem;
@@ -749,7 +656,6 @@
       transform: rotateY(0deg);
       overflow: hidden;
     }
-
     .memory-card-front::after {
       content: '';
       position: absolute;
@@ -761,21 +667,17 @@
       opacity: 0;
       transition: opacity 0.5s var(--timing-function);
     }
-
     .memory-card:hover .memory-card-front::after {
       opacity: 1;
     }
-
     .memory-card-back {
       background: white;
       transform: rotateY(180deg);
       padding: 18px;
     }
-
     body.dark .memory-card-back {
       background: #1a1a22;
     }
-
     .memory-card-back img,
     .memory-card-back i {
       max-width: 100%;
@@ -784,7 +686,6 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     .memory-title {
       position: absolute;
       bottom: 0;
@@ -798,7 +699,6 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.3);
       z-index: 1;
     }
-
     .canvas-container {
       position: relative;
       width: 100%;
@@ -808,7 +708,6 @@
       overflow: hidden;
       box-shadow: 0 12px 36px rgba(0,0,0,0.15);
     }
-
     #drawingCanvas {
       width: 100%;
       height: 400px;
@@ -819,11 +718,9 @@
       transition: background-color 0.3s var(--timing-function);
       display: block;
     }
-
     body.dark #drawingCanvas {
       background: #1a1a22;
     }
-
     .drawing-tools {
       display: flex;
       align-items: center;
@@ -835,16 +732,13 @@
       border-radius: 0 0 var(--border-radius) var(--border-radius);
       transition: background-color 0.3s var(--timing-function);
     }
-
     body.dark .drawing-tools {
       background: #212128;
     }
-
     .color-picker {
       display: flex;
       gap: 10px;
     }
-
     .color-option {
       width: 26px;
       height: 26px;
@@ -854,13 +748,11 @@
       transition: all 0.2s var(--timing-function);
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
     .color-option:hover, .color-option.active {
       transform: scale(1.2);
       border-color: white;
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     }
-
     .brush-size {
       width: 130px;
       -webkit-appearance: none;
@@ -872,11 +764,9 @@
       outline: none;
       cursor: pointer;
     }
-
     body.dark .brush-size {
       background: rgba(255,255,255,0.1);
     }
-
     .brush-size::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
@@ -899,7 +789,6 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         transition: all 0.2s var(--timing-function);
     }
-
     .brush-size::-webkit-slider-thumb:hover {
       transform: scale(1.1);
       background: var(--accent-hover);
@@ -908,12 +797,10 @@
       transform: scale(1.1);
       background: var(--accent-hover);
     }
-
     .drawing-actions {
       display: flex;
       gap: 10px;
     }
-
     .drawing-actions button {
       background: var(--accent);
       color: white;
@@ -931,12 +818,10 @@
         background: #4a5568;
         transform: translateY(-2px);
     }
-
     .drawing-actions button:hover {
       background: var(--accent-hover);
       transform: translateY(-2px);
     }
-
     .model-score {
       position: fixed;
       top: 50%;
@@ -955,19 +840,16 @@
       max-width: 90%;
       width: 360px;
     }
-
     .model-score.active {
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
       animation: score-pop 0.5s var(--timing-function);
     }
-
     @keyframes score-pop {
       0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
       70% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
       100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
-
     .score-value {
       font-size: 5.5rem;
       font-weight: 700;
@@ -980,60 +862,48 @@
       line-height: 1;
       text-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes scaleIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-
     @keyframes blurIn {
       from { filter: blur(10px); opacity: 0; }
       to { filter: blur(0); opacity: 1; }
     }
-
     @keyframes floatIn {
       0% { transform: translateY(20px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
-
     @keyframes pulse-glow {
         0% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.6), 0 0 15px rgba(59, 130, 246, 0.3); }
         100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.5); }
     }
-
-
     @keyframes wiggle {
       0%, 100% { transform: rotate(-2deg); }
       50% { transform: rotate(2deg); }
     }
-
     .fade-in { animation: fadeIn 0.8s var(--timing-function) forwards; opacity: 0; }
     .scale-in { animation: scaleIn 0.8s var(--timing-function) forwards; opacity: 0; }
     .blur-in { animation: blurIn 0.8s var(--timing-function) forwards; opacity: 0; }
     .float-in { animation: floatIn 1s var(--timing-function) forwards; opacity: 0; }
     .pulse-glow { animation: pulse-glow 2s infinite alternate; }
     .wiggle { animation: wiggle 2.5s infinite ease-in-out; }
-
     .delay-100 { animation-delay: 0.1s; }
     .delay-200 { animation-delay: 0.2s; }
     .delay-300 { animation-delay: 0.3s; }
     .delay-400 { animation-delay: 0.4s; }
     .delay-500 { animation-delay: 0.5s; }
-
     @keyframes content-fade {
       0% { opacity: 0; transform: translateY(10px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-
     .browser-content-transition {
       animation: content-fade 0.6s var(--timing-function);
     }
-
     .section-marker {
       position: absolute;
       top: 50%;
@@ -1042,7 +912,6 @@
       opacity: 0;
       pointer-events: none;
     }
-
     .tooltip {
       position: fixed;
       background: rgba(15, 15, 20, 0.9);
@@ -1060,22 +929,18 @@
       max-width: 250px;
       text-align: center;
     }
-
     .tooltip.active {
       opacity: 1;
       transform: translateY(0);
     }
-
     .tooltip::after {
       content: none;
     }
-
     @media (max-width: 1200px) {
       .sticky-browser { width: 92%; }
       .browser-content { padding: 36px; }
       .heading { font-size: 3.25rem; }
     }
-
     @media (max-width: 768px) {
       .heading { font-size: 2.75rem; }
       .quote { font-size: 1.25rem; padding: 15px 24px; margin: 36px 0; }
@@ -1090,7 +955,6 @@
       .browser-header { padding: 12px 16px; }
       .drawing-tools { justify-content: center; }
     }
-
     @media (max-width: 480px) {
       .heading { font-size: 2.25rem; }
       .subheading { font-size: 1.375rem; }
@@ -1114,7 +978,6 @@
       .papa-bubble { max-width: calc(100% - 40px); left: 10px; bottom: 60px; }
       .toggle-blindness-btn { bottom: 10px; right: 10px; }
     }
-
     .papa-bubble {
       position: fixed;
       bottom: 20px;
@@ -1137,18 +1000,16 @@
         opacity: 1;
         transform: translateY(0);
     }
-    /* Style for the label and message */
     .papa-bubble .papa-label {
         display: block;
         font-weight: 600;
         font-size: 1rem;
         margin-bottom: 4px;
-        color: var(--accent); /* Use accent color for name */
+        color: var(--accent);
     }
      .papa-bubble .papa-message {
         font-size: 0.95rem;
      }
-     /* Loading dots styling */
     .papa-bubble .loading-dots span {
         display: inline-block;
         width: 6px;
@@ -1164,7 +1025,6 @@
         0%, 80%, 100% { transform: scale(0); }
         40% { transform: scale(1.0); }
     }
-
     .toggle-blindness-btn {
         position: fixed;
         bottom: 20px;
@@ -1183,7 +1043,31 @@
      .toggle-blindness-btn.disabled {
         background-color: var(--subtle);
      }
-
+    /* Idle overlay styles */
+    .idle-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(250,250,250,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 5000;
+      padding: 20px;
+      font-family: 'Inter', sans-serif;
+      color: var(--primary);
+      font-size: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .idle-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
@@ -1205,9 +1089,7 @@
           <div class="browser-button"><i class="fa-solid fa-bookmark"></i></div>
         </div>
       </div>
-      <div class="browser-content" id="browserContent">
-        <!-- Initial Content Loaded via JS -->
-      </div>
+      <div class="browser-content" id="browserContent"></div>
     </div>
   </div>
   <div class="container">
@@ -1245,9 +1127,7 @@
     </section>
   </div>
   <div class="model-game" id="modelGame">
-    <div class="game-instructions">
-      <!-- Content updated dynamically by JS -->
-    </div>
+    <div class="game-instructions"></div>
     <div class="game-grid" id="gameGrid">
       <div class="game-cell" data-index="0"></div>
       <div class="game-cell" data-index="1"></div>
@@ -1276,10 +1156,17 @@
       <span class="papa-message">Thinking... <span class="loading-dots"><span></span><span></span><span></span></span></span>
   </div>
   <button class="toggle-blindness-btn" id="toggleBlindnessBtn">Blindness On</button>
-
+  <div id="idleOverlay" class="idle-overlay">
+    <div>
+      <h2>Welcome to the Interactive Experience</h2>
+      <p>Scroll, click, or move your mouse to explore Marie-Laure's story.</p>
+      <p>Use the navigation and tabs to discover different sections.</p>
+      <p>When you're ready, simply interact with the page to begin.</p>
+      <button id="closeIdleBtn" class="btn" style="margin-top:20px;">Start Exploring</button>
+    </div>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // --- Constants and State ---
       const sectionData = {
         intro: {
           title: "See the World Like Marie-Laure",
@@ -1336,7 +1223,7 @@
              <div class="memory-grid">
                <div class="memory-card">
                 <div class="memory-card-front">
-                  <i class="fa-solid fa-water"></i> <!-- Seine River -->
+                  <i class="fa-solid fa-water"></i>
                 </div>
                 <div class="memory-card-back">
                   <i class="fa-solid fa-water fa-4x" style="color: #60a5fa;"></i>
@@ -1345,7 +1232,7 @@
               </div>
                <div class="memory-card">
                 <div class="memory-card-front">
-                   <i class="fa-solid fa-person"></i> <!-- Father -->
+                   <i class="fa-solid fa-person"></i>
                 </div>
                 <div class="memory-card-back">
                    <i class="fa-solid fa-person fa-4x" style="color: #8e8e93;"></i>
@@ -1354,7 +1241,7 @@
                </div>
                <div class="memory-card">
                  <div class="memory-card-front">
-                   <i class="fa-solid fa-book-open"></i> <!-- Books -->
+                   <i class="fa-solid fa-book-open"></i>
                  </div>
                  <div class="memory-card-back">
                    <i class="fa-solid fa-book-open fa-4x" style="color: #a0522d;"></i>
@@ -1363,7 +1250,7 @@
                </div>
                 <div class="memory-card">
                   <div class="memory-card-front">
-                    <i class="fa-solid fa-key"></i> <!-- Museum Keys -->
+                    <i class="fa-solid fa-key"></i>
                   </div>
                   <div class="memory-card-back">
                      <i class="fa-solid fa-key fa-4x" style="color: #f59e0b;"></i>
@@ -1477,15 +1364,9 @@
           `
         }
       };
-
-      // --- Google Generative AI API Details (WARNING: Insecure Client-Side Implementation) ---
-      const GEMINI_API_KEY = "AIzaSyAtIJNuqJsnifU3Ez3CNEtjUrhQWbB1N7o"; // <<< EXTREMELY INSECURE - DO NOT USE IN PRODUCTION
-      // Using user-requested model name string. Note: This might not be a valid/publicly available model via this API version.
-      // The primary issue remains CORS block, regardless of model name correctness.
+      const GEMINI_API_KEY = "AIzaSyAtIJNuqJsnifU3Ez3CNEtjUrhQWbB1N7o";
       const GEMINI_MODEL_NAME = "gemini-2.0-flash-lite";
       const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
-
-      // --- DOM Elements ---
       const progressBar = document.getElementById('progressBar');
       const blindnessOverlay = document.getElementById('blindnessOverlay');
       const browserAddress = document.getElementById('browserAddress');
@@ -1495,10 +1376,8 @@
       const sectionMarkers = document.querySelectorAll('.section-marker');
       const tutorial = document.getElementById('tutorial');
       const papaBubble = document.getElementById('papaBubble');
-      const papaMessageSpan = papaBubble.querySelector('.papa-message'); // Target the message span
+      const papaMessageSpan = papaBubble.querySelector('.papa-message');
       const toggleBlindnessBtn = document.getElementById('toggleBlindnessBtn');
-
-      // --- State Variables ---
       let lastScrollTop = 0;
       let ticking = false;
       let currentSection = 'intro';
@@ -1509,136 +1388,9 @@
       let spotlightActive = false;
       let papaTimeout;
       let blindnessEnabled = true;
-
-      // --- Initialization ---
-      updateBrowserContent('intro');
-      updatePapaBubble(); // Initial call
-
-      if (isFirstVisit) {
-        showTutorial('Scroll down to explore Marie-Laure\'s story', document.body, 'bottom', 5000);
-        isFirstVisit = false; // Mark first visit complete
-      }
-
-      // --- Event Listeners ---
-      window.addEventListener('scroll', handleScrollThrottled);
-      toggleBlindnessBtn.addEventListener('click', toggleBlindnessEffect);
-
-      // --- Core Functions ---
-
-      function handleScrollThrottled() {
-         if (!ticking) {
-          window.requestAnimationFrame(function() {
-            handleScroll();
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }
-
-      function handleScroll() {
-        const scrollTop = window.scrollY;
-        const scrollHeight = document.documentElement.scrollHeight;
-        const clientHeight = document.documentElement.clientHeight;
-        const height = scrollHeight - clientHeight;
-        const scrollProgress = height > 0 ? (scrollTop / height) * 100 : 0;
-
-        progressBar.style.width = scrollProgress + "%";
-
-        const parallaxOffset = Math.min(Math.max((scrollProgress / 100) * 30 - 15, -15), 15);
-        const scaleFactor = 1 - Math.abs(parallaxOffset) / 150;
-        stickyBrowser.style.transform = `translate(-50%, calc(-50% + ${parallaxOffset}px)) scale(${scaleFactor})`;
-
-        const blindnessStart = 30;
-        const blindnessEnd = 55;
-        const darknessThreshold = 40;
-
-        if (blindnessEnabled && scrollProgress > blindnessStart && scrollProgress < blindnessEnd) {
-            const midPoint = (blindnessStart + blindnessEnd) / 2;
-            const progressInEffect = (scrollProgress - blindnessStart) / (blindnessEnd - blindnessStart);
-            const intensityFactor = 1 - Math.abs(progressInEffect - 0.5) * 2;
-            const blindnessIntensity = Math.min(intensityFactor * 0.99, 0.99);
-
-            if (!spotlightActive) {
-                 document.addEventListener('mousemove', spotlightHandler);
-                 spotlightActive = true;
-                 blindnessOverlay.style.transition = 'background 0.3s ease-out';
-             }
-            updateSpotlight(lastMouseX, lastMouseY, blindnessIntensity);
-
-            if (scrollProgress > darknessThreshold) {
-                 document.body.classList.add('dark');
-            } else {
-                 document.body.classList.remove('dark');
-            }
-        } else {
-             if (spotlightActive) {
-                 document.removeEventListener('mousemove', spotlightHandler);
-                 spotlightActive = false;
-                 blindnessOverlay.style.transition = 'background 0.5s ease-out';
-                 blindnessOverlay.style.background = 'rgba(0, 0, 0, 0)';
-             }
-             if (currentSection !== 'blindness' && currentSection !== 'adaptation') {
-                 document.body.classList.remove('dark');
-             }
-        }
-
-        determineCurrentSection();
-        lastScrollTop = scrollTop;
-      }
-
-      function spotlightHandler(e) {
-        if (!blindnessEnabled || !spotlightActive) return;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-        const currentBg = blindnessOverlay.style.background;
-        const currentIntensityMatch = currentBg.match(/rgba\(0,0,0,([\d.]+)\)/);
-        const currentIntensity = currentIntensityMatch ? parseFloat(currentIntensityMatch[1]) : 0.9;
-        updateSpotlight(e.clientX, e.clientY, currentIntensity);
-      }
-
-       function updateSpotlight(x, y, intensity) {
-            blindnessOverlay.style.background = `radial-gradient(circle at ${x}px ${y}px, transparent 55px, rgba(0,0,0,${intensity.toFixed(2)}) 85px)`;
-       }
-
-      function determineCurrentSection() {
-        let newCurrentSection = currentSection;
-        let minDistance = Infinity;
-        const viewportCenter = window.innerHeight / 2;
-
-        sectionMarkers.forEach(marker => {
-          const rect = marker.getBoundingClientRect();
-          const distance = Math.abs(rect.top - viewportCenter);
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            if (distance < minDistance) {
-              minDistance = distance;
-              newCurrentSection = marker.getAttribute('data-section');
-            }
-          }
-        });
-
-        if (newCurrentSection !== currentSection) {
-          currentSection = newCurrentSection;
-          updateBrowserContent(currentSection);
-          updatePapaBubble(); // Fetch new advice
-          const sectionElement = document.querySelector(`section[id="${currentSection}"]`);
-          if (sectionElement) {
-             const newAddress = sectionElement.getAttribute('data-address');
-             animateAddressChange(newAddress);
-          }
-
-          if (!activeSections.includes(currentSection)) {
-            activeSections.push(currentSection);
-            if (currentSection === 'drawingGame') {
-                showTutorial('Click "View Reference Model" to start drawing', document.getElementById('showReferenceBtn'), 'top', 5000);
-            } else if (currentSection === 'game') {
-                showTutorial('Click to test your memory like Marie-Laure', document.getElementById('startGameBtn'), 'top', 5000);
-            } else if (currentSection === 'blindness') {
-                showTutorial('The screen will dim as you scroll further...', document.body, 'center', 4000);
-            }
-          }
-        }
-      }
-
+      let idleTimeout;
+      const idleOverlay = document.getElementById('idleOverlay');
+      const closeIdleBtn = document.getElementById('closeIdleBtn');
       function updateBrowserContent(sectionId) {
         const section = sectionData[sectionId];
         if (!section) return;
@@ -1655,7 +1407,6 @@
           attachEventListeners();
         }, 50);
       }
-
       function animateAddressChange(newAddress) {
          if (browserAddress.textContent === newAddress) return;
          browserAddress.style.opacity = '0';
@@ -1668,46 +1419,33 @@
              setTimeout(() => { browserAddress.classList.remove('wiggle'); }, 800);
          }, 300);
       }
-
       function activateElements(container) {
         const elements = container.querySelectorAll('.heading, .subheading, .paragraph, .quote, .tabs');
         elements.forEach((el, index) => {
             setTimeout(() => el.classList.add('active'), index * 50);
         });
       }
-
-       function attachEventListeners() {
+      function attachEventListeners() {
         document.querySelectorAll('.tab').forEach(tab => {
           tab.addEventListener('click', function() {
             const parentTabs = this.closest('.tabs');
             if (!parentTabs) return;
-
             parentTabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-
             const tabId = this.getAttribute('data-tab');
-            let contentParent = parentTabs.parentNode; // Look for content in parent or subsequent siblings
+            let contentParent = parentTabs.parentNode;
             let targetContent = contentParent.querySelector(`.tab-content#${tabId}`);
-
-             // Hide all sibling tab contents first
-             contentParent.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-
-
+            contentParent.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
             if (targetContent) {
                 targetContent.classList.add('active');
-            } else {
-                console.warn("Tab content not found for:", tabId);
             }
           });
         });
-
         document.querySelectorAll('.memory-card').forEach(card => {
           card.addEventListener('click', function() { this.classList.toggle('flipped'); });
         });
-
         const showReferenceBtn = document.getElementById('showReferenceBtn');
         if (showReferenceBtn) setupDrawingGame();
-
         const startGameBtn = document.getElementById('startGameBtn');
         if (startGameBtn) {
              startGameBtn.onclick = () => {
@@ -1715,14 +1453,12 @@
                  startMemoryGame();
              };
         }
-
         const closeGameBtn = document.getElementById('closeGameBtn');
         if (closeGameBtn) {
             closeGameBtn.onclick = () => {
                  document.getElementById('modelGame').classList.remove('active');
             };
         }
-
         const closeScoreBtn = document.getElementById('closeScoreBtn');
         if (closeScoreBtn) {
              closeScoreBtn.onclick = () => {
@@ -1730,7 +1466,6 @@
              };
         }
       }
-
       function setupDrawingGame() {
         const showReferenceBtn = document.getElementById('showReferenceBtn');
         const startDrawingBtn = document.getElementById('startDrawingBtn');
@@ -1738,7 +1473,6 @@
         const canvasContainer = document.getElementById('canvasContainer');
         const canvas = document.getElementById('drawingCanvas');
         if (!canvas || !showReferenceBtn || !startDrawingBtn || !referenceImageDiv || !canvasContainer) {
-             console.warn("Drawing game elements not found.");
              return;
         }
         const ctx = canvas.getContext('2d');
@@ -1749,14 +1483,12 @@
         const modelScoreModal = document.getElementById('modelScore');
         const scoreValueEl = modelScoreModal.querySelector('.score-value');
         const scoreMessageEl = modelScoreModal.querySelector('p');
-
         let isDrawing = false;
         let lastX = 0;
         let lastY = 0;
         let currentColor = '#0a0a0f';
         let currentBrushSize = brushSizeSlider.value;
         let referenceTimeout;
-
         function startDrawingStroke(e) {
           isDrawing = true;
           const { x, y } = getCoordinates(e);
@@ -1764,7 +1496,6 @@
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
         }
-
         function drawStroke(e) {
           if (!isDrawing) return;
           e.preventDefault();
@@ -1773,13 +1504,11 @@
           ctx.stroke();
           [lastX, lastY] = [x, y];
         }
-
         function endDrawingStroke() {
             if (!isDrawing) return;
             ctx.closePath();
             isDrawing = false;
         }
-
         function getCoordinates(e) {
           const rect = canvas.getBoundingClientRect();
           let x, y;
@@ -1794,7 +1523,6 @@
            y = Math.max(0, Math.min(canvas.height, y));
           return { x, y };
         }
-
         function resizeCanvas() {
           const containerWidth = canvasContainer.offsetWidth;
           canvas.width = containerWidth;
@@ -1804,7 +1532,6 @@
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
         }
-
         showReferenceBtn.onclick = () => {
             clearTimeout(referenceTimeout);
             referenceImageDiv.style.display = 'block';
@@ -1818,7 +1545,6 @@
                 }
             }, 10000);
         };
-
         startDrawingBtn.onclick = () => {
             clearTimeout(referenceTimeout);
             referenceImageDiv.style.display = 'none';
@@ -1827,7 +1553,6 @@
             resizeCanvas();
             showTutorial('Draw the model from memory.', canvas, 'top', 4000);
         };
-
         colorOptions.forEach(option => {
           option.onclick = function() {
             colorOptions.forEach(opt => opt.classList.remove('active'));
@@ -1836,16 +1561,13 @@
             ctx.strokeStyle = currentColor;
           };
         });
-
         brushSizeSlider.oninput = function() {
           currentBrushSize = this.value;
           ctx.lineWidth = currentBrushSize;
         };
-
         clearCanvasBtn.onclick = () => {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
         };
-
         submitDrawingBtn.onclick = () => {
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const data = imageData.data;
@@ -1861,7 +1583,6 @@
           else if (fillRatio > 0.15) score = 80 + Math.round(Math.random() * 15);
           else score = 20 + Math.round(Math.random() * 10);
           score = Math.min(99, Math.max(0, score));
-
           scoreValueEl.textContent = score + '%';
           let message;
           if (score >= 90) message = "Excellent! A true representation.";
@@ -1871,7 +1592,6 @@
           scoreMessageEl.textContent = message;
           modelScoreModal.classList.add('active');
         };
-
         window.addEventListener('resize', resizeCanvas);
         ctx.strokeStyle = currentColor;
         ctx.lineWidth = currentBrushSize;
@@ -1886,14 +1606,12 @@
         canvas.addEventListener('mouseup', endDrawingStroke);
         canvas.addEventListener('mouseout', endDrawingStroke);
       }
-
-
       function startMemoryGame() {
         const modelGame = document.getElementById('modelGame');
         const gameInstructions = modelGame.querySelector('.game-instructions');
         const checkPatternBtn = document.getElementById('checkPatternBtn');
         const gameCells = modelGame.querySelectorAll('.game-cell');
-        const grid = document.getElementById('gameGrid'); // Get grid for delegation
+        const grid = document.getElementById('gameGrid');
         let pattern = [];
         let userPattern = [];
         let gameState = 'inactive';
@@ -1901,10 +1619,8 @@
         let correctAnswers = 0;
         let showingTimeout;
         let feedbackTimeout;
-
-        // --- Helper Functions ---
         function cleanupTimeouts() { clearTimeout(showingTimeout); clearTimeout(feedbackTimeout); }
-        function resetGameGrid() { /* ... (same as before) ... */
+        function resetGameGrid() {
             cleanupTimeouts();
             gameCells.forEach(cell => {
                 cell.classList.remove('selected', 'correct-pattern');
@@ -1915,13 +1631,13 @@
             userPattern = [];
             checkPatternBtn.style.display = 'none';
          }
-        function comparePatterns(p1, p2) { /* ... (same as before) ... */
+        function comparePatterns(p1, p2) {
              if (p1.length !== p2.length) return false;
              const s1 = [...p1].sort((a, b) => a - b);
              const s2 = [...p2].sort((a, b) => a - b);
              return s1.every((v, i) => v === s2[i]);
          }
-        function generateRandomPattern(level) { /* ... (same as before) ... */
+        function generateRandomPattern(level) {
              const len = Math.min(3 + Math.floor(level / 2), 7);
              const p = [];
              while (p.length < len) {
@@ -1930,8 +1646,6 @@
              }
              return p;
         }
-
-        // --- Game Logic Functions ---
         function showPattern() {
             resetGameGrid();
             gameState = 'showing';
@@ -1944,14 +1658,12 @@
                 `;
                  gameInstructions.style.opacity = 1;
             }, 300);
-
             pattern = generateRandomPattern(gameLevel);
             let delay = 1500;
             pattern.forEach((index, i) => {
                 showingTimeout = setTimeout(() => { if(gameState === 'showing') gameCells[index].classList.add('selected'); }, delay + i * 700);
                 showingTimeout = setTimeout(() => { if(gameState === 'showing') gameCells[index].classList.remove('selected'); }, delay + (i * 700) + 600);
             });
-
             showingTimeout = setTimeout(() => {
                 if (gameState !== 'showing') return;
                 gameState = 'selecting';
@@ -1967,8 +1679,7 @@
                  }, 300);
             }, delay + (pattern.length * 700) + 700);
         }
-
-        function handleCellClick(event) { // Event delegation handler
+        function handleCellClick(event) {
             if (gameState !== 'selecting' || !event.target.classList.contains('game-cell')) return;
             const cell = event.target;
             const index = parseInt(cell.getAttribute('data-index'));
@@ -1979,7 +1690,6 @@
                 userPattern = userPattern.filter(i => i !== index);
             }
         }
-
         function checkUserPattern() {
             if (gameState !== 'selecting') return;
             gameState = 'checking';
@@ -1987,7 +1697,6 @@
             gameState = 'feedback';
             gameInstructions.style.opacity = 0;
             const correct = comparePatterns(pattern, userPattern);
-
             if (correct) {
                 correctAnswers++;
                 gameLevel++;
@@ -2022,36 +1731,27 @@
                  feedbackTimeout = setTimeout(showPattern, 3500);
             }
         }
-
-        // --- Attach Listeners ---
-         // Remove previous listener before adding new one
-         const newGrid = grid.cloneNode(true);
+        const newGrid = grid.cloneNode(true);
          grid.parentNode.replaceChild(newGrid, grid);
          newGrid.addEventListener('click', handleCellClick);
-
         checkPatternBtn.onclick = checkUserPattern;
         document.getElementById('closeGameBtn').onclick = () => {
              cleanupTimeouts();
              document.getElementById('modelGame').classList.remove('active');
         };
-
-        // --- Start Game ---
         showPattern();
       }
-
       function showTutorial(message, targetElement, position = 'top', duration = 4000) {
-        if (!targetElement && !message) return; // Need either target or message
+        if (!targetElement && !message) return;
         tutorial.textContent = message;
-        tutorial.style.visibility = 'hidden'; // Measure invisible first
+        tutorial.style.visibility = 'hidden';
         tutorial.style.display = 'block';
         const tooltipRect = tutorial.getBoundingClientRect();
         tutorial.style.display = '';
         tutorial.style.visibility = '';
-
         let top = 0, left = 0;
         const margin = 10;
         const edgeMargin = 10;
-
         if (targetElement) {
              const targetRect = targetElement.getBoundingClientRect();
             switch (position) {
@@ -2062,23 +1762,19 @@
                 case 'center': top = window.innerHeight / 2 - tooltipRect.height / 2; left = window.innerWidth / 2 - tooltipRect.width / 2; break;
                 default: top = targetRect.top - tooltipRect.height - margin; left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
             }
-        } else { // If no target, just center it
+        } else {
              top = window.innerHeight / 2 - tooltipRect.height / 2;
              left = window.innerWidth / 2 - tooltipRect.width / 2;
         }
-
         left = Math.max(edgeMargin, Math.min(left, window.innerWidth - tooltipRect.width - edgeMargin));
         top = Math.max(edgeMargin, Math.min(top, window.innerHeight - tooltipRect.height - edgeMargin));
-
         tutorial.style.top = `${top}px`;
         tutorial.style.left = `${left}px`;
         tutorial.style.transform = '';
         tutorial.classList.add('active');
         setTimeout(hideTutorial, duration);
       }
-
       function hideTutorial() { tutorial.classList.remove('active'); }
-
       function toggleBlindnessEffect() {
         blindnessEnabled = !blindnessEnabled;
         if (!blindnessEnabled) {
@@ -2093,57 +1789,126 @@
         } else {
           toggleBlindnessBtn.classList.remove('disabled');
           toggleBlindnessBtn.textContent = 'Blindness On';
-          handleScroll(); // Re-evaluate effect based on current scroll
+          handleScroll();
         }
       }
-
+      function updateSpotlight(x, y, intensity) {
+            blindnessOverlay.style.background = `radial-gradient(circle at ${x}px ${y}px, transparent 55px, rgba(0,0,0,${intensity.toFixed(2)}) 85px)`;
+      }
+      function spotlightHandler(e) {
+        if (!blindnessEnabled || !spotlightActive) return;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        const currentBg = blindnessOverlay.style.background;
+        const currentIntensityMatch = currentBg.match(/rgba\(0,0,0,([\d.]+)\)/);
+        const currentIntensity = currentIntensityMatch ? parseFloat(currentIntensityMatch[1]) : 0.9;
+        updateSpotlight(e.clientX, e.clientY, currentIntensity);
+      }
+      function determineCurrentSection() {
+        let newCurrentSection = currentSection;
+        let minDistance = Infinity;
+        const viewportCenter = window.innerHeight / 2;
+        sectionMarkers.forEach(marker => {
+          const rect = marker.getBoundingClientRect();
+          const distance = Math.abs(rect.top - viewportCenter);
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            if (distance < minDistance) {
+              minDistance = distance;
+              newCurrentSection = marker.getAttribute('data-section');
+            }
+          }
+        });
+        if (newCurrentSection !== currentSection) {
+          currentSection = newCurrentSection;
+          updateBrowserContent(currentSection);
+          updatePapaBubble();
+          const sectionElement = document.querySelector(`section[id="${currentSection}"]`);
+          if (sectionElement) {
+             const newAddress = sectionElement.getAttribute('data-address');
+             animateAddressChange(newAddress);
+          }
+          if (!activeSections.includes(currentSection)) {
+            activeSections.push(currentSection);
+            if (currentSection === 'drawingGame') {
+                showTutorial('Click "View Reference Model" to start drawing', document.getElementById('showReferenceBtn'), 'top', 5000);
+            } else if (currentSection === 'game') {
+                showTutorial('Click to test your memory like Marie-Laure', document.getElementById('startGameBtn'), 'top', 5000);
+            } else if (currentSection === 'blindness') {
+                showTutorial('The screen will dim as you scroll further...', document.body, 'center', 4000);
+            }
+          }
+        }
+      }
+      function handleScroll() {
+        const scrollTop = window.scrollY;
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const height = scrollHeight - clientHeight;
+        const scrollProgress = height > 0 ? (scrollTop / height) * 100 : 0;
+        progressBar.style.width = scrollProgress + "%";
+        const parallaxOffset = Math.min(Math.max((scrollProgress / 100) * 30 - 15, -15), 15);
+        const scaleFactor = 1 - Math.abs(parallaxOffset) / 150;
+        stickyBrowser.style.transform = `translate(-50%, calc(-50% + ${parallaxOffset}px)) scale(${scaleFactor})`;
+        const blindnessStart = 30;
+        const blindnessEnd = 55;
+        const darknessThreshold = 40;
+        if (blindnessEnabled && scrollProgress > blindnessStart && scrollProgress < blindnessEnd) {
+            const midPoint = (blindnessStart + blindnessEnd) / 2;
+            const progressInEffect = (scrollProgress - blindnessStart) / (blindnessEnd - blindnessStart);
+            const intensityFactor = 1 - Math.abs(progressInEffect - 0.5) * 2;
+            const blindnessIntensity = Math.min(intensityFactor * 0.99, 0.99);
+            if (!spotlightActive) {
+                 document.addEventListener('mousemove', spotlightHandler);
+                 spotlightActive = true;
+                 blindnessOverlay.style.transition = 'background 0.3s ease-out';
+             }
+            updateSpotlight(lastMouseX, lastMouseY, blindnessIntensity);
+            if (scrollProgress > darknessThreshold) {
+                 document.body.classList.add('dark');
+            } else {
+                 document.body.classList.remove('dark');
+            }
+        } else {
+             if (spotlightActive) {
+                 document.removeEventListener('mousemove', spotlightHandler);
+                 spotlightActive = false;
+                 blindnessOverlay.style.transition = 'background 0.5s ease-out';
+                 blindnessOverlay.style.background = 'rgba(0, 0, 0, 0)';
+             }
+             if (currentSection !== 'blindness' && currentSection !== 'adaptation') {
+                 document.body.classList.remove('dark');
+             }
+        }
+        determineCurrentSection();
+        lastScrollTop = scrollTop;
+      }
       function updatePapaBubble() {
             clearTimeout(papaTimeout);
-            papaBubble.classList.remove('visible'); // Hide current message
-
-            // --- Prepare API Request ---
+            papaBubble.classList.remove('visible');
             if (!sectionData[currentSection]) {
-                console.error("Invalid section for Papa:", currentSection);
                 showPapaFallback("Just keep exploring, little one.");
                 return;
             }
-
             const prompt = `You are Papa from 'All the Light We Cannot See'. The user is exploring an interactive experience about Marie-Laure. They are currently viewing the section titled "${sectionData[currentSection].title}" (internal ID: ${currentSection}). Offer a short (1-2 sentences max), comforting, encouraging, or contextually relevant piece of advice or observation in Papa's voice, related to this section's theme. Be gentle, slightly melancholic but hopeful, and supportive. Examples: 'Remember the feel of the model, Marie-Laure.', 'Even in darkness, listen closely.', 'Ah, the sea air...'. Do not include quotation marks in your response, and make it summarized and a short phrase`;
-
             const requestBody = {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
-                    // temperature: 0.75, // Adjust for creativity vs consistency
                     maxOutputTokens: 60,
-                    stopSequences: ["\n\n"] // Stop if it tries to generate paragraphs
-                },
-                 // Optional Safety Settings (adjust thresholds as needed)
-                 // safetySettings: [
-                 //   { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-                 //   { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-                 //   { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
-                 //   { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
-                 // ]
+                    stopSequences: ["\n\n"]
+                }
             };
-
-            // Show thinking indicator
              papaMessageSpan.innerHTML = `Thinking... <span class="loading-dots"><span></span><span></span><span></span></span>`;
              papaBubble.classList.add('visible');
-
-             // --- Execute API Call (WARNING: Client-side key, will likely fail due to CORS) ---
-            papaTimeout = setTimeout(() => {
-                console.log(`Attempting fetch to ${API_URL} for section ${currentSection}`);
+             papaTimeout = setTimeout(() => {
                  fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(requestBody)
                  })
                  .then(response => {
-                    console.log("Fetch response status:", response.status);
                     if (!response.ok) {
-                        // Try to get error details, but CORS might block this too
-                         return response.json().catch(() => { // Catch potential JSON parse error on CORS failure
-                             throw new Error(`API Error ${response.status}: ${response.statusText} (CORS likely prevented reading error details)`);
+                         return response.json().catch(() => {
+                             throw new Error(`API Error ${response.status}: ${response.statusText}`);
                          }).then(err => {
                             throw new Error(`API Error ${response.status}: ${err.error?.message || response.statusText}`);
                          });
@@ -2151,38 +1916,27 @@
                     return response.json();
                  })
                  .then(data => {
-                     console.log("API Success Response:", data);
-                     let reply = "Stay strong, my little locksmith."; // Default success reply
-                     // Safely access the response text
+                     let reply = "Stay strong, my little locksmith.";
                      if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
                          reply = data.candidates[0].content.parts[0].text.trim();
                      } else if (data?.promptFeedback?.blockReason) {
-                         console.warn("Gemini prompt blocked:", data.promptFeedback.blockReason);
-                         reply = "Sometimes words are hard to find, but I am near."; // Blocked content fallback
-                     } else {
-                         console.warn("Unexpected Gemini response structure:", data);
+                         reply = "Sometimes words are hard to find, but I am near.";
                      }
                       showPapaMessage(reply);
                  })
                  .catch(error => {
-                     // THIS IS THE EXPECTED PATH IN A BROWSER due to CORS
-                     console.error("Error fetching Papa's advice (Likely CORS):", error);
-                     // Use a predefined fallback message on error
                      showPapaFallback(`The radio signal is weak today... Remember what I taught you.`);
                  });
-            }, 500); // Delay before making the call (still shows "Thinking")
+            }, 500);
       }
-
-       function showPapaMessage(message) {
-           papaBubble.classList.remove('visible'); // Hide thinking
+        function showPapaMessage(message) {
+           papaBubble.classList.remove('visible');
            setTimeout(() => {
-                papaMessageSpan.textContent = message; // Update text
-                papaBubble.classList.add('visible'); // Show message
+                papaMessageSpan.textContent = message;
+                papaBubble.classList.add('visible');
            }, 150);
-       }
-
+        }
         function showPapaFallback(fallbackMessage) {
-            // Uses predefined messages if API fails
             papaBubble.classList.remove('visible');
             setTimeout(() => {
                 const responses = papaResponses[currentSection] || papaResponses.default;
@@ -2190,10 +1944,7 @@
                 papaMessageSpan.textContent = fallbackMessage || responses[randomIndex];
                 papaBubble.classList.add('visible');
             }, 150);
-             console.log("Displayed fallback Papa message.");
-       }
-
-        // --- Predefined Fallback Responses (used if API call fails) ---
+        }
         const papaResponses = {
             intro: [ "Welcome. Remember, Marie-Laure, the world holds wonders beyond sight.", "Take your time exploring, little one. Each step is a discovery.", "Let your fingers trace the path, just like the models." ],
             sight: [ "Hold onto the bright memories, Marie-Laure. They are yours forever.", "Even as light fades, the images stay within you.", "These memories... part of your unique story." ],
@@ -2205,11 +1956,42 @@
             ending: [ "You see, Marie-Laure? You found the light within yourself.", "The world is vast, keep learning, keep sensing.", "I am proud of the scientist you've become. Always curious." ],
             default: [ "Stay curious, my little one.", "I am always near, Marie-Laure.", "Keep moving forward. One step, then the next." ]
       };
-
-
-      // --- Run Initial Setup ---
-      handleScroll(); // Initial positioning and section check
-
+      function handleScrollThrottled() {
+         if (!ticking) {
+          window.requestAnimationFrame(function() {
+            handleScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', handleScrollThrottled);
+      toggleBlindnessBtn.addEventListener('click', toggleBlindnessEffect);
+      function resetIdleTimer() {
+        clearTimeout(idleTimeout);
+        hideIdleOverlay();
+        idleTimeout = setTimeout(showIdleOverlay, 15000);
+      }
+      function showIdleOverlay() {
+        idleOverlay.classList.add('visible');
+      }
+      function hideIdleOverlay() {
+        idleOverlay.classList.remove('visible');
+      }
+      ["mousemove", "click", "keypress", "touchstart"].forEach(event => {
+        window.addEventListener(event, resetIdleTimer, true);
+      });
+      closeIdleBtn.addEventListener('click', function() {
+        hideIdleOverlay();
+        resetIdleTimer();
+      });
+      updateBrowserContent('intro');
+      updatePapaBubble();
+      if (isFirstVisit) {
+        showTutorial('Scroll down to explore Marie-Laure\'s story', document.body, 'bottom', 5000);
+        isFirstVisit = false;
+      }
+      handleScroll();
     });
   </script>
 </body>
