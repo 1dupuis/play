@@ -1,0 +1,954 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Democracy vs Autocracy: Finland and Tibet</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #3a86ff;
+      --secondary-color: #ff006e;
+      --democracy-color: #8ecae6;
+      --autocracy-color: #e63946;
+      --background-color: #f8f9fa;
+      --text-color: #212529;
+      --light-gray: #e9ecef;
+      --dark-gray: #343a40;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      text-align: center;
+      padding: 1.5rem 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    header h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 0.5rem;
+    }
+    
+    header p {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      opacity: 0.9;
+    }
+    
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 6rem);
+    }
+    
+    .slide-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      border-radius: 0.5rem;
+      overflow: auto;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      padding: 0 0 4rem 0;
+    }
+    
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .slide-header {
+      color: white;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .slide-content {
+      padding: 1rem;
+    }
+    
+    .intro .slide-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    .democracy .slide-header {
+      background: linear-gradient(135deg, #48cae4, #0077b6);
+    }
+    
+    .autocracy .slide-header {
+      background: linear-gradient(135deg, #e63946, #9d0208);
+    }
+    
+    .conclusion .slide-header {
+      background: linear-gradient(135deg, #606c38, #283618);
+    }
+    
+    .slide-header h2 {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      margin-bottom: 0.25rem;
+    }
+    
+    .slide-header p {
+      font-size: clamp(0.7rem, 2vw, 0.9rem);
+      opacity: 0.9;
+    }
+    
+    .country-comparison {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .country {
+      flex: 1;
+      min-width: min(100%, 250px);
+      background-color: var(--light-gray);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .finland {
+      border-top: 4px solid var(--democracy-color);
+    }
+    
+    .tibet {
+      border-top: 4px solid var(--autocracy-color);
+    }
+    
+    .country h3 {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .country-flag {
+      width: 25px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .stat-card {
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--dark-gray);
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+    }
+    
+    .democracy-content .stat-header i {
+      color: var(--democracy-color);
+    }
+    
+    .autocracy-content .stat-header i {
+      color: var(--autocracy-color);
+    }
+    
+    .indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background-color: var(--light-gray);
+      border-radius: 3px;
+      overflow: hidden;
+      flex: 1;
+    }
+    
+    .progress {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease-out;
+    }
+    
+    .democracy-score .progress {
+      background-color: var(--democracy-color);
+    }
+    
+    .autocracy-score .progress {
+      background-color: var(--autocracy-color);
+    }
+    
+    h3 {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .impact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+    }
+    
+    .impact-item i {
+      margin-top: 0.3rem;
+      min-width: 1rem;
+    }
+    
+    .democracy-impact .impact-item i {
+      color: var(--democracy-color);
+    }
+    
+    .autocracy-impact .impact-item i {
+      color: var(--autocracy-color);
+    }
+    
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(1rem, 4vw, 2rem);
+      height: 200px;
+      margin: 1.5rem auto;
+      max-width: 300px;
+    }
+    
+    .chart-bar {
+      width: clamp(40px, 8vw, 60px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .bar {
+      width: 100%;
+      background-color: var(--primary-color);
+      border-radius: 4px 4px 0 0;
+      transition: height 1s ease;
+    }
+    
+    .chart-label {
+      font-weight: 500;
+      text-align: center;
+      font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    }
+    
+    .finland-bar .bar {
+      background-color: var(--democracy-color);
+      height: 0;
+    }
+    
+    .tibet-bar .bar {
+      background-color: var(--autocracy-color);
+      height: 0;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    }
+    
+    .comparison-table th, .comparison-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .comparison-table th {
+      background-color: var(--light-gray);
+      font-weight: 600;
+    }
+    
+    .comparison-table td:first-child {
+      font-weight: 500;
+    }
+    
+    .impact-lists {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .impact-list {
+      background-color: var(--light-gray);
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+    
+    .impact-list h3 {
+      font-size: clamp(0.9rem, 2.2vw, 1rem);
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .impact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(calc(100% - 2rem), 500px);
+      background-color: var(--background-color);
+      border-radius: 0.5rem;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+    
+    .nav-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background-color 0.2s ease;
+    }
+    
+    .nav-button:hover {
+      background-color: #2978ff;
+    }
+    
+    .nav-button:disabled {
+      background-color: var(--light-gray);
+      color: var(--dark-gray);
+      cursor: not-allowed;
+    }
+    
+    .slide-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .indicator-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--light-gray);
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    
+    .indicator-dot:hover {
+      transform: scale(1.2);
+    }
+    
+    .indicator-dot.active {
+      background-color: var(--primary-color);
+    }
+    
+    .authors {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+      color: var(--dark-gray);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0.5rem;
+      }
+      
+      .slide-content {
+        padding: 0.75rem;
+      }
+      
+      .comparison-table th, .comparison-table td {
+        padding: 0.5rem 0.3rem;
+      }
+      
+      .nav-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      
+      .chart {
+        max-width: 200px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      header {
+        padding: 1rem 0;
+      }
+      
+      .slide-header {
+        padding: 0.75rem;
+      }
+      
+      .stat-card, .country {
+        padding: 0.75rem;
+      }
+      
+      .comparison-table {
+        font-size: 0.7rem;
+      }
+      
+      .comparison-table th, .comparison-table td {
+        padding: 0.4rem 0.2rem;
+      }
+      
+      .nav-button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      
+      .indicator-dot {
+        width: 8px;
+        height: 8px;
+      }
+    }
+    
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 1200px;
+      }
+      
+      .country-comparison {
+        gap: 2rem;
+      }
+      
+      .stats-grid {
+        gap: 1.5rem;
+      }
+    }
+    
+    @media (min-height: 800px) {
+      .slide {
+        padding-bottom: 6rem;
+      }
+    }
+    
+    @media (max-height: 500px) and (orientation: landscape) {
+      .slide-header {
+        position: relative;
+      }
+      
+      .navigation {
+        position: sticky;
+      }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .stat-card:hover {
+        transform: none;
+      }
+      
+      .progress, .bar {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Democracy vs Autocracy</h1>
+    <p>Finland & Tibet: A Comparative Analysis</p>
+  </header>
+  
+  <div class="container">
+    <div class="slide-container">
+      <div class="slide intro active" id="slide-1">
+        <div class="slide-header">
+          <h2>Introduction</h2>
+          <p>Comparing two political systems</p>
+        </div>
+        <div class="slide-content">
+          <p>This presentation explores two contrasting political systems:</p>
+          
+          <div class="country-comparison">
+            <div class="country finland">
+              <h3>
+                <span>Finland</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/bc/Flag_of_Finland.svg" alt="Finland Flag" class="country-flag">
+              </h3>
+              <p>A top-ranked democracy with free elections and strong civil liberties.</p>
+            </div>
+            
+            <div class="country tibet">
+              <h3>
+                <span>Tibet</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flag_of_Tibet.svg" alt="Tibet Flag" class="country-flag">
+              </h3>
+              <p>Governed by China with an authoritarian system and restricted freedoms.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide democracy" id="slide-2">
+        <div class="slide-header">
+          <h2>Democracy: Finland</h2>
+          <p>A model democratic state</p>
+        </div>
+        <div class="slide-content democracy-content">
+          <p>Finland represents one of the world's strongest democracies:</p>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-award"></i>
+                <span>Freedom House</span>
+              </div>
+              <p>Rated as "Free"</p>
+              <div class="indicator democracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>100/100</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-balance-scale"></i>
+                <span>Democracy Index</span>
+              </div>
+              <p>"Full Democracy"</p>
+              <div class="indicator democracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>9.30/10</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-globe"></i>
+                <span>IDEA Ranking</span>
+              </div>
+              <p>Top democracy</p>
+              <div class="indicator democracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>0.89/1</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3>Key Democratic Features</h3>
+          <div class="impact-item">
+            <i class="fas fa-vote-yea"></i>
+            <p><strong>Free Elections</strong> - Regular, internationally recognized elections</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-comments"></i>
+            <p><strong>Free Expression</strong> - Strong freedom of speech and press</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-gavel"></i>
+            <p><strong>Independent Courts</strong> - Fully independent judicial system</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-hands-helping"></i>
+            <p><strong>Low Corruption</strong> - Among least corrupt nations globally</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide autocracy" id="slide-3">
+        <div class="slide-header">
+          <h2>Autocracy: Tibet</h2>
+          <p>An authoritarian political system</p>
+        </div>
+        <div class="slide-content autocracy-content">
+          <p>Tibet, under Chinese control, demonstrates authoritarian characteristics:</p>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-ban"></i>
+                <span>Freedom House</span>
+              </div>
+              <p>Rated as "Not Free"</p>
+              <div class="indicator autocracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>1/100</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-user-lock"></i>
+                <span>Democracy Index</span>
+              </div>
+              <p>"Authoritarian Regime"</p>
+              <div class="indicator autocracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>2.0/10</span>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>IDEA Ranking</span>
+              </div>
+              <p>Poor democratic metrics</p>
+              <div class="indicator autocracy-score">
+                <span>Score:</span>
+                <div class="progress-bar">
+                  <div class="progress" style="width: 0%"></div>
+                </div>
+                <span>0.12/1</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3>Key Autocratic Features</h3>
+          <div class="impact-item">
+            <i class="fas fa-ban"></i>
+            <p><strong>No Elections</strong> - No free elections or representative choice</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-newspaper"></i>
+            <p><strong>Controlled Media</strong> - No independent press</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-user-slash"></i>
+            <p><strong>Limited Rights</strong> - Restricted speech, religion, and assembly</p>
+          </div>
+          
+          <div class="impact-item">
+            <i class="fas fa-fist-raised"></i>
+            <p><strong>Political Repression</strong> - Imprisonment of dissidents</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide conclusion" id="slide-4">
+        <div class="slide-header">
+          <h2>Comparison & Conclusion</h2>
+          <p>The impact of political systems</p>
+        </div>
+        <div class="slide-content">
+          <div class="chart">
+            <div class="chart-bar finland-bar">
+              <div class="bar"></div>
+              <div class="chart-label">Finland<br/>Democracy</div>
+            </div>
+            <div class="chart-bar tibet-bar">
+              <div class="bar"></div>
+              <div class="chart-label">Tibet<br/>Democracy</div>
+            </div>
+          </div>
+          
+          <table class="comparison-table">
+            <tr>
+              <th>Aspect</th>
+              <th>Finland (Democracy)</th>
+              <th>Tibet (Autocracy)</th>
+            </tr>
+            <tr>
+              <td>Rights</td>
+              <td>Universal suffrage</td>
+              <td>No elections</td>
+            </tr>
+            <tr>
+              <td>Liberties</td>
+              <td>Strong protections</td>
+              <td>Severe restrictions</td>
+            </tr>
+            <tr>
+              <td>Media</td>
+              <td>Free press</td>
+              <td>Censorship</td>
+            </tr>
+            <tr>
+              <td>Courts</td>
+              <td>Independent judiciary</td>
+              <td>Political control</td>
+            </tr>
+          </table>
+          
+          <h3>Impact on Citizens' Lives</h3>
+          
+          <div class="impact-lists">
+            <div class="impact-list">
+              <h3>Finland: Democratic Impact</h3>
+              <div class="democracy-impact">
+                <div class="impact-item">
+                  <i class="fas fa-check-circle"></i>
+                  <p>Freedom to express opinions</p>
+                </div>
+                <div class="impact-item">
+                  <i class="fas fa-check-circle"></i>
+                  <p>Citizens elect representatives</p>
+                </div>
+                <div class="impact-item">
+                  <i class="fas fa-check-circle"></i>
+                  <p>Independent media access</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="impact-list">
+              <h3>Tibet: Autocratic Impact</h3>
+              <div class="autocracy-impact">
+                <div class="impact-item">
+                  <i class="fas fa-times-circle"></i>
+                  <p>Punishment for criticism</p>
+                </div>
+                <div class="impact-item">
+                  <i class="fas fa-times-circle"></i>
+                  <p>No leadership selection</p>
+                </div>
+                <div class="impact-item">
+                  <i class="fas fa-times-circle"></i>
+                  <p>Only approved information</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="navigation">
+      <button class="nav-button prev-button" disabled>
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      <div class="slide-indicators">
+        <div class="indicator-dot active" data-slide="1"></div>
+        <div class="indicator-dot" data-slide="2"></div>
+        <div class="indicator-dot" data-slide="3"></div>
+        <div class="indicator-dot" data-slide="4"></div>
+      </div>
+      <button class="nav-button next-button">
+        Next <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+    
+    <div class="authors">
+      Presented by: Mirko, Timothy, and Gage
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.querySelectorAll('.slide');
+      const prevButton = document.querySelector('.prev-button');
+      const nextButton = document.querySelector('.next-button');
+      const indicators = document.querySelectorAll('.indicator-dot');
+      const finlandBar = document.querySelector('.finland-bar .bar');
+      const tibetBar = document.querySelector('.tibet-bar .bar');
+      const democracyScores = document.querySelectorAll('.democracy-score .progress');
+      const autocracyScores = document.querySelectorAll('.autocracy-score .progress');
+      
+      let currentSlide = 0;
+      
+      function showSlide(index) {
+        // Hide all slides
+        slides.forEach(slide => {
+          slide.classList.remove('active');
+        });
+        
+        // Deactivate all indicators
+        indicators.forEach(dot => {
+          dot.classList.remove('active');
+        });
+        
+        // Show current slide and activate current indicator
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+        
+        // Update button states
+        prevButton.disabled = index === 0;
+        nextButton.disabled = index === slides.length - 1;
+        
+        // Animate chart bars on conclusion slide
+        if (index === 3) {
+          setTimeout(() => {
+            finlandBar.style.height = '90%';
+            tibetBar.style.height = '10%';
+          }, 300);
+        } else {
+          finlandBar.style.height = '0';
+          tibetBar.style.height = '0';
+        }
+        
+        // Animate progress bars on respective slides
+        if (index === 1) {
+          setTimeout(() => {
+            democracyScores.forEach(score => {
+              score.style.width = '100%';
+            });
+          }, 300);
+        } else {
+          democracyScores.forEach(score => {
+            score.style.width = '0%';
+          });
+        }
+        
+        if (index === 2) {
+          setTimeout(() => {
+            autocracyScores.forEach(score => {
+              score.style.width = '20%';
+            });
+          }, 300);
+        } else {
+          autocracyScores.forEach(score => {
+            score.style.width = '0%';
+          });
+        }
+        
+        currentSlide = index;
+        
+        // Scroll to top of slide content
+        if (slides[index].scrollTo) {
+          slides[index].scrollTo(0, 0);
+        }
+      }
+      
+      // Button event listeners
+      prevButton.addEventListener('click', function() {
+        if (currentSlide > 0) {
+          showSlide(currentSlide - 1);
+        }
+      });
+      
+      nextButton.addEventListener('click', function() {
+        if (currentSlide < slides.length - 1) {
+          showSlide(currentSlide + 1);
+        }
+      });
+      
+      // Indicator dot event listeners
+      indicators.forEach((dot, index) => {
+        dot.addEventListener('click', function() {
+          showSlide(index);
+        });
+      });
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+          showSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+          showSlide(currentSlide - 1);
+        }
+      });
+      
+      // Swipe navigation for touch devices
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, false);
+      
+      document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, false);
+      
+      function handleSwipe() {
+        const minSwipeDistance = 50;
+        if (touchEndX - touchStartX > minSwipeDistance && currentSlide > 0) {
+          // Swiped right, go to previous slide
+          showSlide(currentSlide - 1);
+        } else if (touchStartX - touchEndX > minSwipeDistance && currentSlide < slides.length - 1) {
+          // Swiped left, go to next slide
+          showSlide(currentSlide + 1);
+        }
+      }
+      
+      // Initialize first slide
+      showSlide(0);
+    });
+  </script>
+</body>
+</html>
