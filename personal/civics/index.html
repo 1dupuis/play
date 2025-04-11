@@ -1,97 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Ethics Project</title>
-  <meta name="description" content="Exploring how AI impacts our society and the ethical questions it raises">
-  <!-- Font Awesome -->
+  <title>The AI Dilemma – A Research Project</title>
+  <meta name="description" content="A research project exploring how AI is reshaping healthcare, privacy, employment, and our society.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap">
-  <!-- Custom CSS -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Preloader -->
   <div id="preloader">
     <div class="loader">
       <svg width="80" height="80" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" stroke="#8b5cf6">
         <g fill="none" fill-rule="evenodd" stroke-width="2">
           <circle cx="22" cy="22" r="1">
-            <animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/>
-            <animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/>
+            <animate attributeName="r" begin="0s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0;1" keySplines="0.165,0.84,0.44,1" repeatCount="indefinite"/>
+            <animate attributeName="stroke-opacity" begin="0s" dur="1.8s" values="1;0" calcMode="spline" keyTimes="0;1" keySplines="0.3,0.61,0.355,1" repeatCount="indefinite"/>
           </circle>
           <circle cx="22" cy="22" r="1">
-            <animate attributeName="r" begin="-0.9s" dur="1.8s" values="1; 20" calcMode="spline" keyTimes="0; 1" keySplines="0.165, 0.84, 0.44, 1" repeatCount="indefinite"/>
-            <animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1; 0" calcMode="spline" keyTimes="0; 1" keySplines="0.3, 0.61, 0.355, 1" repeatCount="indefinite"/>
+            <animate attributeName="r" begin="-0.9s" dur="1.8s" values="1;20" calcMode="spline" keyTimes="0;1" keySplines="0.165,0.84,0.44,1" repeatCount="indefinite"/>
+            <animate attributeName="stroke-opacity" begin="-0.9s" dur="1.8s" values="1;0" calcMode="spline" keyTimes="0;1" keySplines="0.3,0.61,0.355,1" repeatCount="indefinite"/>
           </circle>
         </g>
       </svg>
     </div>
   </div>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <div class="container">
       <div class="navbar-brand">
         <div class="logo-container">
           <span class="logo-text">AI</span>
         </div>
-        <span class="brand-text">AI Ethics Project</span>
+        <span class="brand-text">The AI Dilemma</span>
       </div>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
         <i class="fas fa-bars"></i>
       </button>
       <ul class="navbar-menu" id="navbarMenu">
         <li><a href="#home" class="active">Home</a></li>
-        <li><a href="#issues">Key Issues</a></li>
-        <li><a href="#research">Research</a></li>
+        <li><a href="#issues">Issues</a></li>
+        <li><a href="#research">Findings</a></li>
         <li><a href="#statistics">Stats</a></li>
         <li><a href="#sources">Sources</a></li>
-        <li><a href="#action" class="cta-button">Take Action</a></li>
+        <li><a href="#action" class="cta-button">Get Involved</a></li>
       </ul>
     </div>
   </nav>
 
   <main>
-    <!-- Hero Section -->
     <section id="home" class="hero">
       <div class="particles-container" id="particles"></div>
       <div class="container">
         <h1 class="title" data-scroll>
-          <span class="title-line">AI Ethics</span>
-          <span class="highlight-text">In Our World</span>
+          <span class="title-line">The AI Dilemma</span>
+          <span class="highlight-text">Exploring Today's Technology</span>
         </h1>
         <p class="subtitle" data-scroll data-scroll-delay="0.2">
-          How artificial intelligence is changing healthcare, privacy, 
-          jobs, education, and our everyday lives.
+          I researched how artificial intelligence affects our lives from healthcare to privacy and jobs.
         </p>
         <div class="buttons" data-scroll data-scroll-delay="0.4">
           <a href="#research" class="primary-button">
-            See Our Research
+            Discover Findings
             <i class="fas fa-arrow-right"></i>
           </a>
-          <a href="#issues" class="secondary-button">Key Issues</a>
+          <a href="#issues" class="secondary-button">See Issues</a>
         </div>
         <p class="tag-line" data-scroll data-scroll-delay="0.6">
-          A grade 10 research project on AI ethics and its impact on society
+          This project explores both the benefits and challenges of AI in our everyday world.
         </p>
       </div>
     </section>
 
-    <!-- Issues Section -->
     <section id="issues" class="issues-section">
       <div class="container">
         <div class="section-header" data-scroll>
-          <h2>Key AI Ethics Issues</h2>
+          <h2>Main Issues with AI</h2>
           <p>
-            AI creates several ethical problems that we need to think about
-            as this technology becomes more common in our daily lives.
+            As AI becomes part of our daily lives, I found that it brings along some serious concerns.
           </p>
         </div>
-        
         <div class="issues-grid">
           <div class="issue-card" data-scroll>
             <div class="issue-header">
@@ -100,16 +89,13 @@
               </div>
               <div class="issue-title-container">
                 <span class="issue-category">Trust</span>
-                <h3 class="issue-title">Fake Information</h3>
+                <h3 class="issue-title">Misinformation</h3>
               </div>
             </div>
-            <p class="issue-description">AI can create convincing but false information, making it hard to know what's true.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">AI can generate information that looks real but is sometimes completely false.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">I discovered that AI-generated information can be misleading, which makes it hard to tell what is true.</div>
           </div>
-          
           <div class="issue-card" data-scroll>
             <div class="issue-header">
               <div class="issue-icon">
@@ -117,16 +103,13 @@
               </div>
               <div class="issue-title-container">
                 <span class="issue-category">Security</span>
-                <h3 class="issue-title">Privacy Problems</h3>
+                <h3 class="issue-title">Privacy Concerns</h3>
               </div>
             </div>
-            <p class="issue-description">AI systems need lots of personal data, raising questions about who sees your information.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">AI requires large amounts of personal data, raising serious privacy issues.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">I learned that many AI applications collect extensive personal data which is vulnerable if not properly secured.</div>
           </div>
-          
           <div class="issue-card" data-scroll>
             <div class="issue-header">
               <div class="issue-icon">
@@ -134,50 +117,41 @@
               </div>
               <div class="issue-title-container">
                 <span class="issue-category">Jobs</span>
-                <h3 class="issue-title">Lost Jobs</h3>
+                <h3 class="issue-title">Workforce Disruption</h3>
               </div>
             </div>
-            <p class="issue-description">As AI does more tasks automatically, many traditional jobs might disappear.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">Automation through AI could replace many traditional jobs.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">It is concerning that as AI automates more tasks, a significant number of jobs could be lost or transformed.</div>
           </div>
-          
           <div class="issue-card" data-scroll>
             <div class="issue-header">
               <div class="issue-icon">
                 <i class="fas fa-graduation-cap"></i>
               </div>
               <div class="issue-title-container">
-                <span class="issue-category">School</span>
-                <h3 class="issue-title">Education Changes</h3>
+                <span class="issue-category">Education</span>
+                <h3 class="issue-title">Changing Learning Methods</h3>
               </div>
             </div>
-            <p class="issue-description">AI is changing how we learn but also creates new problems for cheating and honest work.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">While AI can assist learning, it can also encourage shortcuts and lessen genuine understanding.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">I observed that AI tools help with education, but they can also enable cheating and reduce meaningful engagement.</div>
           </div>
-          
           <div class="issue-card" data-scroll>
             <div class="issue-header">
               <div class="issue-icon">
                 <i class="fas fa-scale-balanced"></i>
               </div>
               <div class="issue-title-container">
-                <span class="issue-category">Rules</span>
-                <h3 class="issue-title">Setting Limits</h3>
+                <span class="issue-category">Ethics</span>
+                <h3 class="issue-title">Setting Boundaries</h3>
               </div>
             </div>
-            <p class="issue-description">Creating good rules for AI development and use is challenging but important.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">Clear guidelines are needed to ensure AI benefits society without overstepping.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">I believe it’s crucial to set limits on AI use so that technology remains a tool under human control.</div>
           </div>
-          
           <div class="issue-card" data-scroll>
             <div class="issue-header">
               <div class="issue-icon">
@@ -185,111 +159,89 @@
               </div>
               <div class="issue-title-container">
                 <span class="issue-category">Fairness</span>
-                <h3 class="issue-title">Unfair Decisions</h3>
+                <h3 class="issue-title">Biased Outcomes</h3>
               </div>
             </div>
-            <p class="issue-description">AI systems can copy and make worse the unfair biases that already exist in society.</p>
-            <a href="#" class="issue-link">
-              Learn more
-              <i class="fas fa-arrow-right"></i>
-            </a>
+            <p class="issue-description">AI can unintentionally learn and amplify existing biases in data.</p>
+            <a href="#" class="issue-link">Learn more <i class="fas fa-arrow-right"></i></a>
+            <div class="learn-more-content" style="display:none;">I found that when AI replicates bias in data, it can lead to unfair decisions in real-life situations.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Research Section -->
     <section id="research" class="research-section">
       <div class="container">
         <div class="section-header" data-scroll>
-          <h2>What We Found</h2>
+          <h2>What I Found Out</h2>
           <p>
-            Our research on AI ethics covers different areas,
-            from healthcare to privacy and how it affects jobs.
+            I looked into how AI is used and its impact on different sectors. Here’s what I uncovered about its influence on healthcare, privacy, and employment.
           </p>
         </div>
-
         <div class="tabs-container" data-scroll>
           <div class="tabs">
             <button class="tab-btn active" data-tab="healthcare">Healthcare</button>
             <button class="tab-btn" data-tab="privacy">Privacy & Trust</button>
             <button class="tab-btn" data-tab="jobs">Jobs & Economy</button>
           </div>
-          
           <div class="tab-content active" id="healthcare">
             <div class="research-card">
               <h3>AI in Healthcare</h3>
-              <p class="research-subtitle">How AI affects doctors and patients</p>
+              <p class="research-subtitle">Early detection with risks</p>
               <div class="research-body">
                 <p>
-                  AI helps doctors find diseases earlier, which is great. 
-                  But it's not perfect – it makes mistakes about 12% of the time.
+                  AI can help detect diseases earlier, potentially saving lives. However, errors do occur.
                 </p>
                 <p>
-                  If patients start trusting AI more than their doctors, it could hurt the
-                  doctor-patient relationship. Small clinics often don't have good security,
-                  making them easy targets for data theft.
+                  Overreliance on AI may weaken the doctor-patient relationship, and smaller clinics often lack proper data protection.
                 </p>
                 <p>
-                  We think healthcare providers should mainly use AI for paperwork and admin tasks. 
-                  This gives doctors more time with patients while making sure humans double-check all AI diagnoses.
+                  It seems best to use AI for routine tasks so that doctors have more time for actual patient care.
                 </p>
                 <div class="research-quote">
-                  <p>"AI can be a big threat to medical practices--but it can also be a major help."</p>
+                  <p>"AI can be both a powerful tool and a potential threat in healthcare."</p>
                   <cite>— Medical Economics, 2024</cite>
                 </div>
               </div>
             </div>
           </div>
-          
           <div class="tab-content" id="privacy">
             <div class="research-card">
-              <h3>Privacy & Trust Issues</h3>
-              <p class="research-subtitle">How AI affects your personal information</p>
+              <h3>Privacy & Trust</h3>
+              <p class="research-subtitle">Balancing efficiency and security</p>
               <div class="research-body">
                 <p>
-                  AI systems need lots of personal data to work well, 
-                  which brings up privacy concerns. Our research shows many AI systems 
-                  collect too much data without telling users clearly.
+                  AI systems gather huge amounts of personal data, which poses major privacy concerns.
                 </p>
                 <p>
-                  Jeremy Peckham's research suggests that AI could cause serious problems if we 
-                  trust these systems too much. There's worry that AI might hurt privacy, 
-                  freedom, and even relationships as we rely more on these technologies.
+                  Experts warn that too much trust in AI can undermine our freedom and personal relationships.
                 </p>
                 <p>
-                  The trust issue goes beyond just privacy - as AI makes more important decisions, 
-                  we need to ask who's responsible when something goes wrong.
+                  Maintaining human oversight is essential to ensure these systems serve us responsibly.
                 </p>
                 <div class="research-quote">
-                  <p>"Humans are special because we're made by God, which makes us different from machines, 
-                  so AI shouldn't control us, but the other way around."</p>
-                  <cite>— Jeremy Peckham, as cited in Perspectives on Science and Christian Faith</cite>
+                  <p>"We must keep control over technology rather than letting it control us."</p>
+                  <cite>— Jeremy Peckham, Perspectives on Science and Christian Faith</cite>
                 </div>
               </div>
             </div>
           </div>
-          
           <div class="tab-content" id="jobs">
             <div class="research-card">
-              <h3>Jobs & Money</h3>
-              <p class="research-subtitle">How AI is changing work</p>
+              <h3>Jobs & the Economy</h3>
+              <p class="research-subtitle">The shift in work and its challenges</p>
               <div class="research-body">
                 <p>
-                  Our research shows that AI could affect over 300 million jobs worldwide, according to 
-                  Goldman Sachs data from 2023. In Canada, some jobs will change more than others.
+                  AI could affect over 300 million jobs globally, with many roles changing or disappearing.
                 </p>
                 <p>
-                  While some old jobs are going away, AI is also creating new types of 
-                  jobs. However, the change is causing problems for workers trying to adapt 
-                  and for keeping the economy stable.
+                  Although new opportunities may arise, adapting to these shifts poses real challenges.
                 </p>
                 <p>
-                  The Canadian government is working on this problem through its AI Strategy, 
-                  which includes training programs and support as industries change with more AI use.
+                  Governments are working on training and support, but the transformation is still daunting.
                 </p>
                 <div class="research-quote">
-                  <p>"Over 300 million jobs around the world could be affected by AI."</p>
+                  <p>"Over 300 million jobs worldwide could be transformed by AI."</p>
                   <cite>— Goldman Sachs, 2023</cite>
                 </div>
               </div>
@@ -299,12 +251,11 @@
       </div>
     </section>
 
-    <!-- Statistics Section -->
     <section id="statistics" class="statistics-section">
       <div class="container">
         <div class="section-header" data-scroll>
           <h2>AI by the Numbers</h2>
-          <p>Important stats that show how much AI affects our society.</p>
+          <p>Key statistics reveal how AI is impacting our world.</p>
         </div>
         <div class="statistics-grid">
           <div class="statistic-card" data-scroll data-scroll-delay="0.1">
@@ -313,8 +264,8 @@
             </div>
             <h3 class="statistic-value counter" data-count="77">0</h3>
             <div class="statistic-percentage">%</div>
-            <div class="statistic-label">Devices Using AI</div>
-            <p class="statistic-description">Of digital devices now have some form of AI technology (IBM, 2025).</p>
+            <div class="statistic-label">Devices with AI</div>
+            <p class="statistic-description">77% of digital devices now include AI features (IBM, 2025).</p>
           </div>
           <div class="statistic-card" data-scroll data-scroll-delay="0.2">
             <div class="statistic-icon">
@@ -322,8 +273,8 @@
             </div>
             <h3 class="statistic-value counter" data-count="12">0</h3>
             <div class="statistic-percentage">%</div>
-            <div class="statistic-label">Medical Errors</div>
-            <p class="statistic-description">Of medical diagnoses may be wrong when done by AI (Medical Economics, 2024).</p>
+            <div class="statistic-label">AI Diagnostic Errors</div>
+            <p class="statistic-description">About 12% of diagnoses made by AI could be wrong (Medical Economics, 2024).</p>
           </div>
           <div class="statistic-card" data-scroll data-scroll-delay="0.3">
             <div class="statistic-icon">
@@ -331,22 +282,19 @@
             </div>
             <h3 class="statistic-value counter" data-count="300">0</h3>
             <div class="statistic-suffix">M+</div>
-            <div class="statistic-label">Jobs Changing</div>
-            <p class="statistic-description">Jobs worldwide could be transformed by AI technology (Goldman Sachs, 2023).</p>
+            <div class="statistic-label">Jobs Impacted</div>
+            <p class="statistic-description">Over 300 million jobs could be affected by AI advances (Goldman Sachs, 2023).</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Quote Section -->
     <section class="quote-section">
       <div class="container">
         <div class="quote-container" data-scroll>
           <i class="fas fa-quote-left quote-icon"></i>
           <blockquote class="quote-text">
-            "AI helps doctors find diseases earlier, which is good. 
-            But it's not perfect–it makes mistakes sometimes. If patients trust 
-            AI more than their own doctors, it could damage the relationships that make healthcare work."
+            "AI helps detect diseases early, but errors can undermine trust in healthcare."
           </blockquote>
           <div class="quote-author">
             <p class="author-name">Sarah M. Worthy</p>
@@ -356,137 +304,100 @@
       </div>
     </section>
 
-    <!-- Sources Section -->
     <section id="sources" class="sources-section">
       <div class="container">
         <div class="section-header" data-scroll>
-          <h2>Our Sources</h2>
-          <p>All the research sources we used for this project.</p>
+          <h2>Sources</h2>
+          <p>A list of the articles and resources used for this project.</p>
         </div>
         <div class="sources-grid">
           <div class="source-card" data-scroll>
-            <h3 class="source-title">A wake-up call for doctor-owned practices</h3>
+            <h3 class="source-title">A Wake-Up Call for Physician-Owned Practices</h3>
             <p class="source-citation">Sarah M. Worthy, Medical Economics, Nov-Dec. 2024</p>
-            <p class="source-description">Looks at how AI affects medical practices, showing both benefits and problems.</p>
-            <a href="link.gale.com/apps/doc/A821913898/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=b97a9940" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Discusses both the benefits and challenges of AI in medical practices.</p>
+            <a href="https://link.gale.com/apps/doc/A821913898/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=b97a9940" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
           <div class="source-card" data-scroll>
             <h3 class="source-title">MASTERS OR SLAVES? AI and the Future of Humanity</h3>
             <p class="source-citation">Eddy Wu, Perspectives on Science and Christian Faith, Dec. 2021</p>
-            <p class="source-description">Review of Jeremy Peckham's book about the ethics of AI development.</p>
-            <a href="link.gale.com/apps/doc/A687563583/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=9b7d4496" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Reviews insights on whether AI will be controlled by humans or vice versa.</p>
+            <a href="https://link.gale.com/apps/doc/A687563583/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=9b7d4496" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
           <div class="source-card" data-scroll>
             <h3 class="source-title">The Dangers of Using AI Generated Images</h3>
             <p class="source-citation">National Law Review, Oct. 2024</p>
-            <p class="source-description">Case of Tesla being sued by Blade Runner producers over AI-generated imagery.</p>
-            <a href="link.gale.com/apps/doc/A813525312/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=12971d2c" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Covers the legal issues when AI-generated imagery mimics copyrighted scenes.</p>
+            <a href="https://link.gale.com/apps/doc/A813525312/AONE?u=ko_k12hs_d50&sid=bookmark-AONE&xid=12971d2c" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
           <div class="source-card" data-scroll>
             <h3 class="source-title">What is Artificial Intelligence (AI)?</h3>
             <p class="source-citation">IBM Knowledge Center, 2025</p>
-            <p class="source-description">Overview of AI basics, uses, and how the technology works.</p>
-            <a href="https://www.ibm.com/topics/artificial-intelligence" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Breaks down the basics of AI and its everyday applications.</p>
+            <a href="https://www.ibm.com/topics/artificial-intelligence" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
           <div class="source-card" data-scroll>
             <h3 class="source-title">Canadian AI Strategy</h3>
             <p class="source-citation">Innovation, Science and Economic Development Canada, 2023</p>
-            <p class="source-description">Canada's plan for AI development, research, and rules.</p>
-            <a href="https://ised-isde.canada.ca/site/ai-strategy/en" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Outlines Canada’s approach to fostering and regulating AI research and development.</p>
+            <a href="https://ised-isde.canada.ca/site/ai-strategy/en" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
           <div class="source-card" data-scroll>
             <h3 class="source-title">NextGenAI Announcement</h3>
             <p class="source-citation">OpenAI Blog, March 2025</p>
-            <p class="source-description">Announcement of a new group focusing on AI research and education.</p>
-            <a href="https://openai.com/index/introducing-nextgenai/" class="source-link" target="_blank">
-              View source
-              <i class="fas fa-external-link-alt"></i>
-            </a>
+            <p class="source-description">Introduces a new initiative aimed at advancing AI research and education.</p>
+            <a href="https://openai.com/index/introducing-nextgenai/" class="source-link" target="_blank">View source <i class="fas fa-external-link-alt"></i></a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Action Section -->
     <section id="action" class="action-section">
       <div class="container">
         <div class="action-content" data-scroll>
-          <h2>How Can You Help?</h2>
+          <h2>Get Involved</h2>
           <p class="action-description">
-            There are several ways you can help shape the future of AI ethics. 
-            Join our project to promote responsible AI development.
+            You can help promote safe and responsible AI. Learn more about the challenges and support ethical practices.
           </p>
           <div class="action-cards">
             <div class="action-card" data-scroll>
               <div class="action-icon">
                 <i class="fas fa-bullhorn"></i>
               </div>
-              <h3>Spread the Word</h3>
-              <p>Share information about AI ethics with your friends and on social media.</p>
-              <a href="#" class="action-link">
-                Learn more
-                <i class="fas fa-arrow-right"></i>
-              </a>
+              <h3>Share Information</h3>
+              <p>Talk about the benefits and risks of AI with friends and classmates.</p>
+              <a href="#" class="action-link">Learn more <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="action-card" data-scroll>
               <div class="action-icon">
                 <i class="fas fa-users"></i>
               </div>
-              <h3>Join Discussion</h3>
-              <p>Take part in community talks and workshops about AI safety.</p>
-              <a href="#" class="action-link">
-                Find events
-                <i class="fas fa-arrow-right"></i>
-              </a>
+              <h3>Join Discussions</h3>
+              <p>Participate in school or community forums to explore the future of technology.</p>
+              <a href="#" class="action-link">Learn more <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="action-card" data-scroll>
               <div class="action-icon">
                 <i class="fas fa-code"></i>
               </div>
-              <h3>Help Build</h3>
-              <p>Help create responsible AI tools and share them with others.</p>
-              <a href="#" class="action-link">
-                GitHub projects
-                <i class="fas fa-arrow-right"></i>
-              </a>
+              <h3>Contribute Ideas</h3>
+              <p>Help design safe AI solutions and share your projects with your community.</p>
+              <a href="#" class="action-link">Learn more <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="action-card" data-scroll>
               <div class="action-icon">
                 <i class="fas fa-book"></i>
               </div>
               <h3>Keep Learning</h3>
-              <p>Stay up to date with the newest research and developments in AI ethics.</p>
-              <a href="#" class="action-link">
-                Reading list
-                <i class="fas fa-arrow-right"></i>
-              </a>
+              <p>Stay updated on the latest research and join workshops about AI ethics.</p>
+              <a href="#" class="action-link">Learn more <i class="fas fa-arrow-right"></i></a>
             </div>
           </div>
-          <a href="#" class="join-button" data-scroll>
-            Join Our Project
-            <i class="fas fa-arrow-right"></i>
-          </a>
+          <a href="#" class="join-button" data-scroll>Join the Project <i class="fas fa-arrow-right"></i></a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
@@ -494,58 +405,51 @@
           <div class="logo-container">
             <span class="logo-text">AI</span>
           </div>
-          <span class="footer-title">AI Ethics Project</span>
+          <span class="footer-title">The AI Dilemma</span>
           <p class="footer-description">
-            A research project exploring how artificial intelligence affects our daily lives and society.
+            A research project exploring how artificial intelligence is reshaping our society.
           </p>
-          <div class="social-links">
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-          </div>
         </div>
         <div class="footer-links">
           <div class="footer-column">
             <h3>Research</h3>
             <ul>
-              <li><a href="#research">Our Method</a></li>
               <li><a href="#research">Findings</a></li>
               <li><a href="#sources">Sources</a></li>
+              <li><a href="#action">Get Involved</a></li>
             </ul>
           </div>
           <div class="footer-column">
-            <h3>Issues</h3>
+            <h3>Topics</h3>
             <ul>
-              <li><a href="#research">Healthcare</a></li>
-              <li><a href="#research">Privacy</a></li>
-              <li><a href="#research">Jobs</a></li>
+              <li><a href="#issues">Misinformation</a></li>
+              <li><a href="#issues">Privacy</a></li>
+              <li><a href="#issues">Jobs</a></li>
             </ul>
           </div>
           <div class="footer-column">
             <h3>Resources</h3>
             <ul>
               <li><a href="https://ised-isde.canada.ca/site/ai-strategy/en" target="_blank">Canadian AI Strategy</a></li>
-              <li><a href="https://www.ibm.com/topics/artificial-intelligence" target="_blank">IBM AI Resources</a></li>
-              <li><a href="https://openai.com" target="_blank">OpenAI Research</a></li>
+              <li><a href="https://www.ibm.com/topics/artificial-intelligence" target="_blank">IBM AI Basics</a></li>
+              <li><a href="https://openai.com" target="_blank">OpenAI</a></li>
             </ul>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 AI Ethics Research Project. All rights reserved.</p>
+        <p>&copy; 2025 The AI Dilemma. All rights reserved.</p>
       </div>
     </div>
   </footer>
 
-  <!-- Back to Top Button -->
   <button id="backToTop" aria-label="Back to top">
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollToPlugin.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script src="script.js"></script>
 </body>
