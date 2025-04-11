@@ -1,5 +1,5 @@
 const navbar = document.querySelector('.navbar');
-const menuToggle = document.getElementById('menuToggle');//a
+const menuToggle = document.getElementById('menuToggle');
 const navbarMenu = document.getElementById('navbarMenu');
 const navLinks = document.querySelectorAll('.navbar-menu a');
 const tabButtons = document.querySelectorAll('.tab-btn');
